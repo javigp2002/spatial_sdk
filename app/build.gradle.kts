@@ -60,6 +60,8 @@ android {
   kotlinOptions { jvmTarget = "17" }
 
   androidResources { noCompress.addAll(listOf(".tflite", ".lite", ".caffemodel")) }
+  buildToolsVersion = "35.0.0"
+  ndkVersion = "29.0.14206865"
 }
 
 dependencies {

@@ -1,4 +1,6 @@
-# Meta Spatial Scanner
+# Meta Spatial Scanner FORK FROM JAVIER GONZALEZ
+
+[Fork](https://github.com/meta-quest/Meta-Spatial-SDK-Samples)
 
 ![Meta Spatial Scanner banner](documentation/media/banner.png "Meta Spatial Scanner banner")
 
@@ -18,7 +20,6 @@ This document provides a high-level overview of the application architecture and
 
 1. **Passthrough Camera API** – access the forward-facing cameras on the Quest 3 and Quest 3S for livestreaming or CV inference.
 2. **ML Kit Object Tracking** – perform realtime on-device detection and labeling of objects in the user's field-of-view.
-3. **Llama 3.2 11B Vision Invocation** - utilize Meta AI as a cloud service to get more in-depth details of an object detected in the user's surroundings.
 
 More in-depth documentation on the implementation of key features within the app can be found in the official Horizon documentation [here](https://developers.meta.com/horizon/documentation/spatial-sdk/spatial-sdk-scanner-overview). Some of the implementations in this project are considered proof-of-concept, and may require additional functionality or development before integrating into a production app.
 
