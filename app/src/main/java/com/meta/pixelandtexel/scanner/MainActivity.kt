@@ -1,6 +1,4 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-package com.meta.pixelandtexel.scanner.activities
+package com.meta.pixelandtexel.scanner
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,9 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.Outlined
-import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.WristAttached
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.models.CuratedObject
@@ -58,13 +53,13 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.createPanelEntity
 import com.meta.spatial.vr.LocomotionSystem
 import com.meta.spatial.vr.VRFeature
-import java.io.File
-import kotlin.math.PI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
+import kotlin.math.PI
 
 /**
  * Main entry point for the Quest application. See the README for an in-depth description for how
@@ -134,8 +129,8 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         CuratedObjectHandler(this, ::selectedCuratedObjectFromSelection, R.xml.objects)
     tipManager =
         TipManager(this) {
-          stopScanning()
-          curatedObjectHandler.spawnCuratedObjectsForSelection()
+            stopScanning()
+            curatedObjectHandler.spawnCuratedObjectsForSelection()
         }
 
     // register systems/components
@@ -188,179 +183,182 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
   override fun registerPanels(): List<PanelRegistration> {
     return listOf(
         PanelRegistration(R.integer.welcome_panel_id) {
-          config {
-            themeResourceId = R.style.PanelAppThemeTransparent
-            includeGlass = false
-            layoutWidthInDp = 368f
-            width = 0.368f
-            height = 0.404f
-            layerConfig = LayerConfig()
-            layerBlendType = PanelShapeLayerBlendType.MASKED
-            enableLayerFeatheredEdge = true
-            effectShader = "customPanel.frag" // just for demonstration purposes
-          }
-          composePanel {
-            setContent {
-              CompositionLocalProvider(
-                  LocalOnBackPressedDispatcherOwner provides
-                      object : OnBackPressedDispatcherOwner {
-                        override val lifecycle: Lifecycle
-                          get() = this@MainActivity.panelViewLifecycleOwner.lifecycle
-
-                        override val onBackPressedDispatcher: OnBackPressedDispatcher
-                          get() = OnBackPressedDispatcher()
-                      }
-              ) {
-                WelcomeScreen(
-                    onLinkClicked = {
-                      val uri = it.toUri()
-                      val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-                      startActivity(browserIntent)
-                    }
-                ) {
-                  welcomePanelEntity?.destroy()
-                  welcomePanelEntity = null
-                }
-              }
+            config {
+                themeResourceId = R.style.PanelAppThemeTransparent
+                includeGlass = false
+                layoutWidthInDp = 368f
+                width = 0.368f
+                height = 0.404f
+                layerConfig = LayerConfig()
+                layerBlendType = PanelShapeLayerBlendType.MASKED
+                enableLayerFeatheredEdge = true
+                effectShader = "customPanel.frag" // just for demonstration purposes
             }
-          }
+            composePanel {
+                setContent {
+                    CompositionLocalProvider(
+                        LocalOnBackPressedDispatcherOwner provides
+                                object : OnBackPressedDispatcherOwner {
+                                    override val lifecycle: Lifecycle
+                                        get() = this@MainActivity.panelViewLifecycleOwner.lifecycle
+
+                                    override val onBackPressedDispatcher: OnBackPressedDispatcher
+                                        get() = OnBackPressedDispatcher()
+                                }
+                    ) {
+                        WelcomeScreen(
+                            onLinkClicked = {
+                                val uri = it.toUri()
+                                val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+                                startActivity(browserIntent)
+                            }
+                        ) {
+                            welcomePanelEntity?.destroy()
+                            welcomePanelEntity = null
+                        }
+                    }
+                }
+            }
         },
         PanelRegistration(R.layout.ui_help_button_view) {
-          config {
-            themeResourceId = R.style.PanelAppThemeTransparent
-            includeGlass = false
-            layoutWidthInDp = 80f
-            width = 0.04f
-            height = 0.04f
-            layerConfig = LayerConfig()
-            layerBlendType = PanelShapeLayerBlendType.MASKED
-            enableLayerFeatheredEdge = true
-          }
-          panel {
-            val helpBtn =
-                rootView?.findViewById<ImageButton>(R.id.help_btn)
-                    ?: throw RuntimeException("Missing help button")
-
-            helpBtn.setOnClickListener {
-              welcomePanelEntity?.destroy()
-              welcomePanelEntity = null
-              stopScanning()
-              dismissInfoPanel()
-              tipManager.dismissTipPanels()
-              curatedObjectHandler.dismissCuratedObjectsSelection()
-
-              tipManager.showHelpPanel()
+            config {
+                themeResourceId = R.style.PanelAppThemeTransparent
+                includeGlass = false
+                layoutWidthInDp = 80f
+                width = 0.04f
+                height = 0.04f
+                layerConfig = LayerConfig()
+                layerBlendType = PanelShapeLayerBlendType.MASKED
+                enableLayerFeatheredEdge = true
             }
-          }
+            panel {
+                val helpBtn =
+                    rootView?.findViewById<ImageButton>(R.id.help_btn)
+                        ?: throw RuntimeException("Missing help button")
+
+                helpBtn.setOnClickListener {
+                    welcomePanelEntity?.destroy()
+                    welcomePanelEntity = null
+                    stopScanning()
+                    dismissInfoPanel()
+                    tipManager.dismissTipPanels()
+                    curatedObjectHandler.dismissCuratedObjectsSelection()
+
+                    tipManager.showHelpPanel()
+                }
+            }
         },
         PanelRegistration(R.layout.ui_camera_controls_view) {
-          config {
-            themeResourceId = R.style.PanelAppThemeTransparent
-            includeGlass = false
-            layoutWidthInDp = 80f
-            width = 0.04f
-            height = 0.04f
-            layerConfig = LayerConfig()
-            layerBlendType = PanelShapeLayerBlendType.MASKED
-            enableLayerFeatheredEdge = true
-          }
-          panel {
-            cameraControlsBtn =
-                rootView?.findViewById(R.id.camera_play_btn)
-                    ?: throw RuntimeException("Missing camera play/pause button")
-
-            cameraControlsBtn?.setOnClickListener {
-              welcomePanelEntity?.destroy()
-              welcomePanelEntity = null
-
-              when (objectDetectionFeature.status) {
-                CameraStatus.PAUSED -> {
-                  // first ask permission if we haven't already
-                  if (!hasPermissions()) {
-                    this@MainActivity.requestPermissions { granted ->
-                      if (granted) {
-                        startScanning()
-                      }
-                    }
-
-                    return@setOnClickListener
-                  }
-
-                  startScanning()
-                }
-
-                CameraStatus.SCANNING -> {
-                  stopScanning()
-                }
-              }
+            config {
+                themeResourceId = R.style.PanelAppThemeTransparent
+                includeGlass = false
+                layoutWidthInDp = 80f
+                width = 0.04f
+                height = 0.04f
+                layerConfig = LayerConfig()
+                layerBlendType = PanelShapeLayerBlendType.MASKED
+                enableLayerFeatheredEdge = true
             }
-          }
+            panel {
+                cameraControlsBtn =
+                    rootView?.findViewById(R.id.camera_play_btn)
+                        ?: throw RuntimeException("Missing camera play/pause button")
+
+                cameraControlsBtn?.setOnClickListener {
+                    welcomePanelEntity?.destroy()
+                    welcomePanelEntity = null
+
+                    when (objectDetectionFeature.status) {
+                        CameraStatus.PAUSED -> {
+                            // first ask permission if we haven't already
+                            if (!hasPermissions()) {
+                                this@MainActivity.requestPermissions { granted ->
+                                    if (granted) {
+                                        startScanning()
+                                    }
+                                }
+
+                                return@setOnClickListener
+                            }
+
+                            startScanning()
+                        }
+
+                        CameraStatus.SCANNING -> {
+                            stopScanning()
+                        }
+                    }
+                }
+            }
         },
         PanelRegistration(R.integer.info_panel_id) {
-          config {
-            themeResourceId = R.style.PanelAppThemeTransparent
-            includeGlass = false
-            layoutWidthInDp = 632f
-            width = 0.632f
-            height = 0.644f
-            layerConfig = LayerConfig()
-            layerBlendType = PanelShapeLayerBlendType.MASKED
-            enableLayerFeatheredEdge = true
-          }
-          composePanel {
-            val vm =
-                ObjectInfoViewModel(pendingInfoRequest!!, getString(R.string.object_query_template))
-            pendingInfoRequest = null
-
-            setContent {
-              ObjectInfoScreen(
-                  vm,
-                  onResume = {
-                    startScanning()
-                    tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
-                  },
-                  onClose = {
-                    dismissInfoPanel()
-                    tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
-                  },
-              )
+            config {
+                themeResourceId = R.style.PanelAppThemeTransparent
+                includeGlass = false
+                layoutWidthInDp = 632f
+                width = 0.632f
+                height = 0.644f
+                layerConfig = LayerConfig()
+                layerBlendType = PanelShapeLayerBlendType.MASKED
+                enableLayerFeatheredEdge = true
             }
-          }
+            composePanel {
+                val vm =
+                    ObjectInfoViewModel(
+                        pendingInfoRequest!!,
+                        getString(R.string.object_query_template)
+                    )
+                pendingInfoRequest = null
+
+                setContent {
+                    ObjectInfoScreen(
+                        vm,
+                        onResume = {
+                            startScanning()
+                            tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
+                        },
+                        onClose = {
+                            dismissInfoPanel()
+                            tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
+                        },
+                    )
+                }
+            }
         },
         PanelRegistration(R.integer.curated_info_panel_id) {
-          config {
-            themeResourceId = R.style.PanelAppThemeTransparent
-            includeGlass = false
-            layoutWidthInDp = 708f
-            width = 0.708f
-            height = 0.644f
-            layerConfig = LayerConfig()
-            layerBlendType = PanelShapeLayerBlendType.MASKED
-            enableLayerFeatheredEdge = true
-          }
-          composePanel {
-            val vm = CuratedObjectInfoViewModel(pendingCuratedObject!!.ui, curatedObjectEntity)
-            pendingCuratedObject = null
-
-            setContent {
-              CompositionLocalProvider(
-                  LocalOnBackPressedDispatcherOwner provides
-                      object : OnBackPressedDispatcherOwner {
-                        override val lifecycle: Lifecycle
-                          get() = this@MainActivity.panelViewLifecycleOwner.lifecycle
-
-                        override val onBackPressedDispatcher: OnBackPressedDispatcher
-                          get() = OnBackPressedDispatcher()
-                      }
-              ) {
-                CuratedObjectInfoScreen(
-                    vm,
-                    onResume = ::startScanning,
-                    onClose = ::dismissInfoPanel,
-                )
-              }
+            config {
+                themeResourceId = R.style.PanelAppThemeTransparent
+                includeGlass = false
+                layoutWidthInDp = 708f
+                width = 0.708f
+                height = 0.644f
+                layerConfig = LayerConfig()
+                layerBlendType = PanelShapeLayerBlendType.MASKED
+                enableLayerFeatheredEdge = true
             }
-          }
+            composePanel {
+                val vm = CuratedObjectInfoViewModel(pendingCuratedObject!!.ui, curatedObjectEntity)
+                pendingCuratedObject = null
+
+                setContent {
+                    CompositionLocalProvider(
+                        LocalOnBackPressedDispatcherOwner provides
+                                object : OnBackPressedDispatcherOwner {
+                                    override val lifecycle: Lifecycle
+                                        get() = this@MainActivity.panelViewLifecycleOwner.lifecycle
+
+                                    override val onBackPressedDispatcher: OnBackPressedDispatcher
+                                        get() = OnBackPressedDispatcher()
+                                }
+                    ) {
+                        CuratedObjectInfoScreen(
+                            vm,
+                            onResume = ::startScanning,
+                            onClose = ::dismissInfoPanel,
+                        )
+                    }
+                }
+            }
         },
     )
   }
@@ -410,7 +408,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
   /**
    * The object detection feature has detected objects in the user's camera feed.
    *
-   * @param result A [DetectedObjectsResult] representation of the object detection result.
+   * @param result A [com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult] representation of the object detection result.
    */
   private fun onObjectsDetected(result: DetectedObjectsResult) {
     if (result.objects.any()) {
@@ -446,7 +444,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
    * @param name The label or name of the object detected in the camera feed
    * @param image An [android.media.Image] image of the detected object, cropped from the device
    *   camera feed frame.
-   * @param pose A [Pose] pose representing the user's head position, and the direction vector from
+   * @param pose A [com.meta.spatial.core.Pose] pose representing the user's head position, and the direction vector from
    *   the head to the right edge of the detected object in the user's view, at eye level.
    */
   private fun showInfoPanelForObject(name: String, image: Bitmap, pose: Pose) {
@@ -460,7 +458,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
       val spawnPose = getPanelSpawnPosition(pose, CURATED_INFO_PANEL_WIDTH, 1.2f)
       infoPanelEntity =
-          Entity.createPanelEntity(
+          Entity.Companion.createPanelEntity(
               R.integer.curated_info_panel_id,
               Transform(spawnPose),
               Grabbable(type = GrabbableType.PIVOT_Y),
@@ -484,7 +482,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
       val spawnPose = getPanelSpawnPosition(pose, INFO_PANEL_WIDTH)
       infoPanelEntity =
-          Entity.createPanelEntity(
+          Entity.Companion.createPanelEntity(
               R.integer.info_panel_id,
               Transform(spawnPose),
               Grabbable(type = GrabbableType.PIVOT_Y),
@@ -509,7 +507,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
     val spawnPose = getPanelSpawnPosition(pose, CURATED_INFO_PANEL_WIDTH, 1.2f)
     infoPanelEntity =
-        Entity.createPanelEntity(
+        Entity.Companion.createPanelEntity(
             R.integer.curated_info_panel_id,
             Transform(spawnPose),
             Grabbable(type = GrabbableType.PIVOT_Y),
@@ -543,13 +541,13 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
     // rotate the pose forward direction by angle to get the new forward direction
     val newFwd =
-        Quaternion.fromAxisAngle(Vector3.Up, angle * 180f / PI.toFloat())
+        Quaternion.Companion.fromAxisAngle(Vector3.Companion.Up, angle * 180f / PI.toFloat())
             .times(rightEdgePose.forward())
             .normalize()
 
     // apply offset to lower the panel to eye height
     val position = rightEdgePose.t - Vector3(0f, 0.1f, 0f) + newFwd * zDistance
-    val rotation = Quaternion.lookRotationAroundY(newFwd)
+    val rotation = Quaternion.Companion.lookRotationAroundY(newFwd)
 
     return Pose(position, rotation)
   }
@@ -577,7 +575,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
   }
 
   private fun loadGLXF(): Job {
-    gltfxEntity = Entity.create()
+    gltfxEntity = Entity.Companion.create()
     return activityScope.launch {
       glXFManager.inflateGLXF(
           "apk:///scenes/Composition.glxf".toUri(),

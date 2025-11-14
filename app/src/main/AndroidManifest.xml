@@ -102,7 +102,7 @@
     />
 
         <activity
-      android:name="com.meta.pixelandtexel.scanner.activities.MainActivity"
+      android:name="com.meta.pixelandtexel.scanner.MainActivity"
       android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
       android:excludeFromRecents="false"
       android:exported="true"
