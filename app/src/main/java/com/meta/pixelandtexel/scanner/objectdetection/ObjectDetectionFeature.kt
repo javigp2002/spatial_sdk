@@ -114,6 +114,8 @@ class ObjectDetectionFeature(
   private val smoothedInferenceTime = NumberSmoother()
   private lateinit var cameraViewEntity: Entity
 
+  private val subscriptionScope = CoroutineScope(Dispatchers.Main)
+
   init {
     cameraController = CameraController(activity)
     cameraController.onCameraPropertiesChanged += ::onCameraPropertiesChanged
@@ -125,6 +127,16 @@ class ObjectDetectionFeature(
     objectDetector.setObjectDetectedListener(this)
 
     detectedObjectCache = DetectedObjectCache()
+
+    subscriptionScope.launch {
+      cameraController.imageState.collect {
+        if (it == null) {
+          return@collect
+        }
+
+        objectDetector.detect( it.image, it.width, it.height, it.finally)
+      }
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

@@ -36,7 +36,11 @@ import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
+data class ScanNewImageData(val image: Image, val width: Int, val height: Int, val finally: () -> Unit)
 
 /**
  * Manages the device camera lifecycle and provides access to camera frames and properties.
@@ -69,6 +73,9 @@ class CameraController(
   }
 
   private var _isRunning = AtomicBoolean(false)
+
+    private val _imageState = MutableStateFlow<ScanNewImageData?>(null)
+    val imageState: StateFlow<ScanNewImageData?> = _imageState
 
   val isRunning: Boolean
     get() = _isRunning.get()
@@ -268,10 +275,15 @@ class CameraController(
             // Log.d(TAG, "Image available: ${image.format}, ${image.width}x${image.height}")
             isProcessingFrame.set(true)
 
-            imageAvailableListener?.onNewImage(image, image.width, image.height) {
-              image.close()
-              isProcessingFrame.set(false)
-            }
+              _imageState.value = ScanNewImageData(image, image.width, image.height) {
+                  image.close()
+                  isProcessingFrame.set(false)
+              }
+
+//            imageAvailableListener?.onNewImage(image, image.width, image.height) {
+//              image.close()
+//              isProcessingFrame.set(false)
+//            }
           },
           imageReaderHandler,
       )
