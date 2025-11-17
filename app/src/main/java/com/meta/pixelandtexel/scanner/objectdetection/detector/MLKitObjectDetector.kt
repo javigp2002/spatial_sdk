@@ -13,8 +13,15 @@ import com.google.mlkit.vision.objects.ObjectDetector
 import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicReference
 
+
+data class DetectorResult(
+    val result: DetectedObjectsResult,
+    val image: Image,
+)
 /**
  * An implementation of [IObjectDetectorHelper] that utilizes Google's ML Kit for performing object
  * detection on [android.media.Image] inputs.
@@ -40,8 +47,13 @@ class MLKitObjectDetector(context: Context) : IObjectDetectorHelper {
     private const val MODEL_NASNET = "mlkit/nasnet-tflite-mobile-metadata-v1.tflite"
   }
 
+
+
   private var objectDetector: ObjectDetector? = null
   private var resultsListener: IObjectsDetectedListener? = null
+
+    private val _detectorState = MutableStateFlow<DetectorResult?>(null)
+    override val detectorState: StateFlow<DetectorResult?> = _detectorState
 
   private var finishedDetectingCallback = AtomicReference<(() -> Unit)?>()
   private val isDetecting: Boolean
@@ -74,14 +86,6 @@ class MLKitObjectDetector(context: Context) : IObjectDetectorHelper {
     }
   }
 
-  /**
-   * Sets the listener that will receive callbacks when objects are detected.
-   *
-   * @param listener The [IObjectsDetectedListener] to be notified of detection results.
-   */
-  override fun setObjectDetectedListener(listener: IObjectsDetectedListener) {
-    resultsListener = listener
-  }
 
   /**
    * Initiates the object detection process on the provided image. Uses the callbacks on the
@@ -119,7 +123,8 @@ class MLKitObjectDetector(context: Context) : IObjectDetectorHelper {
 
           val result =
               DetectedObjectsResult.fromMLKitResults(detectedObjects, inferenceTime, width, height)
-          resultsListener?.onObjectsDetected(result, image)
+//          resultsListener?.onObjectsDetected(result, image)
+            _detectorState.value = DetectorResult(result, image)
 
           finishedDetectingCallback.getAndSet(null)!!()
         }

@@ -12,6 +12,8 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencv.android.OpenCVLoader
@@ -38,6 +40,8 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
   private lateinit var net: Net
 
   private var resultsListener: IObjectsDetectedListener? = null
+    private val _detectorState = MutableStateFlow<DetectorResult?>(null)
+    override val detectorState: StateFlow<DetectorResult?> = _detectorState
 
   private val classNames: List<String> =
       listOf(
@@ -84,15 +88,6 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
     } catch (e: Exception) {
       e.printStackTrace()
     }
-  }
-
-  /**
-   * Sets the listener that will receive callbacks when objects are detected.
-   *
-   * @param listener The [IObjectsDetectedListener] to be notified of detection results.
-   */
-  override fun setObjectDetectedListener(listener: IObjectsDetectedListener) {
-    resultsListener = listener
   }
 
   /**

@@ -3,19 +3,13 @@
 package com.meta.pixelandtexel.scanner.objectdetection.detector
 
 import android.media.Image
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Defines the contract for an object detection helper. Implementations of this interface are
  * responsible for processing an image and identifying objects within it.
  */
 interface IObjectDetectorHelper {
-  /**
-   * Sets the listener that will receive callbacks when objects are detected.
-   *
-   * @param listener The [IObjectsDetectedListener] to be notified of detection results.
-   */
-  fun setObjectDetectedListener(listener: IObjectsDetectedListener)
-
   /**
    * Initiates the object detection process on the provided image.
    *
@@ -30,5 +24,8 @@ interface IObjectDetectorHelper {
    * @param finally A callback function that must be invoked when the detection for this image has
    *   finished (successfully or unsuccessfully).
    */
+  val detectorState: StateFlow<DetectorResult?>
+
   fun detect(image: Image, width: Int, height: Int, finally: () -> Unit)
+
 }

@@ -20,7 +20,6 @@ import com.meta.pixelandtexel.scanner.objectdetection.camera.CameraController
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectDetectorHelper
-import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectsDetectedListener
 import com.meta.pixelandtexel.scanner.objectdetection.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.utils.NumberSmoother
@@ -85,7 +84,7 @@ class ObjectDetectionFeature(
     private val confirmTrackedObjectSelected: (() -> Boolean) = { true },
     private val onTrackedObjectSelected: ((String, Bitmap, Pose) -> Unit)? = null,
     private val spawnCameraViewPanel: Boolean = false,
-) : SpatialFeature, IObjectsDetectedListener, CameraController.ImageAvailableListener {
+) : SpatialFeature, CameraController.ImageAvailableListener {
   companion object {
     private const val TAG = "ObjectDetectionFeature"
   }
@@ -124,9 +123,19 @@ class ObjectDetectionFeature(
     // objectDetector = MediaPipeObjectDetector(activity)
     objectDetector = MLKitObjectDetector(activity)
     // objectDetector = OpenCVObjectDetector(activity)
-    objectDetector.setObjectDetectedListener(this)
+//    objectDetector.setObjectDetectedListener(this)
 
     detectedObjectCache = DetectedObjectCache()
+
+    subscriptionScope.launch {
+      objectDetector.detectorState.collect {
+        if (it == null) {
+          return@collect
+        }
+
+        onObjectsDetected(it.result, it.image)
+      }
+    }
 
     subscriptionScope.launch {
       cameraController.imageState.collect {
@@ -384,7 +393,7 @@ class ObjectDetectionFeature(
    *   frame.
    * @param image The [Image] image frame that the CV inference was performed on.
    */
-  override fun onObjectsDetected(result: DetectedObjectsResult, image: Image) {
+  fun onObjectsDetected(result: DetectedObjectsResult, image: Image) {
     // draw the bounding boxes on the overlay Canvas
     if (spawnCameraViewPanel) {
       graphicOverlayView?.drawResults(

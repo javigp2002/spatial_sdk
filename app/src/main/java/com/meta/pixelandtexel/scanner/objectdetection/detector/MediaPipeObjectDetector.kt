@@ -16,6 +16,8 @@ import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.utils.ImageUtils.getByteBuffer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicReference
 
@@ -38,6 +40,9 @@ class MediaPipeObjectDetector(context: Context) : IObjectDetectorHelper {
     get() = finishedDetectingCallback.get() != null
 
   private var processingImage = AtomicReference<Image?>(null)
+
+  private val _detectorState = MutableStateFlow<DetectorResult?>(null)
+  override val detectorState: StateFlow<DetectorResult?> = _detectorState
 
   init {
     // build our object detection options
@@ -66,15 +71,6 @@ class MediaPipeObjectDetector(context: Context) : IObjectDetectorHelper {
     } catch (e: Exception) {
       e.printStackTrace()
     }
-  }
-
-  /**
-   * Sets the listener that will receive callbacks when objects are detected.
-   *
-   * @param listener The [IObjectsDetectedListener] to be notified of detection results.
-   */
-  override fun setObjectDetectedListener(listener: IObjectsDetectedListener) {
-    resultsListener = listener
   }
 
   /**
