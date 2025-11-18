@@ -4,8 +4,10 @@ package com.meta.pixelandtexel.scanner.objectdetection
 
 import android.graphics.Rect
 import android.net.Uri
+import androidx.core.graphics.createBitmap
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
+import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObject
 import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils
@@ -13,6 +15,7 @@ import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.copy
 import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.toVector2
 import com.meta.pixelandtexel.scanner.objectdetection.math.Plane
 import com.meta.pixelandtexel.scanner.objectdetection.math.Ray
+import com.meta.pixelandtexel.scanner.objectdetection.repository.DisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.objectdetection.utils.ObjectPool
@@ -106,6 +109,8 @@ class TrackedObjectSystem(
   private val outlineDrawable = activity.getDrawable(R.drawable.rounded_box_outline)!!
 
   private var lastTime = System.currentTimeMillis()
+
+    val repository = DisplayedEntityRepository
 
   init {
     activity.registerPanel(
@@ -276,7 +281,13 @@ class TrackedObjectSystem(
 
     val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
-    onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
+//    onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
+
+  repository.createGenericInfoPanel(
+      R.integer.info_panel_id,
+      ObjectInfoRequest("hola", createBitmap(1, 1)),
+      Pose(headPosition, rotation)
+      )
   }
 
   /**

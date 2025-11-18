@@ -21,6 +21,8 @@ import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
+import com.meta.pixelandtexel.scanner.objectdetection.repository.DisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.services.CuratedObjectHandler
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
@@ -74,9 +76,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
     private const val PERMISSIONS_REQUEST_CODE = 1000
     private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA")
-
-    private const val INFO_PANEL_WIDTH = 0.632f
-    private const val CURATED_INFO_PANEL_WIDTH = 0.708f
   }
 
   // used for scene inflation
@@ -93,15 +92,13 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
   private var infoPanelEntity: Entity? = null
   private var curatedObjectEntity: Entity? = null
 
-  // data used for panel content
-  private var pendingInfoRequest: ObjectInfoRequest? = null
-  private var pendingCuratedObject: CuratedObject? = null
-
   // our main services for detected object, displaying helpful tips, and displaying pre-assembled
   // panel content for select objects (with 3D models)
   private lateinit var objectDetectionFeature: ObjectDetectionFeature
   private lateinit var curatedObjectHandler: CuratedObjectHandler
   private lateinit var tipManager: TipManager
+
+  lateinit var entityRepository: IDisplayedEntityRepository
 
   override fun registerFeatures(): List<SpatialFeature> {
     objectDetectionFeature =
@@ -124,7 +121,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     NetworkedAssetLoader.init(File(applicationContext.cacheDir.canonicalPath), OkHttpAssetFetcher())
 
     // extra object detection handling and usability
-
+      entityRepository  = DisplayedEntityRepository
     curatedObjectHandler =
         CuratedObjectHandler(this, ::selectedCuratedObjectFromSelection, R.xml.objects)
     tipManager =
@@ -303,13 +300,12 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 enableLayerFeatheredEdge = true
             }
             composePanel {
-                val vm =
-                    ObjectInfoViewModel(
-                        pendingInfoRequest!!,
-                        getString(R.string.object_query_template)
-                    )
-                pendingInfoRequest = null
+                val request = entityRepository.getAndClearPendingData() as? ObjectInfoRequest
+                    ?: return@composePanel // esto hace que si ha fallado los datos por alguna razon crea un panel vacío -> mejorar
 
+                val vm = ObjectInfoViewModel(request, getString(R.string.object_query_template))
+
+                // pasar
                 setContent {
                     ObjectInfoScreen(
                         vm,
@@ -337,8 +333,10 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 enableLayerFeatheredEdge = true
             }
             composePanel {
-                val vm = CuratedObjectInfoViewModel(pendingCuratedObject!!.ui, curatedObjectEntity)
-                pendingCuratedObject = null
+                val curatedObject = entityRepository.getAndClearPendingData() as? CuratedObject
+                    ?: throw IllegalStateException("Curated panel created without CuratedObject data")
+
+                val vm = CuratedObjectInfoViewModel(curatedObject.ui, curatedObjectEntity)
 
                 setContent {
                     CompositionLocalProvider(
@@ -424,11 +422,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
    *   snapshot crop and conversion.
    */
   private fun confirmTrackedObjectSelected(): Boolean {
-    if (pendingInfoRequest != null || pendingCuratedObject != null) {
-      Log.w(TAG, "A pending request or curated object already exists")
-      return false
-    }
-
     if (infoPanelEntity != null) {
       Log.w(TAG, "An object info panel already exists")
       return false
@@ -451,45 +444,38 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     stopScanning()
     tipManager.dismissTipPanels()
 
-    // spawn the ui for curated (pre-assembled content) object
-    if (curatedObjectHandler.isCuratedObject(name)) {
-      pendingCuratedObject = curatedObjectHandler.getObjectInfo(name)
-      curatedObjectEntity = pendingCuratedObject!!.meshEntity
+      if (curatedObjectHandler.isCuratedObject(name)) {
+          val curatedObjectData = curatedObjectHandler.getObjectInfo(name)
+          curatedObjectEntity = curatedObjectData.meshEntity
 
-      val spawnPose = getPanelSpawnPosition(pose, CURATED_INFO_PANEL_WIDTH, 1.2f)
-      infoPanelEntity =
-          Entity.Companion.createPanelEntity(
+          val (panelEntity, spawnPose) = entityRepository.createCuratedInfoPanel(
               R.integer.curated_info_panel_id,
-              Transform(spawnPose),
-              Grabbable(type = GrabbableType.PIVOT_Y),
+              curatedObjectData,
+              pose
           )
+          infoPanelEntity = panelEntity
 
-      tipManager.reportUserEvent(UserEvent.SELECTED_CURATED_OBJECT)
+          tipManager.reportUserEvent(UserEvent.SELECTED_CURATED_OBJECT)
 
       // re-orient the mesh entity
-      if (curatedObjectEntity != null) {
-        // calculate the position and rotation from the panel pose and our offsets
-        val position = spawnPose.t + spawnPose.q.times(pendingCuratedObject!!.meshPositionOffset)
-        val rotation = spawnPose.q.times(pendingCuratedObject!!.meshRotationOffset)
-        val objectPose = Pose(position, rotation)
+          if (curatedObjectEntity != null) {
+              val position = spawnPose.t + spawnPose.q.times(curatedObjectData.meshPositionOffset)
+              val rotation = spawnPose.q.times(curatedObjectData.meshRotationOffset)
+              val objectPose = Pose(position, rotation)
 
-        toggleCuratedObject(true, objectPose)
-      }
-    }
-    // spawn the ui for generic object (info fetched from llama 3.2 vision)
-    else {
-      pendingInfoRequest = ObjectInfoRequest(name, image)
+              toggleCuratedObject(true, objectPose)
+          }
+      } else {
+          val requestData = ObjectInfoRequest(name, image)
 
-      val spawnPose = getPanelSpawnPosition(pose, INFO_PANEL_WIDTH)
-      infoPanelEntity =
-          Entity.Companion.createPanelEntity(
+          infoPanelEntity = entityRepository.createGenericInfoPanel(
               R.integer.info_panel_id,
-              Transform(spawnPose),
-              Grabbable(type = GrabbableType.PIVOT_Y),
+              requestData,
+              pose
           )
 
-      tipManager.reportUserEvent(UserEvent.SELECTED_OBJECT)
-    }
+          tipManager.reportUserEvent(UserEvent.SELECTED_OBJECT)
+      }
   }
 
   /**
@@ -502,21 +488,17 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
    *   the head to the right edge of the selected object in the user's view, at eye level.
    */
   private fun selectedCuratedObjectFromSelection(curatedObject: CuratedObject, pose: Pose) {
-    pendingCuratedObject = curatedObject
-    curatedObjectEntity = pendingCuratedObject!!.meshEntity
+      curatedObjectEntity = curatedObject.meshEntity
 
-    val spawnPose = getPanelSpawnPosition(pose, CURATED_INFO_PANEL_WIDTH, 1.2f)
-    infoPanelEntity =
-        Entity.Companion.createPanelEntity(
-            R.integer.curated_info_panel_id,
-            Transform(spawnPose),
-            Grabbable(type = GrabbableType.PIVOT_Y),
-        )
-
+      val (panelEntity, _) = entityRepository.createCuratedInfoPanel(
+          R.integer.curated_info_panel_id,
+          curatedObject,
+          pose
+      )
+      infoPanelEntity = panelEntity
     tipManager.reportUserEvent(UserEvent.SELECTED_CURATED_OBJECT)
 
     // reveal the mesh entity without moving it
-
     toggleCuratedObject(true)
   }
 
