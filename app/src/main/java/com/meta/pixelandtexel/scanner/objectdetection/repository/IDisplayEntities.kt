@@ -9,14 +9,13 @@ import com.meta.spatial.core.Pose
  * and data handling of displayed entities in the scene, such as information panels.
  */
 interface IDisplayedEntityRepository {
-
     /**
-     * Retrieves the pending data intended for a ViewModel and clears it
-     * to prevent reuse. This is typically called when a panel is being composed.
-     *
-     * @return The pending data, or null if there is none.
+     * Holds the data for the next information panel to be displayed.
+     * This data is consumed when a new panel entity is created.
      */
-    fun getAndClearPendingData(): Any?
+
+    var newViewModelData: ObjectInfoRequest?
+
 
     /**
      * Creates a generic information panel entity at a calculated position.

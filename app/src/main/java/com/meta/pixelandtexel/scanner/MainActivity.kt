@@ -279,12 +279,10 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 enableLayerFeatheredEdge = true
             }
             composePanel {
-                val request = entityRepository.getAndClearPendingData() as? ObjectInfoRequest
-                    ?: return@composePanel // esto hace que si ha fallado los datos por alguna razon crea un panel vacío -> mejorar
+                val request = entityRepository.newViewModelData ?: return@composePanel // esto hace que si ha fallado los datos por alguna razon crea un panel vacío -> mejorar
 
                 val vm = ObjectInfoViewModel(request, getString(R.string.object_query_template))
 
-                // pasar
                 setContent {
                     ObjectInfoScreen(
                         vm,

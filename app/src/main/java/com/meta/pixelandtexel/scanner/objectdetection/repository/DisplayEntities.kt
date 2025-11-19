@@ -13,34 +13,22 @@ import com.meta.spatial.toolkit.createPanelEntity
 import kotlin.math.PI
 
 object DisplayedEntityRepository: IDisplayedEntityRepository {
+    private const val INFO_PANEL_WIDTH = 0.632f
 
+    override var newViewModelData: ObjectInfoRequest? = null
+        get() {
+            val data = field
+            field = null
+            return data
+        }
 
-    // Almacén temporal para los datos del ViewModel
-    private var pendingViewModelData: Any? = null
-
-    // Constantes de dimensiones de panel
-    private val INFO_PANEL_WIDTH = 0.632f
-
-    /**
-     * Obtiene y limpia los datos pendientes del ViewModel.
-     * Llamado desde el 'composePanel' en PanelRegistration.
-     */
-    override fun getAndClearPendingData(): Any? {
-        val data = pendingViewModelData
-        pendingViewModelData = null
-        return data
-    }
-
-    /**
-     * Crea un panel de información genérico
-     */
     override fun createGenericInfoPanel(
         panelId: Int, // R.integer.info_panel_id
         data: ObjectInfoRequest,
         rightEdgePose: Pose
     ): Entity {
         val spawnPose = getPanelSpawnPosition(rightEdgePose, INFO_PANEL_WIDTH)
-        this.pendingViewModelData = data
+        this.newViewModelData = data
 
         return Entity.Companion.createPanelEntity(
             panelId,
