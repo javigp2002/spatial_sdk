@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner.objectdetection.repository
 
-import com.meta.pixelandtexel.scanner.models.CuratedObject
 import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
@@ -34,20 +33,4 @@ interface IDisplayedEntityRepository {
         rightEdgePose: Pose
     ): Entity
 
-    /**
-     * Creates an information panel for a curated object, which may include a 3D model.
-     * It stores the object data for the panel's composable and returns both the
-     * panel entity and its calculated pose.
-     *
-     * @param panelId The resource ID for the panel registration.
-     * @param data The curated object's data.
-     * @param rightEdgePose The pose of the camera's right edge for positioning.
-     * @return A [Pair] containing the newly created panel [Entity] and its calculated [Pose].
-     *         The pose is returned to allow for external positioning of related objects (e.g., a 3D model).
-     */
-    fun createCuratedInfoPanel(
-        panelId: Int,
-        data: CuratedObject,
-        rightEdgePose: Pose
-    ): Pair<Entity, Pose>
 }

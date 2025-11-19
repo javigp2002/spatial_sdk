@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner.objectdetection.repository
 
-import com.meta.pixelandtexel.scanner.models.CuratedObject
 import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.utils.MathUtils.fromAxisAngle
 import com.meta.spatial.core.Entity
@@ -21,7 +20,6 @@ object DisplayedEntityRepository: IDisplayedEntityRepository {
 
     // Constantes de dimensiones de panel
     private val INFO_PANEL_WIDTH = 0.632f
-    private val CURATED_INFO_PANEL_WIDTH = 0.708f
 
     /**
      * Obtiene y limpia los datos pendientes del ViewModel.
@@ -51,28 +49,7 @@ object DisplayedEntityRepository: IDisplayedEntityRepository {
         )
     }
 
-    /**
-     * Crea un panel de información curado (con modelo 3D).
-     * Devuelve la entidad del panel y la pose calculada.
-     * La pose es necesaria en MainActivity para posicionar el modelo 3D.
-     */
-    override fun createCuratedInfoPanel(
-        panelId: Int,
-        data: CuratedObject,
-        rightEdgePose: Pose
-    ): Pair<Entity, Pose> {
-        val spawnPose = getPanelSpawnPosition(rightEdgePose, CURATED_INFO_PANEL_WIDTH, 1.2f)
-        this.pendingViewModelData = data
 
-        val panelEntity = Entity.Companion.createPanelEntity(
-            panelId,
-            Transform(spawnPose),
-            Grabbable(type = GrabbableType.PIVOT_Y)
-        )
-
-
-        return Pair(panelEntity, spawnPose)
-    }
 
     /**
      * Calcula la pose del panel.
