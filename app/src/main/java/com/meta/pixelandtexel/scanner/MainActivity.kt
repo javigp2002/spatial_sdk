@@ -2,7 +2,6 @@ package com.meta.pixelandtexel.scanner
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
@@ -16,7 +15,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
@@ -32,7 +30,6 @@ import com.meta.spatial.compose.ComposeFeature
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.compose.panelViewLifecycleOwner
 import com.meta.spatial.core.Entity
-import com.meta.spatial.core.Pose
 import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
 import com.meta.spatial.core.Vector3
@@ -77,8 +74,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
   // our main scene entities
   private var welcomePanelEntity: Entity? = null
-  private var infoPanelEntity: Entity? = null
-  private var curatedObjectEntity: Entity? = null
 
   // our main services for detected object, displaying helpful tips, and displaying pre-assembled
   // panel content for select objects (with 3D models)
@@ -93,8 +88,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
             this,
             onStatusChanged = ::onObjectDetectionFeatureStatusChanged,
             onDetectedObjects = ::onObjectsDetected,
-            confirmTrackedObjectSelected = ::confirmTrackedObjectSelected,
-            onTrackedObjectSelected = ::showInfoPanelForObject,
         )
 
     return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature)
@@ -217,7 +210,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     welcomePanelEntity?.destroy()
                     welcomePanelEntity = null
                     stopScanning()
-                    dismissInfoPanel()
                     tipManager.dismissTipPanels()
 
                     tipManager.showHelpPanel()
@@ -279,20 +271,17 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 enableLayerFeatheredEdge = true
             }
             composePanel {
-                val request = entityRepository.newViewModelData ?: return@composePanel // esto hace que si ha fallado los datos por alguna razon crea un panel vacío -> mejorar
+                stopScanning()
+                val entityData = entityRepository.newViewModelData ?: return@composePanel
 
-                val vm = ObjectInfoViewModel(request, getString(R.string.object_query_template))
+                val vm = ObjectInfoViewModel(entityData.data, getString(R.string.object_query_template))
 
                 setContent {
                     ObjectInfoScreen(
                         vm,
-                        onResume = {
-                            startScanning()
-                            tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
-                        },
+                        onResume = { },
                         onClose = {
-                            dismissInfoPanel()
-                            tipManager.reportUserEvent(UserEvent.DISMISSED_INFO_PANEL)
+                            entityRepository.deleteEntity(entityData.entityId)
                         },
                     )
                 }
@@ -301,24 +290,10 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     )
   }
 
-  /**
-   * Destroys the info panel entity displaying the llama generated description or pre-written copy
-   * and images about the detected object.
-   */
-  private fun dismissInfoPanel() {
-    // destroy any info panel that may be displayed, and dismiss any curated object
-    infoPanelEntity?.destroy()
-    infoPanelEntity = null
-    curatedObjectEntity = null
-  }
 
   /** Activates the object detection feature scanning, which turns on the user's camera. */
   private fun startScanning() {
-    dismissInfoPanel()
-    tipManager.dismissTipPanels()
-
     objectDetectionFeature.scan()
-
     tipManager.reportUserEvent(UserEvent.STARTED_SCANNING)
   }
 
@@ -350,48 +325,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     if (result.objects.any()) {
       tipManager.reportUserEvent(UserEvent.DETECTED_OBJECT)
     }
-  }
-
-  /**
-   * The object detection feature asking whether or not to confirm the selection of a detected
-   * object by the user.
-   *
-   * @return Whether or not to allow the object to be selected. Return false to abort the image
-   *   snapshot crop and conversion.
-   */
-  private fun confirmTrackedObjectSelected(): Boolean {
-    if (infoPanelEntity != null) {
-      Log.w(TAG, "An object info panel already exists")
-      return false
-    }
-
-    return true
-  }
-
-  /**
-   * The user selected an object detected by the object detection feature, and the selection was
-   * confirmed by the confirmTrackedObjectSelected call; spawn an information panel for the object.
-   *
-   * @param name The label or name of the object detected in the camera feed
-   * @param image An [android.media.Image] image of the detected object, cropped from the device
-   *   camera feed frame.
-   * @param pose A [com.meta.spatial.core.Pose] pose representing the user's head position, and the direction vector from
-   *   the head to the right edge of the detected object in the user's view, at eye level.
-   */
-  private fun showInfoPanelForObject(name: String, image: Bitmap, pose: Pose) {
-    stopScanning()
-    tipManager.dismissTipPanels()
-
-      val requestData = ObjectInfoRequest(name, image)
-
-      infoPanelEntity = entityRepository.createGenericInfoPanel(
-          R.integer.info_panel_id,
-          requestData,
-          pose
-      )
-
-      tipManager.reportUserEvent(UserEvent.SELECTED_OBJECT)
-
   }
 
   override fun onPause() {

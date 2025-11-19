@@ -1,5 +1,6 @@
 package com.meta.pixelandtexel.scanner.objectdetection.repository
 
+import com.meta.pixelandtexel.scanner.models.EntityData
 import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.utils.MathUtils.fromAxisAngle
 import com.meta.spatial.core.Entity
@@ -14,13 +15,15 @@ import kotlin.math.PI
 
 object DisplayedEntityRepository: IDisplayedEntityRepository {
     private const val INFO_PANEL_WIDTH = 0.632f
+    private var nextId = 0
 
-    override var newViewModelData: ObjectInfoRequest? = null
+    override var newViewModelData: EntityData? = null
         get() {
             val data = field
             field = null
             return data
         }
+    override val entitiesHashMap: HashMap<Int, Entity> = HashMap()
 
     override fun createGenericInfoPanel(
         panelId: Int, // R.integer.info_panel_id
@@ -28,13 +31,26 @@ object DisplayedEntityRepository: IDisplayedEntityRepository {
         rightEdgePose: Pose
     ): Entity {
         val spawnPose = getPanelSpawnPosition(rightEdgePose, INFO_PANEL_WIDTH)
-        this.newViewModelData = data
+        val nextId = this.nextId++
 
-        return Entity.Companion.createPanelEntity(
+        this.newViewModelData = EntityData(nextId, data)
+
+        val entity = Entity.Companion.createPanelEntity(
             panelId,
             Transform(spawnPose),
             Grabbable(type = GrabbableType.PIVOT_Y)
         )
+        entitiesHashMap[nextId] = entity
+        return entity
+    }
+
+
+    override fun deleteEntity(entityId: Int) {
+        entitiesHashMap.get(entityId)
+            ?.let { entity ->
+                entity.destroy()
+                entitiesHashMap.remove(entityId)
+            }
     }
 
 

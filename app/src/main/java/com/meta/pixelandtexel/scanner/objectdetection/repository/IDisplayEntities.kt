@@ -1,5 +1,6 @@
 package com.meta.pixelandtexel.scanner.objectdetection.repository
 
+import com.meta.pixelandtexel.scanner.models.EntityData
 import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
@@ -13,9 +14,9 @@ interface IDisplayedEntityRepository {
      * Holds the data for the next information panel to be displayed.
      * This data is consumed when a new panel entity is created.
      */
+    var newViewModelData: EntityData?
 
-    var newViewModelData: ObjectInfoRequest?
-
+    val entitiesHashMap: HashMap<Int, Entity>
 
     /**
      * Creates a generic information panel entity at a calculated position.
@@ -31,5 +32,7 @@ interface IDisplayedEntityRepository {
         data: ObjectInfoRequest,
         rightEdgePose: Pose
     ): Entity
+
+    fun deleteEntity(entityId: Int)
 
 }

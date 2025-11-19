@@ -70,7 +70,6 @@ import kotlinx.coroutines.launch
  * @param onStatusChanged Callback invoked when the camera's operational status changes (e.g.
  *   PAUSED, SCANNING).
  * @param onDetectedObjects Callback invoked when new objects are detected in a camera frame.
- * @param confirmTrackedObjectSelected Callback invoked to confirm if a tracked object selection
  *   should proceed. Defaults to true.
  * @param onTrackedObjectSelected Callback invoked when a tracked object is selected by the user,
  *   providing the object's label, a [Bitmap] crop, and its [Pose].
@@ -81,8 +80,6 @@ class ObjectDetectionFeature(
     private val activity: AppSystemActivity,
     private val onStatusChanged: ((CameraStatus) -> Unit)? = null,
     private val onDetectedObjects: ((DetectedObjectsResult) -> Unit)? = null,
-    private val confirmTrackedObjectSelected: (() -> Boolean) = { true },
-    private val onTrackedObjectSelected: ((String, Bitmap, Pose) -> Unit)? = null,
     private val spawnCameraViewPanel: Boolean = false,
 ) : SpatialFeature, CameraController.ImageAvailableListener {
   companion object {
@@ -430,10 +427,6 @@ class ObjectDetectionFeature(
       return
     }
 
-    if (!confirmTrackedObjectSelected()) {
-      Log.w(TAG, "Owning activity invalidated selection")
-      return
-    }
 
     val obj = detectedObjectCache.getObject(id)
     if (obj == null) {
@@ -450,7 +443,7 @@ class ObjectDetectionFeature(
             return@tryRequestImageForObject
           }
 
-          onTrackedObjectSelected?.invoke(obj.label, it, pose)
+//          onTrackedObjectSelected?.invoke(obj.label, it, pose)
         }
 
     if (!success) {

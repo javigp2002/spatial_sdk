@@ -111,8 +111,9 @@ class TrackedObjectSystem(
   private var lastTime = System.currentTimeMillis()
 
     val repository = DisplayedEntityRepository
+    private var currentlyClickedObjectId: Int? = null
 
-  init {
+    init {
     activity.registerPanel(
         PanelRegistration(R.integer.object_label_panel_id) { entity ->
           config {
@@ -208,8 +209,8 @@ class TrackedObjectSystem(
 
       completable?.thenAccept {
         // setup our mesh and material
+          val trackedObjectComp = entity.getComponent<TrackedObject>()
 
-        val trackedObjectComp = entity.getComponent<TrackedObject>()
         val id = trackedObjectComp.objectId
 
         val quadMesh =
@@ -221,7 +222,6 @@ class TrackedObjectSystem(
         it.setSceneMesh(quadMesh, "trackedObjectQuad")
 
         // add our on click listener
-
         it.addInputListener(
             object : InputListener {
               override fun onInput(
@@ -238,10 +238,18 @@ class TrackedObjectSystem(
                         ButtonBits.ButtonTriggerR or
                         ButtonBits.ButtonTriggerL
 
-                // one of the select buttons was pushed
-                if ((selectButtons and buttonState and changed) != 0) {
-                  onTrackedObjectClicked(receiver.entity!!)
-                }
+                  val isButtonPressed = (selectButtons and buttonState and changed) != 0
+                  val isButtonHeld = (selectButtons and buttonState) != 0
+
+                  if (isButtonPressed && currentlyClickedObjectId == null) {
+                      val trackedObjectComp = receiver.entity!!.getComponent<TrackedObject>()
+                      currentlyClickedObjectId = trackedObjectComp.objectId
+                      onTrackedObjectClicked(receiver.entity!!)
+                  }
+
+                  if (!isButtonHeld) {
+                      currentlyClickedObjectId = null
+                  }
 
                 return true
               }
@@ -282,7 +290,6 @@ class TrackedObjectSystem(
     val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
 //    onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
-
   repository.createGenericInfoPanel(
       R.integer.info_panel_id,
       ObjectInfoRequest("hola", createBitmap(1, 1)),
