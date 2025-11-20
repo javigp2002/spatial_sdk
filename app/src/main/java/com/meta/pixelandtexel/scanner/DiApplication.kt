@@ -4,5 +4,6 @@ import android.app.Application
 import com.meta.pixelandtexel.scanner.di.AppContainer
 
 class DiApplication: Application(){
-    val appContainer = AppContainer()
+
+    val appContainer by lazy { AppContainer() }
 }

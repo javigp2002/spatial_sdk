@@ -22,7 +22,6 @@ import com.meta.pixelandtexel.scanner.objectdetection.camera.CameraController
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectDetectorHelper
-import com.meta.pixelandtexel.scanner.objectdetection.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.repository.detection.ObjectDetectionRepository
@@ -92,7 +91,6 @@ class ObjectDetectionFeature(
 
   // our core services
   private val cameraController: CameraController
-  private val objectDetector: IObjectDetectorHelper
   private val detectedObjectCache: DetectedObjectCache
 
   // systems
@@ -124,16 +122,8 @@ class ObjectDetectionFeature(
     cameraController = CameraController(activity)
     cameraController.onCameraPropertiesChanged += ::onCameraPropertiesChanged
 
-
-    // different options for object detection; though only MLKit current supports persistent ids
-    // objectDetector = MediaPipeObjectDetector(activity)
-    objectDetector = MLKitObjectDetector()
-    // objectDetector = OpenCVObjectDetector(activity)
-//    objectDetector.setObjectDetectedListener(this)
-
-
     displayRepository = di.appContainer.displayedEntityRepository
-    detectionRepository = ObjectDetectionRepository(objectDetector)
+    detectionRepository = di.appContainer.objectDetectRepository
 
     detectedObjectCache = DetectedObjectCache()
 

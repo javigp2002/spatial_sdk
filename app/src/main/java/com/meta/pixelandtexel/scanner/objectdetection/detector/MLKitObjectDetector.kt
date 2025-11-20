@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner.objectdetection.detector
 
-import android.content.Context
 import android.media.Image
 import android.os.SystemClock
 import android.util.Log
