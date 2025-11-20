@@ -40,8 +40,6 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
   private lateinit var net: Net
 
   private var resultsListener: IObjectsDetectedListener? = null
-    private val _detectorState = MutableStateFlow<DetectorResult?>(null)
-    override val detectorState: StateFlow<DetectorResult?> = _detectorState
 
   private val classNames: List<String> =
       listOf(
@@ -101,7 +99,7 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
    * @param finally A callback function that must be invoked when the detection for this image has
    *   finished (successfully or unsuccessfully).
    */
-  override fun detect(image: Image, width: Int, height: Int, finally: () -> Unit) {
+  fun detect(image: Image, width: Int, height: Int, finally: () -> Unit) {
     val startTime = SystemClock.uptimeMillis()
 
     // convert image to a CvCameraViewFrame and get the Mat
@@ -236,7 +234,16 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
     return MatOfByte(*buffer)
   }
 
-  /**
+    override fun detect(
+        image: Image,
+        width: Int,
+        height: Int,
+        finally: (DetectedObjectsResult?) -> Unit
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    /**
    * Represents an object detected by an OpenCV Net, encapsulating info about a single detected
    * object, including its location, classification, and the confidence level of the detection.
    *

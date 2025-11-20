@@ -17,6 +17,7 @@ import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.ViewLocked
+import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.camera.CameraController
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
@@ -24,6 +25,7 @@ import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectDetectorHe
 import com.meta.pixelandtexel.scanner.objectdetection.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.objectdetection.repository.detection.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.NumberSmoother
 import com.meta.pixelandtexel.scanner.objectdetection.views.android.CameraPreview
 import com.meta.pixelandtexel.scanner.objectdetection.views.android.GraphicOverlay
@@ -116,28 +118,36 @@ class ObjectDetectionFeature(
 
   private var di: DiApplication = activity.application as DiApplication
   private var displayRepository: IDisplayedEntityRepository
+  private val detectionRepository: ObjectDetectionRepository
 
   init {
     cameraController = CameraController(activity)
     cameraController.onCameraPropertiesChanged += ::onCameraPropertiesChanged
 
-    displayRepository = di.appContainer.displayedEntityRepository
 
     // different options for object detection; though only MLKit current supports persistent ids
     // objectDetector = MediaPipeObjectDetector(activity)
-    objectDetector = MLKitObjectDetector(activity)
+    objectDetector = MLKitObjectDetector()
     // objectDetector = OpenCVObjectDetector(activity)
 //    objectDetector.setObjectDetectedListener(this)
+
+
+    displayRepository = di.appContainer.displayedEntityRepository
+    detectionRepository = ObjectDetectionRepository(objectDetector)
 
     detectedObjectCache = DetectedObjectCache()
 
     subscriptionScope.launch {
-      objectDetector.detectorState.collect {
-        if (it == null) {
-          return@collect
-        }
+      detectionRepository.detectionState.collect { state ->
+        if (state == null) return@collect
 
-        onObjectsDetected(it.result, it.image)
+        try {
+          // Your logic to process the detected objects goes here
+          onObjectsDetected(state.result, state.image)
+        } finally {
+          // IMPORTANT: This ensures the image is always closed after use.
+          state.finally()
+        }
       }
     }
 
@@ -147,7 +157,7 @@ class ObjectDetectionFeature(
           return@collect
         }
 
-        objectDetector.detect( it.image, it.width, it.height, it.finally)
+        detectionRepository.processImage(it.image, it.width, it.height, it.finally)
       }
     }
   }
@@ -384,7 +394,7 @@ class ObjectDetectionFeature(
    *   performing any CV inference on the image.
    */
   override fun onNewImage(image: Image, width: Int, height: Int, finally: () -> Unit) {
-    objectDetector.detect(image, width, height, finally)
+//    objectDetector.detect(image, width, height, finally)
   }
 
   /**
@@ -450,7 +460,12 @@ class ObjectDetectionFeature(
             return@tryRequestImageForObject
           }
 
-//          onTrackedObjectSelected?.invoke(obj.label, it, pose)
+          displayRepository.createGenericInfoPanel(
+            R.integer.info_panel_id,
+            ObjectInfoRequest(obj.label, it),
+            pose,
+          )
+
         }
 
     if (!success) {

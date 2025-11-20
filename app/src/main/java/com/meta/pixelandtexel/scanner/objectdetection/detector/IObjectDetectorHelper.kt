@@ -3,7 +3,7 @@
 package com.meta.pixelandtexel.scanner.objectdetection.detector
 
 import android.media.Image
-import kotlinx.coroutines.flow.StateFlow
+import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 
 /**
  * Defines the contract for an object detection helper. Implementations of this interface are
@@ -24,8 +24,8 @@ interface IObjectDetectorHelper {
    * @param finally A callback function that must be invoked when the detection for this image has
    *   finished (successfully or unsuccessfully).
    */
-  val detectorState: StateFlow<DetectorResult?>
+//  val detectorState: StateFlow<DetectorResult?>
 
-  fun detect(image: Image, width: Int, height: Int, finally: () -> Unit)
+  fun detect(image: Image, width: Int, height: Int, finally: (DetectedObjectsResult?) -> Unit)
 
 }
