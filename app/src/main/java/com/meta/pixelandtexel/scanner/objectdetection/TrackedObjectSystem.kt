@@ -15,7 +15,7 @@ import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.copy
 import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.toVector2
 import com.meta.pixelandtexel.scanner.objectdetection.math.Plane
 import com.meta.pixelandtexel.scanner.objectdetection.math.Ray
-import com.meta.pixelandtexel.scanner.objectdetection.repository.DisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.objectdetection.utils.ObjectPool
@@ -76,6 +76,7 @@ import com.meta.spatial.uiset.theme.SpatialColor
  */
 class TrackedObjectSystem(
     activity: AppSystemActivity,
+    displayedEntityRepository: IDisplayedEntityRepository,
     private var fov: Float = 72f,
     private var headToCameraOffset: Pose = Pose(),
     private var screenPointToRayInCamera: ((Vector2) -> Vector3) = { _ -> Vector3.Forward },
@@ -99,6 +100,8 @@ class TrackedObjectSystem(
     private const val PPU_MULTIPLIER = 1f
   }
 
+    private var displayedEntityRepository: IDisplayedEntityRepository
+
   private val trackedObjectPool = ObjectPool(::createNewTrackedObj)
 
   // key is the detected object id, not the entity id
@@ -110,7 +113,6 @@ class TrackedObjectSystem(
 
   private var lastTime = System.currentTimeMillis()
 
-    val repository = DisplayedEntityRepository
     private var currentlyClickedObjectId: Int? = null
 
     init {
@@ -135,6 +137,8 @@ class TrackedObjectSystem(
           }
         }
     )
+
+        this.displayedEntityRepository = displayedEntityRepository
   }
 
   /**
@@ -290,7 +294,7 @@ class TrackedObjectSystem(
     val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
 //    onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
-  repository.createGenericInfoPanel(
+      displayedEntityRepository.createGenericInfoPanel(
       R.integer.info_panel_id,
       ObjectInfoRequest("hola", createBitmap(1, 1)),
       Pose(headPosition, rotation)

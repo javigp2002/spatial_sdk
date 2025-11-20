@@ -18,7 +18,6 @@ import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
-import com.meta.pixelandtexel.scanner.objectdetection.repository.DisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
@@ -101,7 +100,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     NetworkedAssetLoader.init(File(applicationContext.cacheDir.canonicalPath), OkHttpAssetFetcher())
 
     // extra object detection handling and usability
-      entityRepository  = DisplayedEntityRepository
+      entityRepository  = (application as DiApplication).appContainer.displayedEntityRepository
     tipManager =
         TipManager(this) {
             stopScanning()

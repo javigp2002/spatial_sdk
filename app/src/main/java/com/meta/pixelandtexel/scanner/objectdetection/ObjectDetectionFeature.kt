@@ -13,6 +13,7 @@ import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
 import com.meta.pixelandtexel.scanner.BuildConfig
+import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.ViewLocked
@@ -22,6 +23,7 @@ import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProper
 import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.objectdetection.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
+import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.NumberSmoother
 import com.meta.pixelandtexel.scanner.objectdetection.views.android.CameraPreview
 import com.meta.pixelandtexel.scanner.objectdetection.views.android.GraphicOverlay
@@ -112,9 +114,14 @@ class ObjectDetectionFeature(
 
   private val subscriptionScope = CoroutineScope(Dispatchers.Main)
 
+  private var di: DiApplication = activity.application as DiApplication
+  private var displayRepository: IDisplayedEntityRepository
+
   init {
     cameraController = CameraController(activity)
     cameraController.onCameraPropertiesChanged += ::onCameraPropertiesChanged
+
+    displayRepository = di.appContainer.displayedEntityRepository
 
     // different options for object detection; though only MLKit current supports persistent ids
     // objectDetector = MediaPipeObjectDetector(activity)
@@ -214,7 +221,7 @@ class ObjectDetectionFeature(
     // only use the trackedObjectSystem to draw the outlines and labels of detected objects if
     // we aren't displaying the camera debug view
     if (!spawnCameraViewPanel) {
-      trackedObjectSystem = TrackedObjectSystem(activity)
+      trackedObjectSystem = TrackedObjectSystem(activity, displayRepository)
       trackedObjectSystem.onTrackedObjectSelected += ::onTrackedObjectSelected
       cameraController.onCameraPropertiesChanged += trackedObjectSystem::onCameraPropertiesChanged
       detectedObjectCache.onObjectsFound += trackedObjectSystem::onObjectsFound

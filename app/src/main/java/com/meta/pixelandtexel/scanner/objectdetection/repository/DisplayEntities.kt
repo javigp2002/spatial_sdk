@@ -13,8 +13,11 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.createPanelEntity
 import kotlin.math.PI
 
-object DisplayedEntityRepository: IDisplayedEntityRepository {
-    private const val INFO_PANEL_WIDTH = 0.632f
+class DisplayedEntityRepository: IDisplayedEntityRepository {
+    companion object {
+        private const val INFO_PANEL_WIDTH = 0.632f
+    }
+
     private var nextId = 0
 
     override var newViewModelData: EntityData? = null
