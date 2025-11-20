@@ -294,11 +294,6 @@ class TrackedObjectSystem(
     val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
     onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
-//      displayedEntityRepository.createGenericInfoPanel(
-//      R.integer.info_panel_id,
-//      ObjectInfoRequest("hola", createBitmap(1, 1)),
-//      Pose(headPosition, rotation)
-//      )
   }
 
   /**
