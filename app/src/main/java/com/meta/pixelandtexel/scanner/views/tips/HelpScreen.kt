@@ -14,20 +14,20 @@ fun HelpScreen(
     onGenerate: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
 ) {
-  SpatialTheme {
-    Panel(outerPadding = false) {
-      GenerateObjectsView(
-          stringResource(R.string.help_title),
-          stringResource(R.string.help_body),
-          onGenerate,
-          onDismiss,
-      )
+    SpatialTheme {
+        Panel(outerPadding = false) {
+            GenerateObjectsView(
+                stringResource(R.string.help_title),
+                stringResource(R.string.help_body),
+                onGenerate,
+                onDismiss,
+            )
+        }
     }
-  }
 }
 
 @Preview(widthDp = 368, heightDp = 440)
 @Composable
 fun HelpScreenPreview() {
-  HelpScreen()
+    HelpScreen()
 }

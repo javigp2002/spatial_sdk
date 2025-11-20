@@ -9,7 +9,7 @@ import android.view.Surface
  * CameraController to facilitate displaying the camera video feed on panels.
  */
 interface ISurfaceProvider {
-  val surface: Surface?
-  val surfaceAvailable: Boolean
-    get() = surface != null
+    val surface: Surface?
+    val surfaceAvailable: Boolean
+        get() = surface != null
 }

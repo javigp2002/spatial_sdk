@@ -13,7 +13,7 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.createPanelEntity
 import kotlin.math.PI
 
-class DisplayedEntityRepository: IDisplayedEntityRepository {
+class DisplayedEntityRepository : IDisplayedEntityRepository {
     companion object {
         private const val INFO_PANEL_WIDTH = 0.632f
     }
@@ -55,7 +55,6 @@ class DisplayedEntityRepository: IDisplayedEntityRepository {
                 entitiesHashMap.remove(entityId)
             }
     }
-
 
 
     /**

@@ -14,20 +14,20 @@ fun NoObjectsDetectedScreen(
     onGenerate: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
 ) {
-  SpatialTheme {
-    Panel(outerPadding = false) {
-      GenerateObjectsView(
-          stringResource(R.string.no_objects_detected_title),
-          stringResource(R.string.no_objects_detected_body),
-          onGenerate,
-          onDismiss,
-      )
+    SpatialTheme {
+        Panel(outerPadding = false) {
+            GenerateObjectsView(
+                stringResource(R.string.no_objects_detected_title),
+                stringResource(R.string.no_objects_detected_body),
+                onGenerate,
+                onDismiss,
+            )
+        }
     }
-  }
 }
 
 @Preview(widthDp = 368, heightDp = 440)
 @Composable
 fun NoObjectsDetectedScreenPreview() {
-  NoObjectsDetectedScreen()
+    NoObjectsDetectedScreen()
 }

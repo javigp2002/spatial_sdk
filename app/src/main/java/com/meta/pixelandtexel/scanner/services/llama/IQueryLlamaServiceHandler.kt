@@ -11,29 +11,29 @@ package com.meta.pixelandtexel.scanner.services.llama
  * the full answer, and any errors encountered.
  */
 interface IQueryLlamaServiceHandler {
-  /** Called when the response stream from the Llama model begins. (Optional) */
-  fun onStreamStart() {}
+    /** Called when the response stream from the Llama model begins. (Optional) */
+    fun onStreamStart() {}
 
-  /**
-   * Called incrementally as parts of the Llama model's response are received, allowing for
-   * processing or displaying the response as it's being generated. (Optional)
-   *
-   * @param partial The partial response string received so far. This accumulates with each call
-   *   until [onFinished] is invoked.
-   */
-  fun onPartial(partial: String) {}
+    /**
+     * Called incrementally as parts of the Llama model's response are received, allowing for
+     * processing or displaying the response as it's being generated. (Optional)
+     *
+     * @param partial The partial response string received so far. This accumulates with each call
+     *   until [onFinished] is invoked.
+     */
+    fun onPartial(partial: String) {}
 
-  /**
-   * Called when the Llama model has finished generating its complete response.
-   *
-   * @param answer The final and complete answer string from the model.
-   */
-  fun onFinished(answer: String)
+    /**
+     * Called when the Llama model has finished generating its complete response.
+     *
+     * @param answer The final and complete answer string from the model.
+     */
+    fun onFinished(answer: String)
 
-  /**
-   * Called if an error occurs at any point during the query submission or response processing.
-   *
-   * @param reason A string describing the error that occurred.
-   */
-  fun onError(reason: String)
+    /**
+     * Called if an error occurs at any point during the query submission or response processing.
+     *
+     * @param reason A string describing the error that occurred.
+     */
+    fun onError(reason: String)
 }

@@ -15,29 +15,29 @@ fun CuratedObjectImageCopyPanel(
     onResume: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
 ) {
-  val painter = if (content.imageResId != null) painterResource(content.imageResId) else null
-  ObjectInfoView(content.title, painter, content.copy, onResume, onClose)
+    val painter = if (content.imageResId != null) painterResource(content.imageResId) else null
+    ObjectInfoView(content.title, painter, content.copy, onResume, onClose)
 }
 
 @Preview(widthDp = 592, heightDp = 604, showBackground = true, backgroundColor = 0xFF272727)
 @Composable
 private fun CuratedObjectTilesPanelPreview() {
-  SpatialTheme {
-    CuratedObjectImageCopyPanel(
-        ImageCopyPanelContent(
-            "Model: RF32CG5900SR/AA",
-            null,
-            null,
-            "## 30 cu. ft. Mega Capacity\n" +
-                "\n" +
-                "Store more groceries with more room to stay organized.\n" +
-                "\n" +
-                "## Features\n" +
-                "\n" +
-                "- Share pictures, stream music and videos, access recipes, control your smart devices and Alexa all from the fridge.\n" +
-                "- Enjoy your favorite beverage with your choice of ice. Choose from cubed ice or Ice Bites from the Dual Auto Ice Maker in the freezer drawer, or choose from curved or crushed ice from the external dispenser.\n" +
-                "- A flat-front fridge design with recessed drawer handle blends beautifully into the kitchen.",
+    SpatialTheme {
+        CuratedObjectImageCopyPanel(
+            ImageCopyPanelContent(
+                "Model: RF32CG5900SR/AA",
+                null,
+                null,
+                "## 30 cu. ft. Mega Capacity\n" +
+                        "\n" +
+                        "Store more groceries with more room to stay organized.\n" +
+                        "\n" +
+                        "## Features\n" +
+                        "\n" +
+                        "- Share pictures, stream music and videos, access recipes, control your smart devices and Alexa all from the fridge.\n" +
+                        "- Enjoy your favorite beverage with your choice of ice. Choose from cubed ice or Ice Bites from the Dual Auto Ice Maker in the freezer drawer, or choose from curved or crushed ice from the external dispenser.\n" +
+                        "- A flat-front fridge design with recessed drawer handle blends beautifully into the kitchen.",
+            )
         )
-    )
-  }
+    }
 }

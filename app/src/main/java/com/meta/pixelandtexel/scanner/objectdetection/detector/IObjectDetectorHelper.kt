@@ -10,22 +10,22 @@ import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedOb
  * responsible for processing an image and identifying objects within it.
  */
 interface IObjectDetectorHelper {
-  /**
-   * Initiates the object detection process on the provided image.
-   *
-   * This method should perform detection asynchronously. The `finally` lambda must be called once
-   * the detection process for this specific image is complete, regardless of success or failure.
-   * This is crucial for managing processing state, such as releasing resources or allowing the next
-   * frame to be processed.
-   *
-   * @param image The [Image] to be processed for object detection.
-   * @param width The width of the image.
-   * @param height The height of the image.
-   * @param finally A callback function that must be invoked when the detection for this image has
-   *   finished (successfully or unsuccessfully).
-   */
+    /**
+     * Initiates the object detection process on the provided image.
+     *
+     * This method should perform detection asynchronously. The `finally` lambda must be called once
+     * the detection process for this specific image is complete, regardless of success or failure.
+     * This is crucial for managing processing state, such as releasing resources or allowing the next
+     * frame to be processed.
+     *
+     * @param image The [Image] to be processed for object detection.
+     * @param width The width of the image.
+     * @param height The height of the image.
+     * @param finally A callback function that must be invoked when the detection for this image has
+     *   finished (successfully or unsuccessfully).
+     */
 //  val detectorState: StateFlow<DetectorResult?>
 
-  fun detect(image: Image, width: Int, height: Int, finally: (DetectedObjectsResult?) -> Unit)
+    fun detect(image: Image, width: Int, height: Int, finally: (DetectedObjectsResult?) -> Unit)
 
 }

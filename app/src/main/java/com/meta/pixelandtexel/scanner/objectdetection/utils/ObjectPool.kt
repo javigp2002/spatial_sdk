@@ -7,8 +7,8 @@ package com.meta.pixelandtexel.scanner.objectdetection.utils
  * pooling pattern, with support for resetting objects as they are returned to the object pool.
  */
 interface IPoolable {
-  /** Implement this to reset your type before it is returned to the object pool. */
-  fun reset()
+    /** Implement this to reset your type before it is returned to the object pool. */
+    fun reset()
 }
 
 /**
@@ -21,38 +21,38 @@ interface IPoolable {
  * @property factory The factory function which is used to generate new pooled object instances.
  */
 class ObjectPool<T : IPoolable>(private val factory: () -> T, initialSize: Int = 0) {
-  private val pool = ArrayDeque<T>()
+    private val pool = ArrayDeque<T>()
 
-  val availableObjects: Int
-    get() = pool.size
+    val availableObjects: Int
+        get() = pool.size
 
-  init {
-    require(initialSize >= 0) { "Invalid initial size" }
+    init {
+        require(initialSize >= 0) { "Invalid initial size" }
 
-    // optional, initial population of pool
-    repeat(initialSize) { pool.addLast(factory()) }
-  }
-
-  /**
-   * Takes an instance of the [IPoolable] object type from the pool, creating one if necessary.
-   *
-   * @return The [IPoolable] instance.
-   */
-  fun take(): T {
-    return if (pool.isNotEmpty()) {
-      pool.removeLast()
-    } else {
-      factory()
+        // optional, initial population of pool
+        repeat(initialSize) { pool.addLast(factory()) }
     }
-  }
 
-  /**
-   * Returns the instance to the object pool, first resetting it.
-   *
-   * @param obj The [IPoolable] instance to return.
-   */
-  fun put(obj: T) {
-    obj.reset()
-    pool.addLast(obj)
-  }
+    /**
+     * Takes an instance of the [IPoolable] object type from the pool, creating one if necessary.
+     *
+     * @return The [IPoolable] instance.
+     */
+    fun take(): T {
+        return if (pool.isNotEmpty()) {
+            pool.removeLast()
+        } else {
+            factory()
+        }
+    }
+
+    /**
+     * Returns the instance to the object pool, first resetting it.
+     *
+     * @param obj The [IPoolable] instance to return.
+     */
+    fun put(obj: T) {
+        obj.reset()
+        pool.addLast(obj)
+    }
 }

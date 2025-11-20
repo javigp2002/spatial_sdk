@@ -73,7 +73,12 @@ class MLKitObjectDetector() : IObjectDetectorHelper {
             .addOnSuccessListener { detectedObjects ->
                 val finishTimeMs = SystemClock.uptimeMillis()
                 val inferenceTime = finishTimeMs - startTime
-                val result = DetectedObjectsResult.fromMLKitResults(detectedObjects, inferenceTime, width, height)
+                val result = DetectedObjectsResult.fromMLKitResults(
+                    detectedObjects,
+                    inferenceTime,
+                    width,
+                    height
+                )
                 finally(result)
             }
             .addOnFailureListener { e ->

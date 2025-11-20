@@ -17,7 +17,8 @@ data class DetectionState(
     val finally: () -> Unit
 )
 
-class ObjectDetectionRepository(private val detector: IObjectDetectorHelper): IObjectDetectionRepository {
+class ObjectDetectionRepository(private val detector: IObjectDetectorHelper) :
+    IObjectDetectionRepository {
     companion object {
         private const val TAG = "ObjectDetectionRepo"
     }

@@ -19,18 +19,22 @@ fun Panel(
     outerPadding: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-  Box(
-      modifier =
-          Modifier.clip(LocalShapes.current.large)
-              .background(brush = LocalColorScheme.current.panel, shape = LocalShapes.current.large)
-              .padding(if (outerPadding) 20.dp else 0.dp)
-  ) {
-    content.invoke()
-  }
+    Box(
+        modifier =
+            Modifier
+                .clip(LocalShapes.current.large)
+                .background(
+                    brush = LocalColorScheme.current.panel,
+                    shape = LocalShapes.current.large
+                )
+                .padding(if (outerPadding) 20.dp else 0.dp)
+    ) {
+        content.invoke()
+    }
 }
 
 @Preview(widthDp = 516, heightDp = 414)
 @Composable
 private fun PanelPreview() {
-  SpatialTheme { Panel {} }
+    SpatialTheme { Panel {} }
 }

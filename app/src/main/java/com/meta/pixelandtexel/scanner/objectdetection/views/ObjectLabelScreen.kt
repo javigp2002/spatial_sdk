@@ -37,44 +37,48 @@ import com.meta.spatial.uiset.theme.SpatialTheme
  */
 @Composable
 fun ObjectLabelScreen(vm: ObjectLabelViewModel = viewModel(), onClick: (() -> Unit)? = null) {
-  val name by vm.name
+    val name by vm.name
 
-  SpatialTheme {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      Button(
-          onClick = { onClick?.invoke() },
-          colors =
-              ButtonColors(
-                  containerColor = Color.Transparent,
-                  contentColor = Color.Transparent,
-                  disabledContainerColor = Color.Transparent,
-                  disabledContentColor = Color.Transparent,
-              ),
-          shape = CutCornerShape(0.dp),
-          contentPadding = PaddingValues(0.dp),
-          modifier = Modifier.fillMaxSize(),
-      ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier =
-                Modifier.background(color = SpatialColor.b70, shape = SpatialTheme.shapes.large)
-                    .clip(SpatialTheme.shapes.large)
-                    .padding(horizontal = 20.dp)
-                    .height(40.dp)
-                    .wrapContentWidth(),
+    SpatialTheme {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          Text(name, color = SpatialColor.white100, style = SpatialTheme.typography.body1)
+            Button(
+                onClick = { onClick?.invoke() },
+                colors =
+                    ButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = Color.Transparent,
+                    ),
+                shape = CutCornerShape(0.dp),
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .background(
+                                color = SpatialColor.b70,
+                                shape = SpatialTheme.shapes.large
+                            )
+                            .clip(SpatialTheme.shapes.large)
+                            .padding(horizontal = 20.dp)
+                            .height(40.dp)
+                            .wrapContentWidth(),
+                ) {
+                    Text(name, color = SpatialColor.white100, style = SpatialTheme.typography.body1)
+                }
+            }
         }
-      }
     }
-  }
 }
 
 @Preview(widthDp = 516, heightDp = 414)
 @Composable
 private fun ObjectLabelScreenPreview() {
-  ObjectLabelScreen(ObjectLabelViewModel("Name"))
+    ObjectLabelScreen(ObjectLabelViewModel("Name"))
 }

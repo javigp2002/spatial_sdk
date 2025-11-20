@@ -14,20 +14,20 @@ fun FindObjectsScreen(
     onGenerate: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
 ) {
-  SpatialTheme {
-    Panel(outerPadding = false) {
-      GenerateObjectsView(
-          stringResource(R.string.find_objects_title),
-          stringResource(R.string.find_objects_body),
-          onGenerate,
-          onDismiss,
-      )
+    SpatialTheme {
+        Panel(outerPadding = false) {
+            GenerateObjectsView(
+                stringResource(R.string.find_objects_title),
+                stringResource(R.string.find_objects_body),
+                onGenerate,
+                onDismiss,
+            )
+        }
     }
-  }
 }
 
 @Preview(widthDp = 368, heightDp = 440)
 @Composable
 fun FindObjectsScreenPreview() {
-  FindObjectsScreen()
+    FindObjectsScreen()
 }

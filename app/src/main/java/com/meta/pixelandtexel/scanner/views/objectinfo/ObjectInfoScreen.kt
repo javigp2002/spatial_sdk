@@ -22,27 +22,33 @@ fun ObjectInfoScreen(
     onResume: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
 ) {
-  val title by vm.title
-  val resultMessage by vm.resultMessage
-  val image by vm.image
+    val title by vm.title
+    val resultMessage by vm.resultMessage
+    val image by vm.image
 
-  LaunchedEffect(null) { vm.queryLlama() }
+    LaunchedEffect(null) { vm.queryLlama() }
 
-  SpatialTheme {
-    Panel {
-      ObjectInfoView(title, BitmapPainter(image.asImageBitmap()), resultMessage, onResume, onClose)
+    SpatialTheme {
+        Panel {
+            ObjectInfoView(
+                title,
+                BitmapPainter(image.asImageBitmap()),
+                resultMessage,
+                onResume,
+                onClose
+            )
+        }
     }
-  }
 }
 
 @Preview(widthDp = 632, heightDp = 644)
 @Composable
 private fun ObjectInfoScreenPreviewLoading() {
-  ObjectInfoScreen(ObjectInfoViewModel(ObjectInfoRequest("Name", createBitmap(100, 1)), ""))
+    ObjectInfoScreen(ObjectInfoViewModel(ObjectInfoRequest("Name", createBitmap(100, 1)), ""))
 }
 
 @Preview(widthDp = 632, heightDp = 644)
 @Composable
 private fun ObjectInfoScreenPreview() {
-  ObjectInfoScreen(ObjectInfoViewModel(ObjectInfoRequest("Name", createBitmap(100, 100)), ""))
+    ObjectInfoScreen(ObjectInfoViewModel(ObjectInfoRequest("Name", createBitmap(100, 100)), ""))
 }

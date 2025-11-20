@@ -21,25 +21,29 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun NoticeView(onLinkClicked: ((String) -> Unit)? = null, onContinue: (() -> Unit)) {
-  Panel {
-    Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
-      Column(
-          verticalArrangement = Arrangement.spacedBy(30.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        MarkdownText(
-            stringResource(R.string.notice),
-            style = SpatialTheme.typography.body1.merge(TextStyle(color = SpatialColor.white100)),
-            onLinkClicked = onLinkClicked,
-        )
-        PrimaryButton(stringResource(R.string.btn_continue), onClick = onContinue, expanded = true)
-      }
+    Panel {
+        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                MarkdownText(
+                    stringResource(R.string.notice),
+                    style = SpatialTheme.typography.body1.merge(TextStyle(color = SpatialColor.white100)),
+                    onLinkClicked = onLinkClicked,
+                )
+                PrimaryButton(
+                    stringResource(R.string.btn_continue),
+                    onClick = onContinue,
+                    expanded = true
+                )
+            }
+        }
     }
-  }
 }
 
 @Preview(widthDp = 368, heightDp = 404)
 @Composable
 private fun InterstitialViewPreview() {
-  NoticeView {}
+    NoticeView {}
 }

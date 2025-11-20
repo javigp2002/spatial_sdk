@@ -39,65 +39,71 @@ fun ObjectInfoView(
     onResume: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
 ) {
-  Column {
-    ObjectInfoPanelHeader(title, onResume = onResume, onClose = onClose)
-    HorizontalDivider(
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-        thickness = 1.dp,
-        color = Color.White,
-    )
-    ScrollableColumn {
-      if (painter != null) {
-        Spacer(Modifier.height(24.dp))
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-          Image(
-              painter = painter,
-              contentDescription = title,
-              contentScale = ContentScale.FillWidth,
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .clip(RoundedCornerShape(SpatialTheme.shapes.medium.topEnd)),
-          )
-        }
-      }
+    Column {
+        ObjectInfoPanelHeader(title, onResume = onResume, onClose = onClose)
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            thickness = 1.dp,
+            color = Color.White,
+        )
+        ScrollableColumn {
+            if (painter != null) {
+                Spacer(Modifier.height(24.dp))
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Image(
+                        painter = painter,
+                        contentDescription = title,
+                        contentScale = ContentScale.FillWidth,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(SpatialTheme.shapes.medium.topEnd)),
+                    )
+                }
+            }
 
-      if (copy != null) {
-        if (copy.isEmpty()) {
-          Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-            CircularProgressIndicator(
-                color = SpatialTheme.colorScheme.progressOnBackground,
-                trackColor = SpatialTheme.colorScheme.progressBarOnBackground,
-                modifier = Modifier.padding(40.dp),
-            )
-          }
-        } else {
-          Spacer(Modifier.height(24.dp))
-          MarkdownText(
-              copy,
-              style = SpatialTheme.typography.body1.merge(TextStyle(color = SpatialColor.white100)),
-          )
+            if (copy != null) {
+                if (copy.isEmpty()) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        CircularProgressIndicator(
+                            color = SpatialTheme.colorScheme.progressOnBackground,
+                            trackColor = SpatialTheme.colorScheme.progressBarOnBackground,
+                            modifier = Modifier.padding(40.dp),
+                        )
+                    }
+                } else {
+                    Spacer(Modifier.height(24.dp))
+                    MarkdownText(
+                        copy,
+                        style = SpatialTheme.typography.body1.merge(TextStyle(color = SpatialColor.white100)),
+                    )
+                }
+            }
         }
-      }
     }
-  }
 }
 
 @Preview(widthDp = 592, heightDp = 604, showBackground = true, backgroundColor = 0xFF272727)
 @Composable
 private fun ObjectInfoViewPreview() {
-  SpatialTheme {
-    ObjectInfoView(
-        "Model: RF32CG5900SR/AA",
-        painterResource(R.drawable.fridge_hero),
-        "## 30 cu. ft. Mega Capacity\n" +
-            "\n" +
-            "Store more groceries with more room to stay organized.\n" +
-            "\n" +
-            "## Features\n" +
-            "\n" +
-            "- Share pictures, stream music and videos, access recipes, control your smart devices and Alexa all from the fridge.\n" +
-            "- Enjoy your favorite beverage with your choice of ice. Choose from cubed ice or Ice Bites from the Dual Auto Ice Maker in the freezer drawer, or choose from curved or crushed ice from the external dispenser.\n" +
-            "- A flat-front fridge design with recessed drawer handle blends beautifully into the kitchen.",
-    )
-  }
+    SpatialTheme {
+        ObjectInfoView(
+            "Model: RF32CG5900SR/AA",
+            painterResource(R.drawable.fridge_hero),
+            "## 30 cu. ft. Mega Capacity\n" +
+                    "\n" +
+                    "Store more groceries with more room to stay organized.\n" +
+                    "\n" +
+                    "## Features\n" +
+                    "\n" +
+                    "- Share pictures, stream music and videos, access recipes, control your smart devices and Alexa all from the fridge.\n" +
+                    "- Enjoy your favorite beverage with your choice of ice. Choose from cubed ice or Ice Bites from the Dual Auto Ice Maker in the freezer drawer, or choose from curved or crushed ice from the external dispenser.\n" +
+                    "- A flat-front fridge design with recessed drawer handle blends beautifully into the kitchen.",
+        )
+    }
 }

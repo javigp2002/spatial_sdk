@@ -17,9 +17,9 @@ import com.meta.pixelandtexel.scanner.viewmodels.WelcomeViewModel
 import com.meta.spatial.uiset.theme.SpatialTheme
 
 object Routes {
-  const val EMPTY = "EMPTY"
-  const val NOTICE = "NOTICE"
-  const val CAMERA_CONTROLS_INTRO = "CAMERA_CONTROLS_INTRO"
+    const val EMPTY = "EMPTY"
+    const val NOTICE = "NOTICE"
+    const val CAMERA_CONTROLS_INTRO = "CAMERA_CONTROLS_INTRO"
 }
 
 @Composable
@@ -29,36 +29,36 @@ fun WelcomeScreen(
     onLinkClicked: ((String) -> Unit)? = null,
     dismissPanel: (() -> Unit)? = null,
 ) {
-  val route by vm.route
+    val route by vm.route
 
-  LaunchedEffect(route) { navController.navigate(route) { launchSingleTop = true } }
+    LaunchedEffect(route) { navController.navigate(route) { launchSingleTop = true } }
 
-  LaunchedEffect(null) { vm.checkShouldShowNotice() }
+    LaunchedEffect(null) { vm.checkShouldShowNotice() }
 
-  SpatialTheme {
-    NavHost(navController = navController, startDestination = route) {
-      composable(Routes.EMPTY) {
-        // purposefully empty
-      }
-      composable(Routes.NOTICE) {
-        NoticeView(onLinkClicked = onLinkClicked) {
-          SettingsService.set(SettingsKey.ACCEPTED_NOTICE, true)
-          vm.navTo(Routes.CAMERA_CONTROLS_INTRO)
+    SpatialTheme {
+        NavHost(navController = navController, startDestination = route) {
+            composable(Routes.EMPTY) {
+                // purposefully empty
+            }
+            composable(Routes.NOTICE) {
+                NoticeView(onLinkClicked = onLinkClicked) {
+                    SettingsService.set(SettingsKey.ACCEPTED_NOTICE, true)
+                    vm.navTo(Routes.CAMERA_CONTROLS_INTRO)
+                }
+            }
+            composable(Routes.CAMERA_CONTROLS_INTRO) { CameraControlsView { dismissPanel?.invoke() } }
         }
-      }
-      composable(Routes.CAMERA_CONTROLS_INTRO) { CameraControlsView { dismissPanel?.invoke() } }
     }
-  }
 }
 
 @Preview(widthDp = 368, heightDp = 404)
 @Composable
 private fun WelcomeScreenPreviewInterstitial() {
-  WelcomeScreen(WelcomeViewModel(Routes.NOTICE))
+    WelcomeScreen(WelcomeViewModel(Routes.NOTICE))
 }
 
 @Preview(widthDp = 368, heightDp = 404)
 @Composable
 private fun WelcomeScreenPreviewWelcome() {
-  WelcomeScreen(WelcomeViewModel(Routes.CAMERA_CONTROLS_INTRO))
+    WelcomeScreen(WelcomeViewModel(Routes.CAMERA_CONTROLS_INTRO))
 }

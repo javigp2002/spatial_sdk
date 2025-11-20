@@ -33,44 +33,50 @@ fun CuratedObjectTilesPanel(
     onResume: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
 ) {
-  Column {
-    ObjectInfoPanelHeader(content.title, onResume = onResume, onClose = onClose)
-    HorizontalDivider(
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-        thickness = 1.dp,
-        color = Color.White,
-    )
-    Spacer(Modifier.height(24.dp))
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 200.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxSize(),
-    ) {
-      itemsIndexed(content.tiles) { i, tileContent ->
-        val painter =
-            if (tileContent.imageResId != null) painterResource(tileContent.imageResId) else null
-        ObjectInfoTile(tileContent.title, tileContent.subTitle, painter) { tileSelected?.invoke(i) }
-      }
+    Column {
+        ObjectInfoPanelHeader(content.title, onResume = onResume, onClose = onClose)
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            thickness = 1.dp,
+            color = Color.White,
+        )
+        Spacer(Modifier.height(24.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 200.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            itemsIndexed(content.tiles) { i, tileContent ->
+                val painter =
+                    if (tileContent.imageResId != null) painterResource(tileContent.imageResId) else null
+                ObjectInfoTile(
+                    tileContent.title,
+                    tileContent.subTitle,
+                    painter
+                ) { tileSelected?.invoke(i) }
+            }
+        }
     }
-  }
 }
 
 @Preview(widthDp = 592, heightDp = 604, showBackground = true, backgroundColor = 0xFF272727)
 @Composable
 private fun CuratedObjectTilesPanelPreview() {
-  SpatialTheme {
-    CuratedObjectTilesPanel(
-        TilesPanelContent(
-            "Refrigerator",
-            null,
-            listOf(
-                TileContent("How To:", "Troubleshoot Wifi Connection", R.drawable.fridge_light),
-                TileContent("How To:", "Connect Your Apps", R.drawable.tv_apps),
-                TileContent("How To:", "Prepare for Wall Mounting", R.drawable.tv_mount),
-                TileContent("How To:", "Connect a Sound System", R.drawable.tv_sound),
-            ),
+    SpatialTheme {
+        CuratedObjectTilesPanel(
+            TilesPanelContent(
+                "Refrigerator",
+                null,
+                listOf(
+                    TileContent("How To:", "Troubleshoot Wifi Connection", R.drawable.fridge_light),
+                    TileContent("How To:", "Connect Your Apps", R.drawable.tv_apps),
+                    TileContent("How To:", "Prepare for Wall Mounting", R.drawable.tv_mount),
+                    TileContent("How To:", "Connect a Sound System", R.drawable.tv_sound),
+                ),
+            )
         )
-    )
-  }
+    }
 }
