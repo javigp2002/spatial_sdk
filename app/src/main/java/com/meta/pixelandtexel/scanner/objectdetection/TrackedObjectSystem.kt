@@ -4,10 +4,8 @@ package com.meta.pixelandtexel.scanner.objectdetection
 
 import android.graphics.Rect
 import android.net.Uri
-import androidx.core.graphics.createBitmap
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObject
 import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils
