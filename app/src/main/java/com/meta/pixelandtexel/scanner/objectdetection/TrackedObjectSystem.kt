@@ -74,7 +74,6 @@ import com.meta.spatial.uiset.theme.SpatialColor
  */
 class TrackedObjectSystem(
     activity: AppSystemActivity,
-    displayedEntityRepository: IDisplayedEntityRepository,
     private var fov: Float = 72f,
     private var headToCameraOffset: Pose = Pose(),
     private var screenPointToRayInCamera: ((Vector2) -> Vector3) = { _ -> Vector3.Forward },
@@ -99,8 +98,6 @@ class TrackedObjectSystem(
         // the pixels per unit multiplier – increasing this scales the outline width
         private const val PPU_MULTIPLIER = 1f
     }
-
-    private var displayedEntityRepository: IDisplayedEntityRepository
 
     private val trackedObjectPool = ObjectPool(::createNewTrackedObj)
 
@@ -137,8 +134,6 @@ class TrackedObjectSystem(
                 }
             }
         )
-
-        this.displayedEntityRepository = displayedEntityRepository
     }
 
     /**
