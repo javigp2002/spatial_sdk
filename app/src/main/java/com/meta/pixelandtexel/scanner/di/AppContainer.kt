@@ -10,5 +10,5 @@ class AppContainer {
     val displayedEntityRepository: IDisplayedEntityRepository = DisplayedEntityRepository()
 
     val mLKitObjectDetector = MLKitObjectDetector()
-    val objectDetectRepository = ObjectDetectionRepository(mLKitObjectDetector)
+    val objectDetectRepository = ObjectDetectionRepository(mLKitObjectDetector, displayedEntityRepository)
 }

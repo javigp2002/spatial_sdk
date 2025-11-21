@@ -13,7 +13,6 @@ import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.copy
 import com.meta.pixelandtexel.scanner.objectdetection.math.MathUtils.toVector2
 import com.meta.pixelandtexel.scanner.objectdetection.math.Plane
 import com.meta.pixelandtexel.scanner.objectdetection.math.Ray
-import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.objectdetection.utils.ObjectPool
@@ -513,6 +512,15 @@ class TrackedObjectSystem(
         headToCameraOffset = properties.getHeadToCameraPose()
         screenPointToRayInCamera = properties::screenPointToRayInCamera
         screenPointToPointOnViewPlane = properties::screenPointToPointOnViewPlane
+    }
+
+    fun clear(){
+        trackedObjects.forEach {
+            (_, trackedObjectInfo) ->
+            trackedObjectPool.put(trackedObjectInfo)
+        }
+
+        trackedObjects.clear()
     }
 
     /**

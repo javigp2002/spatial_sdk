@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner.objectdetection.repository.detection
 
 import android.media.Image
+import com.meta.spatial.core.Pose
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -32,4 +33,8 @@ interface IObjectDetectionRepository {
      *   regardless of whether detection was successful or the frame was dropped.
      */
     fun processImage(image: Image, width: Int, height: Int, `finally`: () -> Unit)
+
+    fun clear()
+
+    fun requestInfoForObject(id: Int, pose: Pose)
 }

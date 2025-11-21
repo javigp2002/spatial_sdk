@@ -12,17 +12,13 @@ import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
-import com.meta.pixelandtexel.scanner.BuildConfig
 import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.ViewLocked
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
 import com.meta.pixelandtexel.scanner.objectdetection.camera.CameraController
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.objectdetection.camera.models.CameraProperties
-import com.meta.pixelandtexel.scanner.objectdetection.detector.IObjectDetectorHelper
-import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.objectdetection.repository.detection.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.objectdetection.utils.NumberSmoother
@@ -57,8 +53,7 @@ import kotlinx.coroutines.launch
  *
  * This class integrates camera functionalities, object detection processing, and user interface
  * elements related to displaying camera status and detected objects. It handles the camera
- * lifecycle (initialization, scanning, pausing), processes image frames for object detection using
- * an [IObjectDetectorHelper], and manages a cache of detected objects ([DetectedObjectCache]).
+ * lifecycle (initialization, scanning, pausing), processes image frames for object detection
  *
  * The feature can optionally display a camera preview and debug information ([spawnCameraViewPanel]
  * = true) or rely on a [TrackedObjectSystem] to visualize detected objects in the spatial
@@ -82,7 +77,6 @@ import kotlinx.coroutines.launch
 class ObjectDetectionFeature(
     private val activity: AppSystemActivity,
     private val onStatusChanged: ((CameraStatus) -> Unit)? = null,
-    private val onDetectedObjects: ((DetectedObjectsResult) -> Unit)? = null,
     private val spawnCameraViewPanel: Boolean = false,
 ) : SpatialFeature, CameraController.ImageAvailableListener {
     companion object {
@@ -91,7 +85,6 @@ class ObjectDetectionFeature(
 
     // our core services
     private val cameraController: CameraController
-    private val detectedObjectCache: DetectedObjectCache
 
     // systems
     private lateinit var viewLockedSystem: ViewLockedSystem
@@ -125,17 +118,25 @@ class ObjectDetectionFeature(
         displayRepository = di.appContainer.displayedEntityRepository
         detectionRepository = di.appContainer.objectDetectRepository
 
-        detectedObjectCache = DetectedObjectCache()
-
         subscriptionScope.launch {
             detectionRepository.detectionState.collect { state ->
                 if (state == null) return@collect
-
                 try {
-                    // Your logic to process the detected objects goes here
-                    onObjectsDetected(state.result, state.image)
+                    if (state.foundObjects.isNotEmpty()) {
+                        CoroutineScope(Dispatchers.Main).launch{trackedObjectSystem.onObjectsFound(state.foundObjects)}
+                    }
+                    if (state.updatedObjects.isNotEmpty()) {
+                        CoroutineScope(Dispatchers.Main).launch{
+                            trackedObjectSystem.onObjectsUpdated(state.updatedObjects)
+                        }
+                    }
+                    if (state.lostObjectIds.isNotEmpty()) {
+                        CoroutineScope(Dispatchers.Main).launch{
+                            trackedObjectSystem.onObjectsLost(state.lostObjectIds)
+                        }
+                    }
+
                 } finally {
-                    // IMPORTANT: This ensures the image is always closed after use.
                     state.finally()
                 }
             }
@@ -153,7 +154,6 @@ class ObjectDetectionFeature(
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // register our panels
 
         activity.registerPanel(
             PanelRegistration(R.layout.ui_camera_view) {
@@ -221,12 +221,9 @@ class ObjectDetectionFeature(
         // only use the trackedObjectSystem to draw the outlines and labels of detected objects if
         // we aren't displaying the camera debug view
         if (!spawnCameraViewPanel) {
-            trackedObjectSystem = TrackedObjectSystem(activity, displayRepository)
+            trackedObjectSystem = TrackedObjectSystem(activity)
             trackedObjectSystem.onTrackedObjectSelected += ::onTrackedObjectSelected
             cameraController.onCameraPropertiesChanged += trackedObjectSystem::onCameraPropertiesChanged
-            detectedObjectCache.onObjectsFound += trackedObjectSystem::onObjectsFound
-            detectedObjectCache.onObjectsUpdated += trackedObjectSystem::onObjectsUpdated
-            detectedObjectCache.onObjectsLost += trackedObjectSystem::onObjectsLost
 
             systems.add(trackedObjectSystem)
         }
@@ -289,14 +286,16 @@ class ObjectDetectionFeature(
         updateCameraStatus(CameraStatus.PAUSED)
 
         if (immediate) {
-            detectedObjectCache.clear()
+            detectionRepository.clear()
             graphicOverlayView?.clear()
+            trackedObjectSystem.clear()
         } else {
             // wait for the camera to stop, and then clear the results
             CoroutineScope(Dispatchers.Main).launch {
                 delay(100L)
-                detectedObjectCache.clear()
+                detectionRepository.clear()
                 graphicOverlayView?.clear()
+                trackedObjectSystem.clear()
             }
         }
     }
@@ -388,37 +387,6 @@ class ObjectDetectionFeature(
     }
 
     /**
-     * Callback from objectDetector for when CV inference has completed on the image frame passed to
-     * the objectDetector, and the results on the image have been assembled. Passes the results to the
-     * owning activity, and send them to the detectedObjectCache for reconciliation and emission to
-     * any event listeners.
-     *
-     * @param result The [DetectedObjectsResult] assembled results of the CV inference on the image
-     *   frame.
-     * @param image The [Image] image frame that the CV inference was performed on.
-     */
-    fun onObjectsDetected(result: DetectedObjectsResult, image: Image) {
-        // draw the bounding boxes on the overlay Canvas
-        if (spawnCameraViewPanel) {
-            graphicOverlayView?.drawResults(
-                result.objects,
-                result.inputImageWidth,
-                result.inputImageHeight,
-            )
-        }
-
-        // keep track of our inference time, and display those stats
-        if (BuildConfig.DEBUG) {
-            smoothedInferenceTime.update(result.inferenceTime)
-            val smoothedTime = smoothedInferenceTime.getSmoothedNumber().toInt()
-            graphicOverlayView?.drawStats("inference time: $smoothedTime ms")
-        }
-
-        onDetectedObjects?.invoke(result)
-        detectedObjectCache.onObjectsDetected(result, image)
-    }
-
-    /**
      * Called by the TrackedObjectSystem when a tracked object, which is outlined and labeled in the
      * user's field of view, is selected by the user.
      *
@@ -429,39 +397,11 @@ class ObjectDetectionFeature(
      */
     private fun onTrackedObjectSelected(id: Int, pose: Pose) {
         if (!cameraController.isRunning) {
-            // likely a race condition where we've already requested object info
             Log.w(TAG, "Camera isn't running")
             return
         }
 
-
-        val obj = detectedObjectCache.getObject(id)
-        if (obj == null) {
-            Log.w(TAG, "Failed to find object $id")
-            return
-        }
-
-        // try to get a cropped image of the object on the next camera frame
-
-        val success =
-            detectedObjectCache.tryRequestImageForObject(id) {
-                if (it == null) {
-                    Log.w(TAG, "Failed to get clip of image for object $id")
-                    return@tryRequestImageForObject
-                }
-
-                displayRepository.createGenericInfoPanel(
-                    R.integer.info_panel_id,
-                    ObjectInfoRequest(obj.label, it),
-                    pose,
-                )
-
-            }
-
-        if (!success) {
-            Log.w(TAG, "Failed to request clip of image for object $id")
-            return
-        }
+        detectionRepository.requestInfoForObject(id, pose)
     }
 
     override fun onPauseActivity() {

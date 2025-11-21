@@ -17,7 +17,6 @@ import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
-import com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult
 import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
@@ -86,7 +85,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
             ObjectDetectionFeature(
                 this,
                 onStatusChanged = ::onObjectDetectionFeatureStatusChanged,
-                onDetectedObjects = ::onObjectsDetected,
             )
 
         return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature)
@@ -321,16 +319,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         )
     }
 
-    /**
-     * The object detection feature has detected objects in the user's camera feed.
-     *
-     * @param result A [com.meta.pixelandtexel.scanner.objectdetection.detector.models.DetectedObjectsResult] representation of the object detection result.
-     */
-    private fun onObjectsDetected(result: DetectedObjectsResult) {
-        if (result.objects.any()) {
-            tipManager.reportUserEvent(UserEvent.DETECTED_OBJECT)
-        }
-    }
 
     override fun onPause() {
         stopScanning()
