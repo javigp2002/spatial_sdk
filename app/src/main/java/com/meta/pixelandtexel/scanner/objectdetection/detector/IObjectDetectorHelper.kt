@@ -1,5 +1,3 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 package com.meta.pixelandtexel.scanner.objectdetection.detector
 
 import android.media.Image
@@ -24,7 +22,6 @@ interface IObjectDetectorHelper {
      * @param finally A callback function that must be invoked when the detection for this image has
      *   finished (successfully or unsuccessfully).
      */
-//  val detectorState: StateFlow<DetectorResult?>
 
     fun detect(image: Image, width: Int, height: Int, finally: (DetectedObjectsResult?) -> Unit)
 

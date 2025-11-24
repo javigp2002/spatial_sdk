@@ -39,7 +39,7 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
 
     private lateinit var net: Net
 
-    private var resultsListener: IObjectsDetectedListener? = null
+    private var resultsListener = null
 
     private val classNames: List<String> =
         listOf(
@@ -150,7 +150,7 @@ class OpenCVObjectDetector(context: Context) : IObjectDetectorHelper {
                     width,
                     height
                 )
-            resultsListener?.onObjectsDetected(result, image)
+            // resultsListener?.onObjectsDetected(result, image) No se hace por herencia
 
             frame.release()
             cvFrame.release()
