@@ -43,6 +43,7 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.createPanelEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,7 +79,7 @@ class ObjectDetectionFeature(
     private val activity: AppSystemActivity,
     private val onStatusChanged: ((CameraStatus) -> Unit)? = null,
     private val spawnCameraViewPanel: Boolean = false,
-) : SpatialFeature, CameraController.ImageAvailableListener {
+) : SpatialFeature {
     companion object {
         private const val TAG = "ObjectDetectionFeature"
     }
@@ -262,7 +263,6 @@ class ObjectDetectionFeature(
         if (cameraController.isInitialized) {
             cameraController.start(
                 surfaceProviders = listOfNotNull(cameraPreviewView as? ISurfaceProvider),
-                imageAvailableListener = this,
             )
             updateCameraStatus(CameraStatus.SCANNING)
             return
@@ -369,24 +369,6 @@ class ObjectDetectionFeature(
     }
 
     /**
-     * Callback from the CameraController for when a new image frame is available from the device
-     * camera feed. Passes the image and frame data to the object detector for CV inference.
-     *
-     * **IMPORTANT** new image frames will not be read from the device camera feed until the finally
-     * callback is invoked by the receiver.
-     *
-     * @param image The camera feed [Image] image frame, in the format specified by
-     *   CameraController.CAMERA_IMAGE_FORMAT
-     * @param width The width of the image in pixels.
-     * @param height The height of the image in pixels.
-     * @param finally The callback to be executed by the object detector when it is finished
-     *   performing any CV inference on the image.
-     */
-    override fun onNewImage(image: Image, width: Int, height: Int, finally: () -> Unit) {
-//    objectDetector.detect(image, width, height, finally)
-    }
-
-    /**
      * Called by the TrackedObjectSystem when a tracked object, which is outlined and labeled in the
      * user's field of view, is selected by the user.
      *
@@ -419,6 +401,8 @@ class ObjectDetectionFeature(
         if (::cameraStatusEntity.isInitialized) {
             cameraStatusEntity.destroy()
         }
+
+        subscriptionScope.cancel()
         super.onDestroy()
     }
 }

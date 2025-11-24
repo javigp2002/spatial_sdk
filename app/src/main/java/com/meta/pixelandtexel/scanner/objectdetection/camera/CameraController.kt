@@ -180,13 +180,12 @@ class CameraController(
      */
     fun start(
         surfaceProviders: List<ISurfaceProvider> = listOf(),
-        imageAvailableListener: ImageAvailableListener? = null,
     ) {
         if (!isInitialized) {
             throw RuntimeException("Camera not initialized")
         }
 
-        if (surfaceProviders.isEmpty() && imageAvailableListener == null) {
+        if (surfaceProviders.isEmpty() && _imageState.subscriptionCount.value <= 0) {
             Log.w(TAG, "No reason to start camera")
             return
         }
@@ -210,7 +209,7 @@ class CameraController(
                 }
             }
 
-            startInternal(surfaceProviders, imageAvailableListener)
+            startInternal(surfaceProviders)
         }
     }
 
@@ -225,7 +224,6 @@ class CameraController(
      */
     private suspend fun startInternal(
         surfaceProviders: List<ISurfaceProvider>,
-        imageAvailableListener: ImageAvailableListener? = null,
     ) {
         try {
             _isRunning.set(true)
@@ -239,17 +237,15 @@ class CameraController(
             val targets = surfaceProviders.map { it.surface!! }.toMutableList()
 
             // initialize our image ready for frame object detection
+            imageReader =
+                ImageReader.newInstance(
+                    cameraOutputSize.width,
+                    cameraOutputSize.height,
+                    CAMERA_IMAGE_FORMAT,
+                    2,
+                )
+            targets.add(imageReader!!.surface)
 
-            if (imageAvailableListener != null) {
-                imageReader =
-                    ImageReader.newInstance(
-                        cameraOutputSize.width,
-                        cameraOutputSize.height,
-                        CAMERA_IMAGE_FORMAT,
-                        2,
-                    )
-                targets.add(imageReader!!.surface)
-            }
 
             // create and start our session with the open camera and list of target surfaces
 
@@ -284,11 +280,6 @@ class CameraController(
                         image.close()
                         isProcessingFrame.set(false)
                     }
-
-//            imageAvailableListener?.onNewImage(image, image.width, image.height) {
-//              image.close()
-//              isProcessingFrame.set(false)
-//            }
                 },
                 imageReaderHandler,
             )
@@ -502,24 +493,4 @@ class CameraController(
         }
     }
 
-    /**
-     * Simple pattern for objects to implement which want to receive a camera frame image for
-     * processing.
-     */
-    interface ImageAvailableListener {
-        /**
-         * Function called when a new image frame is available from the device camera feed.
-         *
-         * **IMPORTANT** new image frames will not be read from the device camera feed until the finally
-         * callback is invoked by the receiver.
-         *
-         * @param image The camera feed [Image] image frame, in the format specified by
-         *   CameraController.CAMERA_IMAGE_FORMAT
-         * @param width The width of the image in pixels.
-         * @param height The height of the image in pixels.
-         * @param finally The callback to be executed by the object when any image processing has
-         *   complated.
-         */
-        fun onNewImage(image: Image, width: Int, height: Int, finally: () -> Unit)
-    }
 }
