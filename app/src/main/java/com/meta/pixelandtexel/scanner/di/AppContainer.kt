@@ -1,9 +1,9 @@
 package com.meta.pixelandtexel.scanner.di
 
-import com.meta.pixelandtexel.scanner.objectdetection.detector.MLKitObjectDetector
-import com.meta.pixelandtexel.scanner.objectdetection.repository.DisplayedEntityRepository
-import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
-import com.meta.pixelandtexel.scanner.objectdetection.repository.detection.ObjectDetectionRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.ObjectDetectionRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.DisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.MLKitObjectDetector
 
 class AppContainer {
 

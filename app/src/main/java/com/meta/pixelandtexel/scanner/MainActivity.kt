@@ -15,9 +15,9 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
-import com.meta.pixelandtexel.scanner.objectdetection.ObjectDetectionFeature
-import com.meta.pixelandtexel.scanner.objectdetection.camera.enums.CameraStatus
-import com.meta.pixelandtexel.scanner.objectdetection.repository.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
