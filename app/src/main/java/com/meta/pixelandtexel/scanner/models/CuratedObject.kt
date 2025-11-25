@@ -42,18 +42,18 @@ data class CuratedObject(
     val ui: List<PanelContentBase>,
     val order: Int,
 ) {
-  var meshEntity: Entity? = null
-  var meshBounds: Bound3D? = null
-  var meshPositionOffset: Vector3 = Vector3(0f)
-  var meshRotationOffset: Quaternion = Quaternion()
-  var animationNameToTrack: Map<String, Int>? = null
-  var initialAnimationTrack: Int? = null
+    var meshEntity: Entity? = null
+    var meshBounds: Bound3D? = null
+    var meshPositionOffset: Vector3 = Vector3(0f)
+    var meshRotationOffset: Quaternion = Quaternion()
+    var animationNameToTrack: Map<String, Int>? = null
+    var initialAnimationTrack: Int? = null
 }
 
 enum class PanelContentType {
-  UNKNOWN,
-  TILES,
-  IMAGE_COPY,
+    UNKNOWN,
+    TILES,
+    IMAGE_COPY,
 }
 
 abstract class PanelContentBase(

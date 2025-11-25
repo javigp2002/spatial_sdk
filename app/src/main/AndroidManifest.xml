@@ -72,8 +72,8 @@
     android:required="false"
   />
     <uses-permission android:name="horizonos.permission.HEADSET_CAMERA" />
-
     <application
+            android:name=".DiApplication"
     android:allowBackup="false"
     android:label="Meta Spatial Scanner"
   >
@@ -102,7 +102,7 @@
     />
 
         <activity
-      android:name="com.meta.pixelandtexel.scanner.activities.MainActivity"
+      android:name="com.meta.pixelandtexel.scanner.MainActivity"
       android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
       android:excludeFromRecents="false"
       android:exported="true"
@@ -115,15 +115,6 @@
                 <category android:name="com.oculus.intent.category.VR" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity
-      android:name="com.meta.pixelandtexel.scanner.activities.LiveStreamingActivity"
-      android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
-      android:excludeFromRecents="false"
-      android:exported="true"
-      android:launchMode="singleTask"
-    >
         </activity>
     </application>
 </manifest>
