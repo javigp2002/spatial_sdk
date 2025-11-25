@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.meta.pixelandtexel.scanner.viewmodels
+package com.meta.pixelandtexel.scanner.android.viewmodels
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.State

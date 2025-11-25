@@ -1,13 +1,11 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-package com.meta.pixelandtexel.scanner.viewmodels
+package com.meta.pixelandtexel.scanner.android.viewmodels
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.meta.pixelandtexel.scanner.android.views.welcome.Routes
 import com.meta.pixelandtexel.scanner.services.settings.SettingsKey
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
-import com.meta.pixelandtexel.scanner.views.welcome.Routes
 
 class WelcomeViewModel(
     initialRoute: String = Routes.EMPTY // for @Preview

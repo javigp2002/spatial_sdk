@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.meta.pixelandtexel.scanner.views.welcome
+package com.meta.pixelandtexel.scanner.android.views.welcome
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,9 +11,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.meta.pixelandtexel.scanner.android.viewmodels.WelcomeViewModel
 import com.meta.pixelandtexel.scanner.services.settings.SettingsKey
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
-import com.meta.pixelandtexel.scanner.viewmodels.WelcomeViewModel
 import com.meta.spatial.uiset.theme.SpatialTheme
 
 object Routes {

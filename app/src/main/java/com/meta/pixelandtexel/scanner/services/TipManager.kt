@@ -4,10 +4,10 @@ package com.meta.pixelandtexel.scanner.services
 
 import android.util.Log
 import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.views.tips.FindObjectsScreen
-import com.meta.pixelandtexel.scanner.views.tips.HelpScreen
-import com.meta.pixelandtexel.scanner.views.tips.NoObjectsDetectedScreen
-import com.meta.pixelandtexel.scanner.views.tips.SelectObjectTipScreen
+import com.meta.pixelandtexel.scanner.android.views.tips.FindObjectsScreen
+import com.meta.pixelandtexel.scanner.android.views.tips.HelpScreen
+import com.meta.pixelandtexel.scanner.android.views.tips.NoObjectsDetectedScreen
+import com.meta.pixelandtexel.scanner.android.views.tips.SelectObjectTipScreen
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose

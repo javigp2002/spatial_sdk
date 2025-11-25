@@ -1,13 +1,12 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-package com.meta.pixelandtexel.scanner.views.tips
+package com.meta.pixelandtexel.scanner.android.views.tips
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.views.components.Panel
 import com.meta.spatial.uiset.theme.SpatialTheme
+import com.meta.pixelandtexel.scanner.android.views.components.Panel
+
 
 @Composable
 fun HelpScreen(

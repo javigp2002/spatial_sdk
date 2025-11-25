@@ -13,6 +13,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
+import com.meta.pixelandtexel.scanner.android.viewmodels.ObjectInfoViewModel
+import com.meta.pixelandtexel.scanner.android.views.objectinfo.ObjectInfoScreen
+import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
@@ -21,9 +24,6 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enum
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
-import com.meta.pixelandtexel.scanner.viewmodels.ObjectInfoViewModel
-import com.meta.pixelandtexel.scanner.views.objectinfo.ObjectInfoScreen
-import com.meta.pixelandtexel.scanner.views.welcome.WelcomeScreen
 import com.meta.spatial.compose.ComposeFeature
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.compose.panelViewLifecycleOwner

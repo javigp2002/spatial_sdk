@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.meta.pixelandtexel.scanner.views.objectinfo
+package com.meta.pixelandtexel.scanner.android.views.objectinfo
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,10 +10,10 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.meta.pixelandtexel.scanner.android.viewmodels.ObjectInfoViewModel
+import com.meta.pixelandtexel.scanner.android.views.components.Panel
 import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
-import com.meta.pixelandtexel.scanner.viewmodels.ObjectInfoViewModel
-import com.meta.pixelandtexel.scanner.views.components.ObjectInfoView
-import com.meta.pixelandtexel.scanner.views.components.Panel
+import com.meta.pixelandtexel.scanner.android.views.components.ObjectInfoView
 import com.meta.spatial.uiset.theme.SpatialTheme
 
 @Composable

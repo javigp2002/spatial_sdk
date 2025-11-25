@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.meta.pixelandtexel.scanner.views.tips
+package com.meta.pixelandtexel.scanner.android.views.tips
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.views.components.Panel
+import com.meta.pixelandtexel.scanner.android.views.components.Panel
 import com.meta.spatial.uiset.button.PrimaryButton
 import com.meta.spatial.uiset.theme.SpatialTheme
 
