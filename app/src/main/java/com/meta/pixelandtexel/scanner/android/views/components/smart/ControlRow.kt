@@ -17,8 +17,9 @@ fun ControlRow(
     label: String,
     value: Float,
     onValueChange: (Float) -> Unit,
-    thumbColor: Color,
-    textColor: Color
+    thumbColor: Color = Color.Magenta,
+    textColor: Color = Color.White,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -40,7 +41,8 @@ fun ControlRow(
                 thumbColor = thumbColor,
                 activeTrackColor = Color.Gray,
                 inactiveTrackColor = Color.LightGray
-            )
+            ),
+            enabled = enabled,
         )
     }
 }

@@ -85,16 +85,14 @@ fun LightControlCard(
                     label = "Intensity",
                     value = state.intensity,
                     onValueChange = { viewModel.updateIntensity(it) },
-                    thumbColor = pinkColor,
-                    textColor = textColor
+                    enabled = state.isLightOn
                 )
 
                 ControlRow(
                     label = "Color",
                     value = state.colorValue,
                     onValueChange = { viewModel.updateColor(it) },
-                    thumbColor = pinkColor,
-                    textColor = textColor
+                    enabled = state.isLightOn
                 )
             }
 
