@@ -1,4 +1,4 @@
-package com.meta.pixelandtexel.scanner.android.views.components
+package com.meta.pixelandtexel.scanner.android.views.components.smart
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

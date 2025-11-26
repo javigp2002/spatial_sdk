@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.meta.pixelandtexel.scanner.android.views.components.ControlRow
+import com.meta.pixelandtexel.scanner.android.views.components.smart.ControlRow
 import com.meta.pixelandtexel.scanner.android.views.components.Panel
 import com.meta.pixelandtexel.scanner.utils.mytheme.AppTextStyles
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
@@ -29,7 +29,8 @@ import com.meta.spatial.uiset.theme.SpatialTheme
 
 @Composable
 fun LightControlCard(
-    viewModel: LightViewModel = viewModel()
+    viewModel: LightViewModel = viewModel(),
+    onClose: (() -> Unit)? = null,
 ) {
     val state by viewModel.uiState.collectAsState()
 
