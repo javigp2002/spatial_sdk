@@ -13,14 +13,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.android.viewmodels.ObjectInfoViewModel
-import com.meta.pixelandtexel.scanner.android.views.objectinfo.ObjectInfoScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
+import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
+import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
@@ -272,21 +273,21 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 }
                 composePanel {
                     stopScanning()
-                    val entityData = entityRepository.newViewModelData ?: return@composePanel
-
-                    val vm = ObjectInfoViewModel(
-                        entityData.data,
-                        getString(R.string.object_query_template)
-                    )
+                    val displayInfo = entityRepository.newViewModelData ?: return@composePanel
 
                     setContent {
-                        ObjectInfoScreen(
-                            vm,
-                            onResume = { },
-                            onClose = {
-                                entityRepository.deleteEntity(entityData.entityId)
-                            },
-                        )
+                        when (displayInfo.data.type) {
+                            TypeSmartHomeInfo.LIGHT -> {
+                                LightControlCard(
+                                    viewModel = LightViewModel(),
+                                    onClose = {
+                                        entityRepository.deleteEntity(displayInfo.entityId)
+                                    }
+                                )
+                            }
+                            TypeSmartHomeInfo.PLUG -> TODO()
+                            TypeSmartHomeInfo.UNKNOWN -> TODO()
+                        }
                     }
                 }
             },
