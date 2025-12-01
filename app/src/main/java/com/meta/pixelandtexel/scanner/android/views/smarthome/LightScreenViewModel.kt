@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class LightUiState(
+    val isConnected: Boolean = false,
     val isLightOn: Boolean = false,
     val intensity: Float = 0.5f,
     val colorValue: Float = 0.5f

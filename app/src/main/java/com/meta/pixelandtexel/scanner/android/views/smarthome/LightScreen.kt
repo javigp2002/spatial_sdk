@@ -38,6 +38,8 @@ fun LightControlCard(
     val pinkColor = Color(0xFFF2C0C0)
     val textColor = Color.White
 
+    val canChangeValue = state.isConnected && state.isLightOn
+
     SpatialTheme{
         Panel {
             Column(
@@ -85,14 +87,14 @@ fun LightControlCard(
                     label = "Intensity",
                     value = state.intensity,
                     onValueChange = { viewModel.updateIntensity(it) },
-                    enabled = state.isLightOn
+                    enabled = canChangeValue
                 )
 
                 ControlRow(
                     label = "Color",
                     value = state.colorValue,
                     onValueChange = { viewModel.updateColor(it) },
-                    enabled = state.isLightOn
+                    enabled = canChangeValue
                 )
             }
 
