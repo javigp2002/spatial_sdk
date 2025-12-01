@@ -1,7 +1,5 @@
 import java.util.Properties
 
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.jetbrains.kotlin.android)
@@ -108,13 +106,15 @@ dependencies {
   // For Markdown formatting in Jetpack Compose
   implementation(libs.compose.markdown)
 
-  // AWS Bedrock integration, and parsing JSON response
-  implementation(libs.aws.bedrockruntime)
+  implementation(libs.retrofit)
+  implementation(libs.retrofit2.kotlinx.serialization.converter)
   implementation(libs.google.gson)
+
 
   // Http server for video streaming
   implementation(libs.ktor.server.core)
   implementation(libs.ktor.server.netty)
+  implementation(libs.aws.bedrockruntime)
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }

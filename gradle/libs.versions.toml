@@ -1,4 +1,6 @@
 [versions]
+retrofit = "2.9.0"
+retrofit2KotlinxSerializationConverter = "1.0.0"
 spatialsdk = "0.8.0"
 agp = "8.6.1"
 kotlin = "2.1.20"
@@ -75,6 +77,9 @@ google-mediapipe-tasks-vision = { group = "com.google.mediapipe", name = "tasks-
 google-mlkit-object1-detection = { group = "com.google.mlkit", name = "object-detection", version.ref = "mlkit" }
 google-mlkit-object1-detection-custom = { group = "com.google.mlkit", name = "object-detection-custom", version.ref = "mlkit" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
