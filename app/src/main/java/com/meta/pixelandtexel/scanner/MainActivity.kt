@@ -13,8 +13,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
+import com.meta.pixelandtexel.scanner.android.AndroidEntryActivity
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
-import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
@@ -271,6 +271,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     layerBlendType = PanelShapeLayerBlendType.MASKED
                     enableLayerFeatheredEdge = true
                 }
+                activityClass = AndroidEntryActivity::class.java
                 composePanel {
                     stopScanning()
                     val displayInfo = entityRepository.newViewModelData ?: return@composePanel
@@ -279,7 +280,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                         when (displayInfo.data.type) {
                             TypeSmartHomeInfo.LIGHT -> {
                                 LightControlCard(
-                                    viewModel = LightViewModel(),
                                     onClose = {
                                         entityRepository.deleteEntity(displayInfo.entityId)
                                     }
