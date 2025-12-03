@@ -104,7 +104,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         )
 
         // extra object detection handling and usability
-        entityRepository = (application as DiApplication).appContainer.displayedEntityRepository
+        entityRepository = get()
         tipManager =
             TipManager(this) {
                 stopScanning()
