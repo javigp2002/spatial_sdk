@@ -1,10 +1,13 @@
 package com.meta.pixelandtexel.scanner.android.views.smarthome
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.meta.pixelandtexel.scanner.android.domain.usecases.GetConnectionUsecase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LightUiState(
@@ -14,12 +17,18 @@ data class LightUiState(
     val colorValue: Float = 0.5f
 )
 
-class LightViewModel:  ViewModel() {
+class LightViewModel(
+    private val getConnectionUsecase: GetConnectionUsecase
+):  ViewModel() {
 
     private val _uiState = MutableStateFlow(LightUiState())
     val uiState: StateFlow<LightUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch{
+            val connected = getConnectionUsecase.run()
+            _uiState.update { it.copy(isConnected = connected) }
+        }
     }
 
     fun toggleLight(isOn: Boolean) {

@@ -116,6 +116,10 @@ dependencies {
   implementation(libs.ktor.server.netty)
   implementation(libs.aws.bedrockruntime)
 
+  // Koin for Android
+  implementation(libs.koin.android)
+
+  implementation ("com.google.code.gson:gson:2.13.2")
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }

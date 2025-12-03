@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
+import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
@@ -44,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 import java.io.File
 
 /**
@@ -77,6 +79,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     // panel content for select objects (with 3D models)
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
     private lateinit var tipManager: TipManager
+
 
     lateinit var entityRepository: IDisplayedEntityRepository
 
@@ -277,7 +280,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     setContent {
                         when (displayInfo.data.type) {
                             TypeSmartHomeInfo.LIGHT -> {
+                                val lightViewModel = LightViewModel(get())
                                 LightControlCard(
+                                    viewModel = lightViewModel,
                                     onClose = {
                                         entityRepository.deleteEntity(displayInfo.entityId)
                                     }
