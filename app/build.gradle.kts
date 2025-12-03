@@ -109,6 +109,7 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.retrofit2.kotlinx.serialization.converter)
   implementation(libs.google.gson)
+  implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
   // Http server for video streaming

@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner
 
 import android.app.Application
+import com.meta.pixelandtexel.scanner.android.datasource.networkModule
 import com.meta.pixelandtexel.scanner.android.datasource.repository.SmartHomeRepositoryImpl
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetConnectionUsecase
@@ -12,7 +13,7 @@ import org.koin.dsl.module
 val appModule = module {
 
     single<SmartHomeRepository>{
-        SmartHomeRepositoryImpl()
+        SmartHomeRepositoryImpl(get())
     }
 
     factory { GetConnectionUsecase(get()) }
@@ -26,7 +27,7 @@ class DiApplication : Application() {
 
         startKoin {
             androidContext(this@DiApplication)
-            modules(appModule)
+            modules(networkModule, appModule)
         }
     }
 }
