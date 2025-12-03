@@ -13,7 +13,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.android.AndroidEntryActivity
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
@@ -271,7 +270,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     layerBlendType = PanelShapeLayerBlendType.MASKED
                     enableLayerFeatheredEdge = true
                 }
-                activityClass = AndroidEntryActivity::class.java
                 composePanel {
                     stopScanning()
                     val displayInfo = entityRepository.newViewModelData ?: return@composePanel

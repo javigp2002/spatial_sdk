@@ -5,9 +5,6 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.android)
   alias(libs.plugins.meta.spatial.plugin)
   alias(libs.plugins.jetbrains.kotlin.plugin.compose)
-
-  id("kotlin-kapt")
-  id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -118,11 +115,6 @@ dependencies {
   implementation(libs.ktor.server.core)
   implementation(libs.ktor.server.netty)
   implementation(libs.aws.bedrockruntime)
-
-  // Hilt (DI)
-  implementation(libs.androidx.hilt.android)
-  kapt(libs.androidx.hilt.android.compiler)
-  implementation(libs.androidx.hilt.navigation.compose)
 
 }
 
