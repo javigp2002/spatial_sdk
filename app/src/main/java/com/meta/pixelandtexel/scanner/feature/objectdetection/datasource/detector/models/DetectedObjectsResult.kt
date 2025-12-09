@@ -24,6 +24,8 @@ data class DetectedObjectsResult(
     val inputImageHeight: Int,
 ) {
     companion object {
+        private val neededObjects = setOf("spotlight", "lampshade", "switch", "modem", "radiator", "space heater")
+
         /**
          * Creates a [DetectedObjectsResult] instance from MediaPipe's object detection results.
          *
@@ -92,6 +94,11 @@ data class DetectedObjectsResult(
                     val point = PointF(it.boundingBox.exactCenterX(), it.boundingBox.exactCenterY())
                     val label = it.labels[0].text
                     val confidence = it.labels[0].confidence
+
+//                    if (!neededObjects.contains(label.lowercase()) ) {
+//                        return@mapNotNull null
+//                    }
+
 
                     DetectedObject(point, it.boundingBox, label, confidence, it.trackingId)
                 }

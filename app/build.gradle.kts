@@ -109,12 +109,18 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.retrofit2.kotlinx.serialization.converter)
   implementation(libs.google.gson)
+  implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
   // Http server for video streaming
   implementation(libs.ktor.server.core)
   implementation(libs.ktor.server.netty)
   implementation(libs.aws.bedrockruntime)
+
+  // Koin for Android
+  implementation(libs.koin.android)
+
+  implementation ("com.google.code.gson:gson:2.13.2")
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }

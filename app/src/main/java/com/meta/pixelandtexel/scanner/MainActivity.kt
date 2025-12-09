@@ -45,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 import java.io.File
 
 /**
@@ -79,6 +80,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
     private lateinit var tipManager: TipManager
 
+
     lateinit var entityRepository: IDisplayedEntityRepository
 
     override fun registerFeatures(): List<SpatialFeature> {
@@ -102,7 +104,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         )
 
         // extra object detection handling and usability
-        entityRepository = (application as DiApplication).appContainer.displayedEntityRepository
+        entityRepository = get()
         tipManager =
             TipManager(this) {
                 stopScanning()
@@ -278,8 +280,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     setContent {
                         when (displayInfo.data.type) {
                             TypeSmartHomeInfo.LIGHT -> {
+                                val lightViewModel = LightViewModel(get())
                                 LightControlCard(
-                                    viewModel = LightViewModel(),
+                                    viewModel = lightViewModel,
                                     onClose = {
                                         entityRepository.deleteEntity(displayInfo.entityId)
                                     }

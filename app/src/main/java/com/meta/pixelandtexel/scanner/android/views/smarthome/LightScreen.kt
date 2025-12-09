@@ -109,6 +109,6 @@ fun LightCardPreview() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        LightControlCard(viewModel = LightViewModel())
+        LightControlCard()
     }
 }
