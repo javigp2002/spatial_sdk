@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner.android.datasource.repository
 
 import com.meta.pixelandtexel.scanner.android.datasource.SmartHomeApi
+import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 
 class SmartHomeRepositoryImpl (
