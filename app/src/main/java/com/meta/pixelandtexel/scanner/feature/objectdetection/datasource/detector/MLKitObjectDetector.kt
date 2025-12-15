@@ -21,7 +21,7 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detecto
 class MLKitObjectDetector() : IObjectDetectorHelper {
     companion object {
         private const val TAG = "MLKitObjectDetector"
-        private const val MODEL_EFFICIENTNET = "mlkit/efficientnet-tflite-lite4-uint8-v1.tflite"
+        private const val MODEL_EFFICIENTNET = "mlkit/mobile_object_labeler_v1.tflite"
         // Other models...
     }
 
@@ -34,7 +34,7 @@ class MLKitObjectDetector() : IObjectDetectorHelper {
                 CustomObjectDetectorOptions.Builder(localModel)
                     .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
                     .setMaxPerObjectLabelCount(1)
-                    .setClassificationConfidenceThreshold(0.65f)
+                    .setClassificationConfidenceThreshold(0.75f)
                     .enableMultipleObjects()
                     .enableClassification()
                     .build()
