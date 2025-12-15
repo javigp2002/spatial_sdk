@@ -1,10 +1,9 @@
-package com.meta.pixelandtexel.scanner.android.views.smartplug
+package com.meta.pixelandtexel.scanner.android.views.smarthome.plug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetSmartPlugInfoUsecase
 import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUsecase
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,16 +32,31 @@ class SmartPlugViewModel(
      * Inicia un bucle que consulta el estado del enchufe cada 2 segundos.
      */
     private fun startPolling() {
-        pollingJob?.cancel()
-
+        pollingJob?.cancel() // Cancela cualquier bucle anterior
+//        pollingJob = viewModelScope.launch {
+//            while (true) {
+//                refreshPlugInfo()
+//                delay(2000)
+//            }
+//        }
     }
 
     /**
      * Solicita la información más reciente del enchufe y actualiza el UiState.
      */
-    private fun refreshPlugInfo() {
+    private suspend fun refreshPlugInfo() {
         entityId?.let { id ->
-
+            val plugInfo = getSmartPlugInfoUsecase.run("")
+            if (plugInfo != null) {
+                _uiState.update {
+                    it.copy(
+                        isPlugOn = plugInfo.isPlugOn,
+                        consumptionW = plugInfo.consumptionW,
+                        currentA = plugInfo.currentA,
+                        voltageV = plugInfo.voltageV
+                    )
+                }
+            }
         }
     }
 

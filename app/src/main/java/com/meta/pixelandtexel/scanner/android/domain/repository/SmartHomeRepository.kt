@@ -9,6 +9,6 @@ interface SmartHomeRepository {
 
     suspend fun turnOffSwitch(entityId: String): Boolean
 
-
+    suspend fun getSmartPlugInfo(entityId: String): SmartPlugInfo?
 
 }
