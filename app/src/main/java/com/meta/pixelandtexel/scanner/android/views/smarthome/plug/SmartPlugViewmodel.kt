@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SmartPlugViewModel(
-
     private val toggleSmartPlugUsecase: ToggleSmartPlugUsecase,
+    private val getSmartPlugInfoUsecase: GetSmartPlugInfoUsecase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SmartPlugUiState())

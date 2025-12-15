@@ -25,6 +25,8 @@ val appModule = module {
 
     factory { GetConnectionUsecase(get())}
     factory { ToggleSmartPlugUsecase(get())}
+    factory { GetSmartPlugInfoUsecase(get())}
+
 }
 
 class DiApplication : Application() {
