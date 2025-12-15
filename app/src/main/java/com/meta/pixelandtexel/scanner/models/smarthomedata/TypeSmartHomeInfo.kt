@@ -7,8 +7,6 @@ enum class TypeSmartHomeInfo {
 }
 
 fun getEnumFromString(type: String): TypeSmartHomeInfo {
-    return TypeSmartHomeInfo.LIGHT // while developing
-
     if (lightStringList.any { it.equals(type, ignoreCase = true) }) {
         return TypeSmartHomeInfo.LIGHT
     }

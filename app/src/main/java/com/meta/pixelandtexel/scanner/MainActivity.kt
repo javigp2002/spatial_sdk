@@ -288,7 +288,14 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                                     }
                                 )
                             }
-                            TypeSmartHomeInfo.PLUG -> TODO()
+                            TypeSmartHomeInfo.PLUG -> {
+                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
+                                SmartPlugScreen(
+                                    entityId = displayInfo.entityId,
+                                    viewModel = smartPlugViewModel
+                                )
+
+                            }
                             TypeSmartHomeInfo.UNKNOWN -> TODO()
                         }
                     }

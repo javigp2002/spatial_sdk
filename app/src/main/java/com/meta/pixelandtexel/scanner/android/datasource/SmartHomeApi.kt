@@ -4,6 +4,17 @@ import retrofit2.http.GET
 import com.meta.pixelandtexel.scanner.android.datasource.dto.ConnectionDto
 
 interface SmartHomeApi {
-    @GET("api/connection")
+    @GET("api")
     suspend fun getConnection(): ConnectionDto
+
+    @POST("services/switch/turn_on")
+    suspend fun turnOnSwitch(
+        @Body body: EntityIdDto
+    ): Response<Unit>
+
+    @POST("services/switch/turn_off")
+    suspend fun turnOffSwitch(
+        @Body body: EntityIdDto
+    ): Response<Unit>
+
 }

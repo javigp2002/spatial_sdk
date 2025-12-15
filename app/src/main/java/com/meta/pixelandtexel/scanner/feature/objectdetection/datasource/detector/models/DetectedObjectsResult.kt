@@ -6,6 +6,7 @@ import android.graphics.PointF
 import androidx.core.graphics.toRect
 import com.google.mediapipe.tasks.components.containers.Detection
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.OpenCVObjectDetector
+import com.meta.pixelandtexel.scanner.models.smarthomedata.plugStringList
 
 /**
  * Represents the result of a object detection, encapsulating a list of detected objects, the time
@@ -94,10 +95,9 @@ data class DetectedObjectsResult(
                     val point = PointF(it.boundingBox.exactCenterX(), it.boundingBox.exactCenterY())
                     val label = it.labels[0].text
                     val confidence = it.labels[0].confidence
-
-//                    if (!neededObjects.contains(label.lowercase()) ) {
-//                        return@mapNotNull null
-//                    }
+                    if (!plugStringList.contains(label.lowercase()) ) {
+                        return@mapNotNull null
+                    }
 
 
                     DetectedObject(point, it.boundingBox, label, confidence, it.trackingId)

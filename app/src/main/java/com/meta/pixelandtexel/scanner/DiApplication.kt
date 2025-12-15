@@ -23,7 +23,8 @@ val appModule = module {
         SmartHomeRepositoryImpl(get())
     }
 
-    factory { GetConnectionUsecase(get()) }
+    factory { GetConnectionUsecase(get())}
+    factory { ToggleSmartPlugUsecase(get())}
 }
 
 class DiApplication : Application() {

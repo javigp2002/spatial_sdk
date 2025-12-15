@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class SmartPlugViewModel(
 
+    private val toggleSmartPlugUsecase: ToggleSmartPlugUsecase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SmartPlugUiState())
@@ -52,7 +53,10 @@ class SmartPlugViewModel(
                 _uiState.update { it.copy(isLoading = true) }
 
                 val currentStatus = _uiState.value.isPlugOn
-                val success = true
+                val success = toggleSmartPlugUsecase.run(entityId =
+                    "",
+                    turnOn = !currentStatus)
+
                 if (success) {
                     _uiState.update { it.copy(isPlugOn = !currentStatus) }
                 }
