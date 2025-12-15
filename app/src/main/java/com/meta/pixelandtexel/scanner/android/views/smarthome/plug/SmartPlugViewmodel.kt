@@ -3,6 +3,7 @@ package com.meta.pixelandtexel.scanner.android.views.smartplug
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetSmartPlugInfoUsecase
+import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUsecase
 import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
