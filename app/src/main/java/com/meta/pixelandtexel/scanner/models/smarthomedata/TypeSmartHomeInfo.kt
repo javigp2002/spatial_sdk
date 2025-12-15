@@ -39,5 +39,6 @@ val plugStringList = listOf(
     "wall socket",
     "power point",
     "extension cord",
-    "power strip"
+    "power strip",
+    "switch",
 )
