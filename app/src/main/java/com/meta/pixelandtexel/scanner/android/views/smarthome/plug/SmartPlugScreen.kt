@@ -1,4 +1,4 @@
-package com.meta.pixelandtexel.scanner.android.views.smartplug
+package com.meta.pixelandtexel.scanner.android.views.smarthome.plug
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

@@ -15,8 +15,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
-import com.meta.pixelandtexel.scanner.android.views.smartplug.SmartPlugScreen
-import com.meta.pixelandtexel.scanner.android.views.smartplug.SmartPlugViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
