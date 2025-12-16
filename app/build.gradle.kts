@@ -1,6 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.util.Properties
-
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 plugins {
   alias(libs.plugins.android.application)
@@ -8,6 +7,9 @@ plugins {
   alias(libs.plugins.meta.spatial.plugin)
   alias(libs.plugins.jetbrains.kotlin.plugin.compose)
 }
+
+val httpApi: String = gradleLocalProperties(rootDir, providers).getProperty("HTTP_API")
+
 
 android {
   namespace = "com.meta.pixelandtexel.scanner"
@@ -27,12 +29,8 @@ android {
     ndkVersion = "28.0.13004108"
 
     // Pass our aws credentials to the BuildConfig
-    val awsRegion = getLocalProperty("AWS_REGION", project)
-    val awsAccessKey = getLocalProperty("AWS_BEDROCK_ACCESS_KEY", project)
-    val awsSecretKey = getLocalProperty("AWS_BEDROCK_SECRET_KEY", project)
-    buildConfigField("String", "AWS_REGION", "\"$awsRegion\"")
-    buildConfigField("String", "AWS_ACCESS_KEY", "\"$awsAccessKey\"")
-    buildConfigField("String", "AWS_SECRET_KEY", "\"$awsSecretKey\"")
+
+    buildConfigField("String", "HTTP_API", "\"$httpApi\"")
   }
 
   packaging {
@@ -108,13 +106,21 @@ dependencies {
   // For Markdown formatting in Jetpack Compose
   implementation(libs.compose.markdown)
 
-  // AWS Bedrock integration, and parsing JSON response
-  implementation(libs.aws.bedrockruntime)
+  implementation(libs.retrofit)
+  implementation(libs.retrofit2.kotlinx.serialization.converter)
   implementation(libs.google.gson)
+  implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
   // Http server for video streaming
   implementation(libs.ktor.server.core)
   implementation(libs.ktor.server.netty)
+  implementation(libs.aws.bedrockruntime)
+
+  // Koin for Android
+  implementation(libs.koin.android)
+
+  implementation ("com.google.code.gson:gson:2.13.2")
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }

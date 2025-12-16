@@ -20,7 +20,6 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.system.View
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.CameraController
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.models.CameraProperties
-import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.NumberSmoother
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.CameraPreview
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.GraphicOverlay
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.ISurfaceProvider
@@ -45,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 
 /**
  * A Spatial SDK Feature which uses the device camera feed and a CV object detection model to
@@ -102,7 +102,6 @@ class ObjectDetectionFeature(
     // debug ui
     private var cameraPreviewView: CameraPreview? = null
     private var graphicOverlayView: GraphicOverlay? = null
-    private val smoothedInferenceTime = NumberSmoother()
     private lateinit var cameraViewEntity: Entity
 
     private val subscriptionScope = CoroutineScope(Dispatchers.Main)
@@ -115,8 +114,8 @@ class ObjectDetectionFeature(
         cameraController = CameraController(activity)
         cameraController.onCameraPropertiesChanged += ::onCameraPropertiesChanged
 
-        displayRepository = di.appContainer.displayedEntityRepository
-        detectionRepository = di.appContainer.objectDetectRepository
+        displayRepository = di.get()
+        detectionRepository = di.get()
 
         subscriptionScope.launch {
             detectionRepository.detectionState.collect { state ->

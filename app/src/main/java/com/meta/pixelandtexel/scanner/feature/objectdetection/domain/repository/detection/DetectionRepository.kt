@@ -15,7 +15,8 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detecto
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.area
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.intersection
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
+import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
+import com.meta.pixelandtexel.scanner.models.smarthomedata.getEnumFromString
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -74,14 +75,18 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
             val bmp = obj?.let { image.getBitmap(it.bounds) }
 
             if (obj != null && bmp != null) {
+                val typeSmartHome = getEnumFromString(obj.label)
                 displayRepository.createGenericInfoPanel(
                     R.integer.info_panel_id,
-                    ObjectInfoRequest(obj.label, bmp),
+                    SmartHomeInfoRequest(
+                        typeSmartHome,
+                    ),
                     pose,
                 )
             }
         }
     }
+
 
     private fun reconcileDetectedObjects(
         incomingObjects: List<DetectedObject>

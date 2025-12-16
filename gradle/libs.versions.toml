@@ -1,4 +1,7 @@
 [versions]
+koinAndroid = "3.5.6"
+retrofit = "2.9.0"
+retrofit2KotlinxSerializationConverter = "1.0.0"
 spatialsdk = "0.8.0"
 agp = "8.6.1"
 kotlin = "2.1.20"
@@ -19,9 +22,13 @@ opencv = "4.10.0"
 aws = "1.3.3"
 gson = "2.11.0"
 ktorServer = "3.1.2"
+hiltAndroid = "2.51.1"
+hiltNavigationCompose = "1.2.0"
+
 
 [libraries]
 # Meta Spatial SDK Libraries
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 meta-spatial-sdk-base = { group = "com.meta.spatial", name = "meta-spatial-sdk", version.ref = "spatialsdk" }
 meta-spatial-sdk-animation = { group = "com.meta.spatial", name = "meta-spatial-sdk-animation", version.ref = "spatialsdk" }
 meta-spatial-sdk-castinputforward = { group = "com.meta.spatial", name = "meta-spatial-sdk-castinputforward", version.ref = "spatialsdk" }
@@ -58,6 +65,9 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown", version.ref = "composeMarkdown" }
+androidx-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
+androidx-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 # Android UI
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
@@ -75,6 +85,9 @@ google-mediapipe-tasks-vision = { group = "com.google.mediapipe", name = "tasks-
 google-mlkit-object1-detection = { group = "com.google.mlkit", name = "object-detection", version.ref = "mlkit" }
 google-mlkit-object1-detection-custom = { group = "com.google.mlkit", name = "object-detection-custom", version.ref = "mlkit" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

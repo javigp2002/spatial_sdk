@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display
 
 import com.meta.pixelandtexel.scanner.models.EntityData
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
+import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
 
@@ -29,7 +29,7 @@ interface IDisplayedEntityRepository {
      */
     fun createGenericInfoPanel(
         panelId: Int,
-        data: ObjectInfoRequest,
+        data: SmartHomeInfoRequest,
         rightEdgePose: Pose
     ): Entity
 

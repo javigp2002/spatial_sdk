@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display
 
 import com.meta.pixelandtexel.scanner.models.EntityData
-import com.meta.pixelandtexel.scanner.models.ObjectInfoRequest
+import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
 import com.meta.pixelandtexel.scanner.utils.MathUtils.fromAxisAngle
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
@@ -30,7 +30,7 @@ class DisplayedEntityRepository : IDisplayedEntityRepository {
 
     override fun createGenericInfoPanel(
         panelId: Int, // R.integer.info_panel_id
-        data: ObjectInfoRequest,
+        data: SmartHomeInfoRequest,
         rightEdgePose: Pose
     ): Entity {
         val spawnPose = getPanelSpawnPosition(rightEdgePose, INFO_PANEL_WIDTH)

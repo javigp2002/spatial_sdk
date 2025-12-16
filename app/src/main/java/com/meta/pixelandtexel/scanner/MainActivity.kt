@@ -13,14 +13,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.android.viewmodels.ObjectInfoViewModel
-import com.meta.pixelandtexel.scanner.android.views.objectinfo.ObjectInfoScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
+import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
+import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
@@ -44,6 +47,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 import java.io.File
 
 /**
@@ -78,6 +82,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
     private lateinit var tipManager: TipManager
 
+
     lateinit var entityRepository: IDisplayedEntityRepository
 
     override fun registerFeatures(): List<SpatialFeature> {
@@ -101,7 +106,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         )
 
         // extra object detection handling and usability
-        entityRepository = (application as DiApplication).appContainer.displayedEntityRepository
+        entityRepository = get()
         tipManager =
             TipManager(this) {
                 stopScanning()
@@ -272,21 +277,29 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 }
                 composePanel {
                     stopScanning()
-                    val entityData = entityRepository.newViewModelData ?: return@composePanel
-
-                    val vm = ObjectInfoViewModel(
-                        entityData.data,
-                        getString(R.string.object_query_template)
-                    )
+                    val displayInfo = entityRepository.newViewModelData ?: return@composePanel
 
                     setContent {
-                        ObjectInfoScreen(
-                            vm,
-                            onResume = { },
-                            onClose = {
-                                entityRepository.deleteEntity(entityData.entityId)
-                            },
-                        )
+                        when (displayInfo.data.type) {
+                            TypeSmartHomeInfo.LIGHT -> {
+                                val lightViewModel = LightViewModel(get())
+                                LightControlCard(
+                                    viewModel = lightViewModel,
+                                    onClose = {
+                                        entityRepository.deleteEntity(displayInfo.entityId)
+                                    }
+                                )
+                            }
+                            TypeSmartHomeInfo.PLUG -> {
+                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
+                                SmartPlugScreen(
+                                    entityId = displayInfo.entityId,
+                                    viewModel = smartPlugViewModel
+                                )
+
+                            }
+                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
+                        }
                     }
                 }
             },
