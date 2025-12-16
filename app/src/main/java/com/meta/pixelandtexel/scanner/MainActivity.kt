@@ -33,7 +33,8 @@ import com.meta.spatial.compose.panelViewLifecycleOwner
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
-import com.meta.spatial.core.Vector3
+import com.meta.spatial.mruk.MRUKFeature
+import com.meta.spatial.mruk.MRUKLoadDeviceResult
 import com.meta.spatial.okhttp3.OkHttpAssetFetcher
 import com.meta.spatial.runtime.LayerConfig
 import com.meta.spatial.runtime.NetworkedAssetLoader
@@ -62,7 +63,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         private const val TAG = "MainActivity"
 
         private const val PERMISSIONS_REQUEST_CODE = 1000
-        private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA")
+        private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA", "com.oculus.permission.USE_SCENE")
     }
 
     // used for scene inflation
@@ -80,6 +81,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     // our main services for detected object, displaying helpful tips, and displaying pre-assembled
     // panel content for select objects (with 3D models)
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
+    private lateinit var mrukFeature: MRUKFeature
     private lateinit var tipManager: TipManager
 
 
@@ -92,7 +94,8 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 onStatusChanged = ::onObjectDetectionFeatureStatusChanged,
             )
 
-        return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature)
+        mrukFeature = MRUKFeature(this, systemManager)
+        return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature, mrukFeature)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,9 +119,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
         systemManager.unregisterSystem<LocomotionSystem>()
 
-        // FIXME not working; prevent isdk components from automatically being added to all panels
-        // systemManager.findSystem<IsdkToolkitBridgeSystem>().active = false
-
         componentManager.registerComponent<WristAttached>(WristAttached.Companion, SendRate.DEFAULT)
         systemManager.registerSystem(WristAttachedSystem())
 
@@ -131,7 +131,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
             val composition = glXFManager.getGLXFInfo("scanner_app_main_scene")
 
             // wait for system manager to initialize so we can get the underlying scene objects
-
             welcomePanelEntity = composition.getNodeByName("WelcomePanel").entity
         }
     }
@@ -140,19 +139,32 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         super.onSceneReady()
 
         // set the reference space to enable re-centering
-        scene.setReferenceSpace(ReferenceSpace.LOCAL_FLOOR)
+        scene.setReferenceSpace(ReferenceSpace.STAGE)
 
-        scene.setLightingEnvironment(
-            ambientColor = Vector3(0f),
-            sunColor = Vector3(0f),
-            sunDirection = -Vector3(1.0f, 3.0f, -2.0f),
-            environmentIntensity = 0.2f,
-        )
-        scene.updateIBLEnvironment("museum_lobby.env")
-
-        scene.setViewOrigin(0.0f, 0.0f, 0.0f, 180.0f)
+        requestPermissions { permissionsGranted ->
+            loadScene(permissionsGranted)
+        }
 
         scene.enablePassthrough(true)
+    }
+
+    private fun loadScene(scenePermissionsGranted: Boolean) {
+        if (scenePermissionsGranted) {
+            loadSceneFromDevice()
+        } else {
+            Log.d("JAVI DEBUG", "Permisos denegados. No se puede cargar la escena desde el dispositivo.")
+        }
+    }
+    private fun loadSceneFromDevice() {
+        val future = mrukFeature.loadSceneFromDevice(requestSceneCaptureIfNoDataFound = true)
+
+        future.whenComplete { result: MRUKLoadDeviceResult, _ ->
+            Log.d("JAVI DEBUG", "Scene loaded from device with result: $result")
+
+            if (result != MRUKLoadDeviceResult.SUCCESS) {
+                Log.d("JAVI DEBUG", "error")
+            }
+        }
     }
 
     override fun registerPanels(): List<PanelRegistration> {
@@ -217,7 +229,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                         stopScanning()
                         tipManager.dismissTipPanels()
 
-                        tipManager.showHelpPanel()
+//                        tipManager.showHelpPanel()
+                        loadScene(true)
+
                     }
                 }
             },
@@ -349,8 +363,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         }
     }
 
-    // permissions requesting
-
     private fun hasPermissions() =
         PERMISSIONS_REQUIRED.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
@@ -359,7 +371,13 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private fun requestPermissions(callback: (granted: Boolean) -> Unit) {
         permissionsResultCallback = callback
 
-        ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+        if (hasPermissions()) {
+            Log.d(TAG, "Los permisos ya estaban concedidos. Saltando la solicitud.")
+            callback(true)
+        } else {
+            Log.d(TAG, "Permisos no concedidos. Solicitando al usuario...")
+            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -369,15 +387,14 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when (requestCode) {
-            PERMISSIONS_REQUEST_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Log.d(TAG, "Camera permission granted")
-                    permissionsResultCallback(true)
-                } else {
-                    Log.w(TAG, "Camera permission denied")
-                    permissionsResultCallback(false)
-                }
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            val allGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            if (allGranted) {
+                Log.d(TAG, "Todos los permisos fueron concedidos por el usuario.")
+                permissionsResultCallback.invoke(true)
+            } else {
+                Log.w(TAG, "Al menos un permiso fue denegado.")
+                permissionsResultCallback.invoke(false)
             }
         }
     }

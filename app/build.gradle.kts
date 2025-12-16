@@ -94,6 +94,7 @@ dependencies {
   implementation(libs.meta.spatial.sdk.toolkit)
   implementation(libs.meta.spatial.sdk.uiset)
   implementation(libs.meta.spatial.sdk.vr)
+  implementation(libs.meta.spatial.sdk.mruk)
 
   // Mediapipe CV object detection
   implementation(libs.google.mediapipe.tasks.vision)
