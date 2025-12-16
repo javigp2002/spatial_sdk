@@ -95,7 +95,7 @@ data class DetectedObjectsResult(
                     val point = PointF(it.boundingBox.exactCenterX(), it.boundingBox.exactCenterY())
                     val label = it.labels[0].text
                     val confidence = it.labels[0].confidence
-                    Log.d("JAVI DEBUG", it.labels[0].text + " confidence: " + confidence)
+
                     if (!plugStringList.contains(label.lowercase()) ) {
                         return@mapNotNull null
                     }
