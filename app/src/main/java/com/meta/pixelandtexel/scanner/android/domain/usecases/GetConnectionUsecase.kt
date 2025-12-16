@@ -5,8 +5,8 @@ import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeReposit
 class GetConnectionUsecase (
     private val repository: SmartHomeRepository
 ) {
-    suspend fun run(): Boolean {
-        return repository.getConnection()
+    suspend fun run(boolean: Boolean): Boolean {
+        return repository.getConnection(boolean)
     }
 
 }

@@ -25,7 +25,7 @@ class LightViewModel(
 
     init {
         viewModelScope.launch{
-            val connected = getConnectionUsecase.run()
+            val connected = getConnectionUsecase.run(true)
             _uiState.update { it.copy(isConnected = connected) }
         }
     }
