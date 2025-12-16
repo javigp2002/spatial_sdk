@@ -298,7 +298,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                                 )
 
                             }
-                            TypeSmartHomeInfo.UNKNOWN -> TODO()
+                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
                         }
                     }
                 }
