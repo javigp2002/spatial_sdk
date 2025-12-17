@@ -20,6 +20,7 @@ import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugView
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.UpdateRaycastSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
@@ -84,6 +85,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var mrukFeature: MRUKFeature
     private lateinit var tipManager: TipManager
 
+    private val meshEntity: Entity? = null
+    private lateinit var updateRaycastSystem: UpdateRaycastSystem
+
 
     lateinit var entityRepository: IDisplayedEntityRepository
 
@@ -125,7 +129,8 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         componentManager.registerComponent<Outlined>(Outlined.Companion, SendRate.DEFAULT)
         systemManager.registerSystem(OutlinedSystem(this))
 
-        // wait for GLXF to load before accessing nodes inside it
+        updateRaycastSystem = UpdateRaycastSystem(mrukFeature, meshEntity)
+        systemManager.registerSystem(updateRaycastSystem)
 
         loadGLXF().invokeOnCompletion {
             val composition = glXFManager.getGLXFInfo("scanner_app_main_scene")
