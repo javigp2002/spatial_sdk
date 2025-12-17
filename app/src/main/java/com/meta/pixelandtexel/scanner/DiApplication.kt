@@ -10,8 +10,8 @@ import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUse
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
-import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.ObjectDetectionRepository
-import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.DisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository.ObjectDetectionRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository.DisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin

@@ -1,5 +1,6 @@
-package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display
+package com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository
 
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.models.EntityData
 import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
 import com.meta.pixelandtexel.scanner.utils.MathUtils.fromAxisAngle
