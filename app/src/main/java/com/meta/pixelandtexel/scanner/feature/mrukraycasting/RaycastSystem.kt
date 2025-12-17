@@ -2,61 +2,70 @@ package com.meta.pixelandtexel.scanner.feature.mrukraycasting
 
 import android.net.Uri
 import android.util.Log
-import com.meta.pixelandtexel.scanner.utils.getRightController
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
 import com.meta.spatial.core.Quaternion
 import com.meta.spatial.core.SystemBase
-import com.meta.spatial.core.Vector3
 import com.meta.spatial.mruk.MRUKFeature
-import com.meta.spatial.mruk.MRUKHit
-import com.meta.spatial.mruk.SurfaceType
 import com.meta.spatial.toolkit.Mesh
 import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.Visible
-
+import com.meta.spatial.mruk.SurfaceType
 
 
 /**
- * A system responsible for updating raycasting interactions in the MRUK (Meta Room Understanding Kit) environment.
- * This system handles raycasting from the user's right hand to detect surfaces and updates the position and visibility
- * of a mesh entity (e.g., an arrow) based on the raycast results.
+ * A system responsible for updating raycasting interactions in the MRUK environment.
+ *
+ * Listens for changes in `detectionRepository.raycastRequest`. When a request is received,
+ * it casts a ray against the room's geometry and creates a permanent 3D entity
+ * at the point of impact.
  *
  * @property mrukFeature The MRUK feature used for raycasting and room management.
- * @property meshEntity The entity representing the mesh (e.g., an arrow) to be updated based on raycast results.
+ * @property detectionRepository El repositorio del que se leen las solicitudes de raycast.
  */
 class UpdateRaycastSystem(
     private val mrukFeature: MRUKFeature,
-private var meshEntity: Entity? = null,) : SystemBase() {
-    companion object{
+    private val detectionRepository: IObjectDetectionRepository
+) : SystemBase() {
+    companion object {
         const val MAX_DISTANCE = Float.MAX_VALUE
     }
 
     override fun execute() {
-        meshEntity?.setComponent(Visible(false))
-
-        val rightHandPose = getRightController(mrukFeature.systemManager)?.tryGetComponent<Transform>()?.transform
+        val objectRequestedDirection = detectionRepository.raycastRequest
             ?: return
-        val currentRoom = mrukFeature.getCurrentRoom() ?: return
 
-        val rightHandDirection = (rightHandPose.q * Vector3(0f, 0f, 1f)).normalize()
-        val hit =
-            mrukFeature.raycastRoom(
-                currentRoom.anchor.uuid,
-                rightHandPose.t,
-                rightHandDirection,
-                MAX_DISTANCE,
-                SurfaceType.PLANE_VOLUME,
-
-            )
-        if (hit != null) {
-            if (meshEntity == null) {
-                meshEntity = Entity.create(listOf(Mesh(Uri.parse("arrow.glb")), Transform(Pose())))
-            }
-            val arrowPose = Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
-            meshEntity?.setComponent(Transform(arrowPose))
-            meshEntity?.setComponent(Visible(true))
+        val currentRoom = mrukFeature.getCurrentRoom()
+        if (currentRoom == null) {
+            Log.w("UpdateRaycastSystem", "Cannot raycast, no current room available.")
+            detectionRepository.raycastRequest = null
+            return
         }
 
+
+        val hit = mrukFeature.raycastRoom(
+            currentRoom.anchor.uuid,
+            origin = objectRequestedDirection.origin,
+            direction = objectRequestedDirection.direction,
+            maxDistance = MAX_DISTANCE,
+            SurfaceType.PLANE_VOLUME,
+        )
+
+        if (hit != null) {
+            val newMeshPose =
+                Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
+            Entity.create(
+                listOf(
+                    Mesh(Uri.parse("arrow.glb")),
+                    Transform(newMeshPose),
+                    Visible(true)
+                )
+            )
+        } else {
+            Log.d("UpdateRaycastSystem", "Raycast did not hit any surface.")
+        }
+
+        detectionRepository.raycastRequest = null
     }
 }

@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection
 
 import android.media.Image
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.spatial.core.Pose
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,7 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
  * the detection results, allowing for different implementations to be used
  * interchangeably.
  */
+
 interface IObjectDetectionRepository {
+    /**
+     * The current raycast request model, if any.
+     * This can be used to perform raycasting based on detected objects.
+     */
+    var raycastRequest: RaycastRequestModel?
 
     /**
      * A [StateFlow] that emits the latest [DetectionState] result.

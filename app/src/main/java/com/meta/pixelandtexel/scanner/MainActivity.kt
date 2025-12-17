@@ -85,7 +85,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var mrukFeature: MRUKFeature
     private lateinit var tipManager: TipManager
 
-    private val meshEntity: Entity? = null
     private lateinit var updateRaycastSystem: UpdateRaycastSystem
 
 
@@ -129,7 +128,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         componentManager.registerComponent<Outlined>(Outlined.Companion, SendRate.DEFAULT)
         systemManager.registerSystem(OutlinedSystem(this))
 
-        updateRaycastSystem = UpdateRaycastSystem(mrukFeature, meshEntity)
+        updateRaycastSystem = UpdateRaycastSystem(mrukFeature, get())
         systemManager.registerSystem(updateRaycastSystem)
 
         loadGLXF().invokeOnCompletion {

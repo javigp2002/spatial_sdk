@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.area
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.intersection
 import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
@@ -42,6 +43,9 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
 
     private val _detectionState = MutableStateFlow<DetectionState?>(null)
     override val detectionState: StateFlow<DetectionState?> = _detectionState
+
+    @Volatile
+    override var raycastRequest: RaycastRequestModel? = null
 
     override fun processImage(image: Image, width: Int, height: Int, `finally`: () -> Unit) {
         if (!isDetecting.compareAndSet(false, true)) {
