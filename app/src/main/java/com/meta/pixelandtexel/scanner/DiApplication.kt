@@ -9,6 +9,7 @@ import com.meta.pixelandtexel.scanner.android.domain.usecases.GetSmartPlugInfoUs
 import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUsecase
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.MLKitObjectDetector
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.DisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
@@ -19,7 +20,10 @@ import org.koin.dsl.module
 val appModule = module {
     single<IDisplayedEntityRepository>{ DisplayedEntityRepository() }
     single<IObjectDetectorHelper>{ MLKitObjectDetector()}
-    single { ObjectDetectionRepository(get(), get()) }
+
+    single<IObjectDetectionRepository> {
+        ObjectDetectionRepository(get(), get())
+    }
 
     single<SmartHomeRepository>{
         SmartHomeRepositoryImpl(get())

@@ -11,6 +11,7 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.ObjectPool
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.ObjectLabelScreen
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.copy
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.toVector2
@@ -71,6 +72,7 @@ import com.meta.spatial.uiset.theme.SpatialColor
  */
 class TrackedObjectSystem(
     activity: AppSystemActivity,
+    private val detectionRepository: IObjectDetectionRepository,
     private var fov: Float = 72f,
     private var headToCameraOffset: Pose = Pose(),
     private var screenPointToRayInCamera: ((Vector2) -> Vector3) = { _ -> Vector3.Forward },

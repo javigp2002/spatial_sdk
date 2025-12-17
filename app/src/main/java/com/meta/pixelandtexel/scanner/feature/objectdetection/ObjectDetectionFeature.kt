@@ -13,7 +13,6 @@ import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.ViewLocked
-import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.system.TrackedObjectSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.system.ViewLockedSystem
@@ -23,6 +22,7 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.mode
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.CameraPreview
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.GraphicOverlay
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.ISurfaceProvider
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.spatial.core.ComponentRegistration
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
@@ -108,7 +108,7 @@ class ObjectDetectionFeature(
 
     private var di: DiApplication = activity.application as DiApplication
     private var displayRepository: IDisplayedEntityRepository
-    private val detectionRepository: ObjectDetectionRepository
+    private val detectionRepository: IObjectDetectionRepository
 
     init {
         cameraController = CameraController(activity)
@@ -220,7 +220,7 @@ class ObjectDetectionFeature(
         // only use the trackedObjectSystem to draw the outlines and labels of detected objects if
         // we aren't displaying the camera debug view
         if (!spawnCameraViewPanel) {
-            trackedObjectSystem = TrackedObjectSystem(activity)
+            trackedObjectSystem = TrackedObjectSystem(activity, detectionRepository)
             trackedObjectSystem.onTrackedObjectSelected += ::onTrackedObjectSelected
             cameraController.onCameraPropertiesChanged += trackedObjectSystem::onCameraPropertiesChanged
 
