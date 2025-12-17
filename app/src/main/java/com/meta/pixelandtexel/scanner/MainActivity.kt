@@ -119,7 +119,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
             }
 
         // register systems/components
-
         systemManager.unregisterSystem<LocomotionSystem>()
 
         componentManager.registerComponent<WristAttached>(WristAttached.Companion, SendRate.DEFAULT)

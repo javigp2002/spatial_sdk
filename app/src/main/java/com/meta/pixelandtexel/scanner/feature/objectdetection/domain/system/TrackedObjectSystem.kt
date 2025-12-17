@@ -7,7 +7,6 @@ import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.viewmodels.ObjectLabelViewModel
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.models.DetectedObject
-import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.ObjectPool
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.ObjectLabelScreen
@@ -102,8 +101,6 @@ class TrackedObjectSystem(
 
     // key is the detected object id, not the entity id
     private var trackedObjects = HashMap<Int, TrackedObjectInfo>()
-
-    val onTrackedObjectSelected = Event2<Int, Pose>()
 
     private val outlineDrawable = activity.getDrawable(R.drawable.rounded_box_outline)!!
 
@@ -259,9 +256,8 @@ class TrackedObjectSystem(
     }
 
     /**
-     * Handles the click event on a tracked object – calculating an interaction pose based on the
-     * object's position and the user's head position, then invokes the [onTrackedObjectSelected]
-     * event.
+     * Handles the click event on a tracked object by calculating the interaction pose
+     * based on the object's position and the user's head position.
      *
      * @param entity The entity representing the clicked tracked object.
      */
@@ -275,8 +271,6 @@ class TrackedObjectSystem(
         val direction = (pose.t - headPosition).normalize()
 
         detectionRepository.raycastRequest = RaycastRequestModel(headPosition, direction)
-
-//        onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
     }
 
     /**
