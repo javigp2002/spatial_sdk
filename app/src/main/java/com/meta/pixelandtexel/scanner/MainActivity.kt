@@ -17,6 +17,8 @@ import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
 import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
 import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
 import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
@@ -297,25 +299,35 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     val displayInfo = entityRepository.newViewModelData ?: return@composePanel
 
                     setContent {
-                        when (displayInfo.data.type) {
-                            TypeSmartHomeInfo.LIGHT -> {
-                                val lightViewModel = LightViewModel(get())
-                                LightControlCard(
-                                    viewModel = lightViewModel,
-                                    onClose = {
-                                        entityRepository.deleteEntity(displayInfo.entityId)
-                                    }
-                                )
-                            }
-                            TypeSmartHomeInfo.PLUG -> {
-                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
-                                SmartPlugScreen(
-                                    entityId = displayInfo.entityId,
-                                    viewModel = smartPlugViewModel
-                                )
-
-                            }
-                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
+//                        when (displayInfo.data.type) {
+//                            TypeSmartHomeInfo.LIGHT -> {
+//                                val lightViewModel = LightViewModel(get())
+//                                LightControlCard(
+//                                    viewModel = lightViewModel,
+//                                    onClose = {
+//                                        entityRepository.deleteEntity(displayInfo.entityId)
+//                                    }
+//                                )
+//                            }
+//                            TypeSmartHomeInfo.PLUG -> {
+//                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
+//                                SmartPlugScreen(
+//                                    entityId = displayInfo.entityId,
+//                                    viewModel = smartPlugViewModel
+//                                )
+//
+//                            }
+//                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
+//                        }
+                        setContent {
+                            val viewmodel = DeviceSelectionViewModel(displayInfo.data.type, get())
+                            DeviceSelectionScreen(
+                                viewModel = viewmodel,
+                                onOptionSelected = { selectedId ->
+                                    Log.d("JAVI DEBUG", "Selected option ID: $selectedId")
+                                    entityRepository.deleteEntity(displayInfo.entityId)
+                                }
+                            )
                         }
                     }
                 }
