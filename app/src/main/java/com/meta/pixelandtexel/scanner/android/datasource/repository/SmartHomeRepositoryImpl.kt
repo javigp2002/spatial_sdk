@@ -4,6 +4,8 @@ import com.meta.pixelandtexel.scanner.android.datasource.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.android.domain.model.SmartPlugInfo
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
+import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
+import kotlinx.coroutines.delay
 
 class SmartHomeRepositoryImpl (
     private val api: SmartHomeApi
@@ -39,5 +41,15 @@ class SmartHomeRepositoryImpl (
 
     override suspend fun getSmartPlugInfo(entityId: String): SmartPlugInfo? {
         return null
+    }
+
+    override suspend fun getDevicesOfASmarthomeType(type: TypeSmartHomeInfo): List<String> {
+        delay(500)
+        return listOf(
+            "switch.smart_plug_javi",
+            "switch.smart_plug_javi2",
+            "switch.smart_plug_javi3",
+            "switch.smart_plug_javi4"
+        )
     }
 }

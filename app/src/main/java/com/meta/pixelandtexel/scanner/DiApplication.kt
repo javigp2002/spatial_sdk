@@ -5,6 +5,7 @@ import com.meta.pixelandtexel.scanner.android.datasource.networkModule
 import com.meta.pixelandtexel.scanner.android.datasource.repository.SmartHomeRepositoryImpl
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetConnectionUsecase
+import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDevicesOfASmarthomeType
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetSmartPlugInfoUsecase
 import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUsecase
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
@@ -32,6 +33,8 @@ val appModule = module {
     factory { GetConnectionUsecase(get())}
     factory { ToggleSmartPlugUsecase(get())}
     factory { GetSmartPlugInfoUsecase(get())}
+
+    factory { GetDevicesOfASmarthomeType(get()) }
 
 }
 
