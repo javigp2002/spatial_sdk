@@ -6,7 +6,6 @@ import android.util.Log
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.models.DetectedObject
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.ImageUtils.getBitmap
 import kotlin.collections.mutableListOf
-import com.meta.spatial.core.Pose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicBoolean
@@ -38,7 +37,7 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
     }
 
     private val isDetecting = AtomicBoolean(false)
-    private val objectInfoRequest = AtomicReference<Pair<Int, Pose>?>(null)
+    private val objectInfoRequest = AtomicReference<Pair<Int, RaycastRequestModel>?>(null)
 
     private val cachedObjectIds = mutableSetOf<Int>()
     private val cachedObjects = mutableListOf<DetectedObject>()
@@ -46,8 +45,6 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
     private val _detectionState = MutableStateFlow<DetectionState?>(null)
     override val detectionState: StateFlow<DetectionState?> = _detectionState
 
-    @Volatile
-    override var raycastRequest: RaycastRequestModel? = null
 
     override fun processImage(image: Image, width: Int, height: Int, `finally`: () -> Unit) {
         if (!isDetecting.compareAndSet(false, true)) {
@@ -76,7 +73,7 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
     }
 
     private fun checkRequestImageForObject(image: Image) {
-        objectInfoRequest.getAndSet(null)?.let { (id, pose) ->
+        objectInfoRequest.getAndSet(null)?.let { (id, raycastModelPose) ->
             val obj = cachedObjects.firstOrNull { it.id == id }
             val bmp = obj?.let { image.getBitmap(it.bounds) }
 
@@ -86,8 +83,8 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
                     R.integer.info_panel_id,
                     SmartHomeInfoRequest(
                         typeSmartHome,
+                        raycastModelPose,
                     ),
-                    pose,
                 )
             }
         }
@@ -156,7 +153,7 @@ class ObjectDetectionRepository(private val detector: IObjectDetectorHelper,
         cachedObjects.clear()
     }
 
-    override fun requestInfoForObject(id: Int, pose: Pose) {
+    override fun requestInfoForObject(id: Int, pose: RaycastRequestModel) {
         objectInfoRequest.set(id to pose)
     }
 }

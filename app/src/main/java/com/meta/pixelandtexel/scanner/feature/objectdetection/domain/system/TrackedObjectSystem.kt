@@ -282,10 +282,10 @@ class TrackedObjectSystem(
 
         val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
-
-        detectionRepository.raycastRequest = RaycastRequestModel(headPosition, direction)
-
-        detectionRepository.requestInfoForObject(comp.objectId, Pose(headPosition, rotation))
+        detectionRepository.requestInfoForObject(
+            comp.objectId,
+            RaycastRequestModel(headPosition, direction, rotation)
+        )
     }
 
     /**
