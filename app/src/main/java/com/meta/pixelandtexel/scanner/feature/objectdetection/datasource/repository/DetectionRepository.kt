@@ -1,4 +1,4 @@
-package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection
+package com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository
 
 import android.graphics.Rect
 import android.media.Image
@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicBoolean
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.DetectionState
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.area
