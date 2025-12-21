@@ -15,9 +15,13 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.Visible
 import com.meta.spatial.toolkit.createPanelEntity
 import com.meta.pixelandtexel.scanner.R
+import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
+import com.meta.spatial.core.Quaternion
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
-class MRUKObjectsRepositoryImpl : IMRUKObjectsRepository {
+class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKObjectsRepository {
 
     override var lastAddedObjectId: String? = null
 
@@ -69,5 +73,23 @@ class MRUKObjectsRepositoryImpl : IMRUKObjectsRepository {
         } else {
             false
         }
+    }
+
+    override suspend fun getAllMRUKObjects(): Boolean {
+        withContext(Dispatchers.IO) {
+            // llamar a la api
+//           val models = smartHomeApi.getAllDevicesOfASmarthomeType()
+
+            val smartThingRaycastModel = MrukRaycastModel(
+                id = "switch.smart_plug_javi",
+                pose = Pose(
+                    Vector3(-1.6329944f, 0.7017277f, -1.3612689f),
+                    Quaternion(-0.1479072f, -0.14790718f, 0.6914648f, -0.69146466f)
+                )
+            )
+            addMRUKObject(smartThingRaycastModel)
+        }
+        return true
+
     }
 }

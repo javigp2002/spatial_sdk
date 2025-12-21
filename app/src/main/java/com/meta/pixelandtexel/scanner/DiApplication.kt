@@ -28,8 +28,8 @@ val appModule = module {
         ObjectDetectionRepository(get(), get())
     }
 
-    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl() }
 
+    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get()) }
     single<SmartHomeRepository>{
         SmartHomeRepositoryImpl(get())
     }

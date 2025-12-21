@@ -85,6 +85,10 @@ class MRUKSidePanelRaycasterFeature(
         )
     }
 
+    suspend fun getAllSmartThings(): Boolean {
+        return mrukObjectRepository.getAllMRUKObjects()
+    }
+
     override fun systemsToRegister(): List<SystemBase> {
         val systems = mutableListOf<SystemBase>()
         return systems

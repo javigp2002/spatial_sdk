@@ -240,6 +240,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 //                        tipManager.showHelpPanel()
                         loadScene(true)
 
+                        activityScope.launch {
+                            mrukSidePanelRaycasterFeature.getAllSmartThings()
+                        }
                     }
                 }
             },
