@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner
 
 import android.app.Application
-import com.meta.pixelandtexel.scanner.android.datasource.networkModule
+import com.meta.pixelandtexel.scanner.datasource.network.networkModule
 import com.meta.pixelandtexel.scanner.android.datasource.repository.SmartHomeRepositoryImpl
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetConnectionUsecase
