@@ -8,6 +8,8 @@ import com.meta.pixelandtexel.scanner.android.domain.usecases.GetConnectionUseca
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDevicesOfASmarthomeType
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetSmartPlugInfoUsecase
 import com.meta.pixelandtexel.scanner.android.domain.usecases.ToggleSmartPlugUsecase
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.MRUKObjectsRepositoryImpl
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.MLKitObjectDetector
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
@@ -25,6 +27,8 @@ val appModule = module {
     single<IObjectDetectionRepository> {
         ObjectDetectionRepository(get(), get())
     }
+
+    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl() }
 
     single<SmartHomeRepository>{
         SmartHomeRepositoryImpl(get())
