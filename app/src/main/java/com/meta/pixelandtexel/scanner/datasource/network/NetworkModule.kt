@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner.datasource.network
 
 import com.meta.pixelandtexel.scanner.BuildConfig
-import com.meta.pixelandtexel.scanner.android.datasource.SmartHomeApi
+import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
