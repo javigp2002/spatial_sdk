@@ -21,9 +21,9 @@ class SmartPlugViewModel(
 
     private var pollingJob: Job? = null
 
-    private var entityId: Int? = null
+    private var entityId: String? = null
 
-    fun initialize(entityId: Int) {
+    fun initialize(entityId: String) {
         this.entityId = entityId
         startPolling()
     }
@@ -70,7 +70,7 @@ class SmartPlugViewModel(
 
                 val currentStatus = _uiState.value.isPlugOn
                 val success = toggleSmartPlugUsecase.run(entityId =
-                    "",
+                    id,
                     turnOn = !currentStatus)
 
                 if (success) {

@@ -13,7 +13,7 @@ import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
 
 @Composable
 fun SmartPlugScreen(
-    entityId: Int,
+    entityId: String,
     viewModel: SmartPlugViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()

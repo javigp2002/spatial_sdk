@@ -18,7 +18,7 @@ class SmartHomeRepositoryImpl (
     override suspend fun turnOnSwitch(entityId: String): Boolean {
         try {
             api.turnOnSwitch(
-                body = EntityIdDto(entity_id = "switch.smart_plug_javi")
+                body = EntityIdDto(entity_id = entityId)
             )
             return true
         } catch (e: Exception) {
@@ -30,7 +30,7 @@ class SmartHomeRepositoryImpl (
     override suspend fun turnOffSwitch(entityId: String): Boolean {
         try {
             api.turnOffSwitch(
-                body = EntityIdDto(entity_id = "switch.smart_plug_javi")
+                body = EntityIdDto(entity_id = entityId)
             )
             return true
         } catch (e: Exception) {
