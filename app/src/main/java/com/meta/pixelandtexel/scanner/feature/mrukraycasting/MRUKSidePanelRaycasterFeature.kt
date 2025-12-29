@@ -3,8 +3,8 @@ package com.meta.pixelandtexel.scanner.feature.mrukraycasting
 import android.os.Bundle
 import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.DynamicSmartThingScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.DynamicSmartThingViewmodel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.MrukRaycastModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
 import com.meta.pixelandtexel.scanner.models.devices.Device
@@ -62,14 +62,14 @@ class MRUKSidePanelRaycasterFeature(
                     enableLayerFeatheredEdge = true
                 }
                 composePanel {
-                    val id = mrukObjectRepository.lastAddedObjectId ?: return@composePanel
-                    mrukObjectRepository.lastAddedObjectId = null
+                    val device = mrukObjectRepository.lastAddedObjectDevice ?: return@composePanel
+                    mrukObjectRepository.lastAddedObjectDevice = null
 
                     setContent {
-                        val smartPlugViewModel = SmartPlugViewModel(di.get(), di.get())
-                        SmartPlugScreen(
-                            entityId = id,
-                            viewModel = smartPlugViewModel
+                        val viewmodel = DynamicSmartThingViewmodel()
+                        DynamicSmartThingScreen(
+                            device = device,
+                            viewModel = viewmodel,
                         )
                     }
                 }

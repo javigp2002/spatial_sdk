@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKObjectsRepository {
 
-    override var lastAddedObjectId: String? = null
+    override var lastAddedObjectDevice: Device? = null
 
     override val mrukEntities: HashMap<String, ObjectEntityModel> = HashMap()
 
@@ -42,7 +42,6 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
                     Visible(true)
                 )
             )
-
             val panelEntity = Entity.Companion.createPanelEntity(
                 R.integer.object_panel_id,
                 Transform(newMeshPose * Pose(Vector3(0f, 0.5f, 0f))),
@@ -50,14 +49,13 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
 
             )
 
-
             val objectEntity = ObjectEntityModel(
                 objectEntity = boxEntity,
                 panelEntity = panelEntity
             )
             mrukEntities[addObject.device.name] = objectEntity
 
-            lastAddedObjectId = addObject.device.name
+            lastAddedObjectDevice = addObject.device
             return true
         } else {
             return false
