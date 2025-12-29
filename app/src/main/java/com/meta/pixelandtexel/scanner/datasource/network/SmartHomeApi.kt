@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner.datasource.network
 
 import com.meta.pixelandtexel.scanner.android.datasource.dto.ConnectionDto
+import com.meta.pixelandtexel.scanner.android.datasource.dto.DeviceListResponseDto
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -23,4 +24,9 @@ interface SmartHomeApi {
 
     @POST("services/get_all_devices_set")
     suspend fun getAllDevicesOfASmarthomeType(): Response<Any>
+
+    @POST("template")
+    suspend fun postTemplate(
+        @Body body: Map<String, String>
+    ): Response<DeviceListResponseDto>
 }

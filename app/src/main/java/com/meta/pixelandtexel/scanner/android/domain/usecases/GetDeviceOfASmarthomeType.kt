@@ -7,7 +7,8 @@ class GetDevicesOfASmarthomeType(
     private val repository: SmartHomeRepository
 ) {
     suspend fun run(): List<Device> {
-        return emptyList()
+        val devices = repository.getDevices()
+        return devices
     }
 
 }

@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner.android.domain.repository
 
 import com.meta.pixelandtexel.scanner.android.domain.model.SmartPlugInfo
-import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
+import com.meta.pixelandtexel.scanner.models.devices.Device
 
 interface SmartHomeRepository {
     suspend fun getConnection(boolean: Boolean): Boolean
@@ -12,6 +12,6 @@ interface SmartHomeRepository {
 
     suspend fun getSmartPlugInfo(entityId: String): SmartPlugInfo?
 
-    suspend fun getDevicesOfASmarthomeType(type: TypeSmartHomeInfo): List<String>
+    suspend fun getDevices(): List<Device>
 
 }
