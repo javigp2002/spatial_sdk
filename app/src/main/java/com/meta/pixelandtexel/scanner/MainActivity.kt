@@ -307,14 +307,14 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                         val viewmodel = DeviceSelectionViewModel(displayInfo.data.type, get())
                         DeviceSelectionScreen(
                             viewModel = viewmodel,
-                            onOptionSelected = { selectedId ->
+                            onOptionSelected = { device ->
                                 entityRepository.deleteEntity(displayInfo.entityId)
                                 val spawnPose =
                                     getPanelHitSpawnPosition(displayInfo.data.raycastInfo)
                                 if (spawnPose != null) {
                                     activityScope.launch {
                                         mrukSidePanelRaycasterFeature.addSmartThing(
-                                            selectedId,
+                                            device,
                                             spawnPose
                                         )
                                     }

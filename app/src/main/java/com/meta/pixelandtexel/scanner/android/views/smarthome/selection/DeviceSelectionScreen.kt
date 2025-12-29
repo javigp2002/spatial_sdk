@@ -17,12 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
 
 @Composable
 fun DeviceSelectionScreen(
     viewModel: DeviceSelectionViewModel,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (Device) -> Unit
 ) {
     val options by viewModel.options.collectAsState()
     val deviceType by viewModel.deviceType.collectAsState()
@@ -50,10 +51,10 @@ fun DeviceSelectionScreen(
             } else {
                 options.forEach { option ->
                     Button(
-                        onClick = { onOptionSelected(option.id) },
+                        onClick = { onOptionSelected(option) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = option.label)
+                        Text(text = option.name)
                     }
                 }
             }

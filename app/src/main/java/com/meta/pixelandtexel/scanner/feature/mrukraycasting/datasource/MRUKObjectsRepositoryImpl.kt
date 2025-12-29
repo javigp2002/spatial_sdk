@@ -16,6 +16,7 @@ import com.meta.spatial.toolkit.Visible
 import com.meta.spatial.toolkit.createPanelEntity
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
+import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.spatial.core.Quaternion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,7 +30,7 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
 
 
     override suspend fun addMRUKObject(addObject: MrukRaycastModel): Boolean {
-        if (!mrukEntities.containsKey(addObject.id)) {
+        if (!mrukEntities.containsKey(addObject.device.name)) {
 
             val newMeshPose = Pose(addObject.pose.t, addObject.pose.q)
 
@@ -54,9 +55,9 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
                 objectEntity = boxEntity,
                 panelEntity = panelEntity
             )
-            mrukEntities[addObject.id] = objectEntity
+            mrukEntities[addObject.device.name] = objectEntity
 
-            lastAddedObjectId = addObject.id
+            lastAddedObjectId = addObject.device.name
             return true
         } else {
             return false
@@ -81,7 +82,10 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
 //           val models = smartHomeApi.getAllDevicesOfASmarthomeType()
 
             val smartThingRaycastModel = MrukRaycastModel(
-                id = "switch.smart_plug_javi",
+                device = Device(
+                    name = "Smart Thing 1",
+                    entityList = emptyList()
+                ),
                 pose = Pose(
                     Vector3(-1.6329944f, 0.7017277f, -1.3612689f),
                     Quaternion(-0.1479072f, -0.14790718f, 0.6914648f, -0.69146466f)

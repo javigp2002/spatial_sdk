@@ -7,6 +7,7 @@ import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScre
 import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.MrukRaycastModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
+import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.core.ComponentRegistration
 import com.meta.spatial.core.Pose
@@ -76,10 +77,10 @@ class MRUKSidePanelRaycasterFeature(
         )
     }
 
-    suspend fun addSmartThing(idThing: String, spawnPose: Pose) {
+    suspend fun addSmartThing(device: Device, spawnPose: Pose) {
         mrukObjectRepository.addMRUKObject(
             MrukRaycastModel(
-                id = idThing,
+                device = device,
                 pose = spawnPose
             )
         )
