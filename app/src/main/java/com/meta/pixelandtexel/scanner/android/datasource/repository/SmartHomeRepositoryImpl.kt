@@ -1,8 +1,8 @@
 package com.meta.pixelandtexel.scanner.android.datasource.repository
 
-import androidx.compose.ui.tooling.preview.Devices
 import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
+import com.meta.pixelandtexel.scanner.android.datasource.mapper.DeviceMapper
 import com.meta.pixelandtexel.scanner.android.domain.model.SmartPlugInfo
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.models.devices.Device
@@ -64,6 +64,12 @@ class SmartHomeRepositoryImpl (
                 body = mapOf("template" to template)
             )
 
+            if (response.isSuccessful) {
+                val responseBody = response.body()
+                if (responseBody != null) {
+                    return DeviceMapper.map(responseBody)
+                }
+            }
 
             return emptyList()
         } catch (e: Exception) {
