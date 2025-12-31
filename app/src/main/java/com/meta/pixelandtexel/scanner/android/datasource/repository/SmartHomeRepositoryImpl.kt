@@ -3,9 +3,12 @@ package com.meta.pixelandtexel.scanner.android.datasource.repository
 import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.android.datasource.mapper.DeviceMapper
+import com.meta.pixelandtexel.scanner.android.datasource.mapper.DomainMapper
 import com.meta.pixelandtexel.scanner.android.domain.model.SmartPlugInfo
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.models.devices.Device
+import com.meta.pixelandtexel.scanner.models.devices.ThingEntity
+import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 
 class SmartHomeRepositoryImpl (
     private val api: SmartHomeApi
@@ -76,5 +79,29 @@ class SmartHomeRepositoryImpl (
             e.printStackTrace()
             return emptyList()
         }
+    }
+
+    override suspend fun getThingEntities(thingEntities: List<ThingEntity>): List<ThingEntity> {
+        try {
+            val updatedEntities = thingEntities.map { entity ->
+                val response = api.getEntityState(entity.id)
+                val responseBody = response.body() ?: return@map entity
+
+                var newState = responseBody.state
+                if (entity.domain is SensorDomain) {
+                    val unit = responseBody.attributes?.unitOfMeasurement ?: ""
+                    newState = "$newState $unit"
+                }
+
+                entity.copy(
+                    domain = DomainMapper.fromOtherDomainNewValue(entity.domain, newState)
+                )
+            }
+            return updatedEntities
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return emptyList()
+        }
+
     }
 }

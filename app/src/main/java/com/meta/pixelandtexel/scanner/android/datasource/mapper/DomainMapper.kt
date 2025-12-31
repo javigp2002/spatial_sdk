@@ -28,4 +28,19 @@ object DomainMapper {
             else -> null
         }
     }
+
+    fun fromOtherDomainNewValue(domain: Domain, newValue: String): Domain {
+        return when (domain) {
+            is SwitchDomain -> {
+                val newValueBoolean =
+                    newValue.equals("ON", ignoreCase = true) || newValue.equals(
+                        "true",
+                        ignoreCase = true
+                    )
+                domain.copy(value = newValueBoolean)
+            }
+
+            is SensorDomain -> domain.copy(value = newValue)
+        }
+    }
 }
