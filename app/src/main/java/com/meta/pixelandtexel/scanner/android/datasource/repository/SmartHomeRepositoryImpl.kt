@@ -1,10 +1,9 @@
 package com.meta.pixelandtexel.scanner.android.datasource.repository
 
-import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
+import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.mapper.DeviceMapper
 import com.meta.pixelandtexel.scanner.android.datasource.mapper.DomainMapper
-import com.meta.pixelandtexel.scanner.android.domain.model.SmartPlugInfo
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.ThingEntity
@@ -70,6 +69,28 @@ class SmartHomeRepositoryImpl (
         } catch (e: Exception) {
             e.printStackTrace()
             return emptyList()
+        }
+
+    }
+
+    override suspend fun getActionForThing(thingId: String, action: String): Boolean {
+        return try {
+            val thingDomain = thingId.substringBefore(".", missingDelimiterValue = "")
+            val service = action.lowercase()
+            val body = EntityIdDto(
+                entity_id = thingId
+            )
+
+            val response = api.postActionToDeviceDomain(
+                device = thingDomain,
+                action = service,
+                body = body
+            )
+
+            response.isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
 
     }

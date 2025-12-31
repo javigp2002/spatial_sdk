@@ -3,6 +3,7 @@ package com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDeviceInfoUsecase
+import com.meta.pixelandtexel.scanner.android.domain.usecases.UseActionDevice
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.EntityUiModel
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.SmartDeviceUiState
 import com.meta.pixelandtexel.scanner.models.devices.Device
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DynamicSmartThingViewmodel(
-    private val getDeviceInfoUsecase: GetDeviceInfoUsecase
+    private val getDeviceInfoUsecase: GetDeviceInfoUsecase,
+    private val useActionDevice: UseActionDevice
 ) : ViewModel() {
     companion object {
         private const val WAIT_FOR_NEXT_REQUEST_MS = 5000L
@@ -28,12 +30,10 @@ class DynamicSmartThingViewmodel(
             deviceName = device.name,
             entities = device.entityList.sortedBy { entity -> entity.domain.toString() }
                 .map { entity ->
-                    EntityUiModel(
-                        id = entity.id,
-                        name = entity.id.split(".").last().replace("_", " ").capitalize(),
-                        domain = entity.domain
+                    EntityUiModel.fromThingEntityWithoutDeviceName(
+                        entity,
+                        device.name
                     )
-
                 }
         )
 
@@ -56,10 +56,9 @@ class DynamicSmartThingViewmodel(
                 _uiState.update { currentState ->
                     currentState.copy(
                         entities = updatedEntities.map { entity ->
-                            EntityUiModel(
-                                id = entity.id,
-                                name = entity.id.split(".").last().replace("_", " ").capitalize(),
-                                domain = entity.domain
+                            EntityUiModel.fromThingEntityWithoutDeviceName(
+                                thingEntity = entity,
+                                deviceName = currentState.deviceName
                             )
                         }
                     )
@@ -70,14 +69,19 @@ class DynamicSmartThingViewmodel(
 
     }
 
-    fun onSwitchToggled(entityId: String, newValue: Boolean) {
+    fun onSwitchToggled(entity: EntityUiModel, newValue: Boolean) {
         viewModelScope.launch {
+            val entityId = entity.id
             updateEntityState(entityId) { it.copy(isUpdating = true) }
 
-            // usecase
-
-            delay(500)
-            val success = true
+            val action = if (newValue) "turn_on" else "turn_off"
+            if (action !in entity.domain.services) {
+                return@launch
+            }
+            val success = useActionDevice.run(
+                thingId = entityId,
+                action = action
+            )
 
             if (success) {
                 updateEntityState(entityId) { currentEntity ->
@@ -106,7 +110,4 @@ class DynamicSmartThingViewmodel(
             )
         }
     }
-
-    private fun String.capitalize() =
-        replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }

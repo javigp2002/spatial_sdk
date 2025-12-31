@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner.datasource.network
 
-import com.meta.pixelandtexel.scanner.android.datasource.dto.ConnectionDto
 import com.meta.pixelandtexel.scanner.android.datasource.dto.DeviceListResponseDto
 import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.android.datasource.dto.ThingsResponseDto
@@ -11,16 +10,11 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface SmartHomeApi {
-    @GET("api")
-    suspend fun getConnection(): ConnectionDto
 
-    @POST("services/switch/turn_on")
-    suspend fun turnOnSwitch(
-        @Body body: EntityIdDto
-    ): Response<Unit>
-
-    @POST("services/switch/turn_off")
-    suspend fun turnOffSwitch(
+    @POST("services/{domain}/{action}")
+    suspend fun postActionToDeviceDomain(
+        @Path("domain") device: String,
+        @Path("action") action: String,
         @Body body: EntityIdDto
     ): Response<Unit>
 

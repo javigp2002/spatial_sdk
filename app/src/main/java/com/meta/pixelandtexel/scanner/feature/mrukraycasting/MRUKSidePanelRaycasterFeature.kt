@@ -66,7 +66,7 @@ class MRUKSidePanelRaycasterFeature(
                     mrukObjectRepository.lastAddedObjectDevice = null
 
                     setContent {
-                        val viewmodel = DynamicSmartThingViewmodel(di.get())
+                        val viewmodel = DynamicSmartThingViewmodel(di.get(), di.get())
                         DynamicSmartThingScreen(
                             device = device,
                             viewModel = viewmodel,

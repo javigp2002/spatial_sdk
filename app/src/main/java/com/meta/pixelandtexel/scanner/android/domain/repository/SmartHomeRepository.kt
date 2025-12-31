@@ -8,4 +8,6 @@ interface SmartHomeRepository {
 
     suspend fun getThingEntities(thingEntities: List<ThingEntity>): List<ThingEntity>
 
+    suspend fun getActionForThing(thingId: String, action: String): Boolean
+
 }

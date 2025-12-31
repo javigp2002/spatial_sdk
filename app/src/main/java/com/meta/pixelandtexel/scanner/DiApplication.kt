@@ -6,6 +6,7 @@ import com.meta.pixelandtexel.scanner.android.datasource.repository.SmartHomeRep
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDeviceInfoUsecase
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDevicesOfASmarthomeType
+import com.meta.pixelandtexel.scanner.android.domain.usecases.UseActionDevice
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.MRUKObjectsRepositoryImpl
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
@@ -32,6 +33,7 @@ val appModule = module {
         SmartHomeRepositoryImpl(get())
     }
 
+    factory { UseActionDevice(get()) }
     factory { GetDevicesOfASmarthomeType(get()) }
     factory { GetDeviceInfoUsecase(get()) }
 

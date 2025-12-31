@@ -92,7 +92,7 @@ fun DynamicSmartThingScreen(
                     EntityRow(
                         entity = entity,
                         onSwitchToggle = { newValue ->
-                            viewModel.onSwitchToggled(entity.id, newValue)
+                            viewModel.onSwitchToggled(entity, newValue)
                         }
                     )
                 }
