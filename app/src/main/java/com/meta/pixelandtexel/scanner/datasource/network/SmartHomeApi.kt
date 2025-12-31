@@ -24,8 +24,6 @@ interface SmartHomeApi {
         @Body body: EntityIdDto
     ): Response<Unit>
 
-    @POST("services/get_all_devices_set")
-    suspend fun getAllDevicesOfASmarthomeType(): Response<Any>
 
     @POST("template")
     suspend fun postTemplate(

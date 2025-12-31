@@ -14,37 +14,6 @@ class SmartHomeRepositoryImpl (
     private val api: SmartHomeApi
 ) : SmartHomeRepository {
 
-    override suspend fun getConnection(boolean: Boolean): Boolean {
-       return true
-    }
-
-    override suspend fun turnOnSwitch(entityId: String): Boolean {
-        try {
-            api.turnOnSwitch(
-                body = EntityIdDto(entity_id = entityId)
-            )
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    override suspend fun turnOffSwitch(entityId: String): Boolean {
-        try {
-            api.turnOffSwitch(
-                body = EntityIdDto(entity_id = entityId)
-            )
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    override suspend fun getSmartPlugInfo(entityId: String): SmartPlugInfo? {
-        return null
-    }
 
     override suspend fun getDevices(): List<Device> {
         val template = """
