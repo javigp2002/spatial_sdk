@@ -61,7 +61,11 @@ class SmartHomeRepositoryImpl (
                 }
 
                 entity.copy(
-                    domain = DomainMapper.fromOtherDomainNewValue(entity.domain, newState)
+                    domain = DomainMapper.fromOtherDomainNewValue(
+                        entity.domain,
+                        newState,
+                        responseBody.attributes
+                    )
                 )
             }
             return updatedEntities
