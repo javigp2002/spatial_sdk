@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.meta.pixelandtexel.scanner.android.views.components.ScrollableColumn
 import com.meta.pixelandtexel.scanner.android.views.components.smart.EntityRow
 import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.models.devices.Device
@@ -54,11 +54,7 @@ fun DynamicSmartThingScreen(
             .padding(MyPaddings.M),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(MyPaddings.M)
-        ) {
+        ScrollableColumn {
             Text(
                 text = uiState.deviceName,
                 style = MaterialTheme.typography.headlineMedium,

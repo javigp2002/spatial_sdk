@@ -1,5 +1,3 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 package com.meta.pixelandtexel.scanner.android.views.components
 
 import androidx.compose.foundation.background
