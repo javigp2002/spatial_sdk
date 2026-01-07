@@ -1,7 +1,6 @@
 package com.meta.pixelandtexel.scanner.datasource.network
 
 import com.meta.pixelandtexel.scanner.android.datasource.dto.DeviceListResponseDto
-import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.android.datasource.dto.ThingsResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,7 +14,7 @@ interface SmartHomeApi {
     suspend fun postActionToDeviceDomain(
         @Path("domain") device: String,
         @Path("action") action: String,
-        @Body body: EntityIdDto
+        @Body body: Map<String, @JvmSuppressWildcards Any?>
     ): Response<Unit>
 
 
