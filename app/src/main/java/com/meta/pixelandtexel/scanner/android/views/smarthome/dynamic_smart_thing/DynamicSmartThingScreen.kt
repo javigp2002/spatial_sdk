@@ -8,20 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,10 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.EntityUiModel
+import com.meta.pixelandtexel.scanner.android.views.components.smart.EntityRow
+import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.models.devices.Device
+import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
@@ -89,12 +84,32 @@ fun DynamicSmartThingScreen(
                     items = controllers,
                     key = { it.id }
                 ) { entity ->
-                    EntityRow(
-                        entity = entity,
-                        onSwitchToggle = { newValue ->
-                            viewModel.onSwitchToggled(entity, newValue)
-                        }
-                    )
+                    if (entity.domain is SwitchDomain) {
+                        EntityRow(
+                            title = entity.name,
+                            isUpdating = entity.isUpdating,
+                            actualValue = entity.domain.value,
+                            onSwitchToggle = { newValue ->
+                                viewModel.onSwitchToggled(entity, newValue)
+                            }
+                        )
+                    } else if (entity.domain is MediaPlayerDomain) {
+                        MediaPlayerComposable(
+                            title = entity.name,
+                            mediaPlayerDomain = entity.domain,
+                            onStartChange = { newValue ->
+//                                viewModel.onSwitchToggled(entity, newValue)
+                            },
+                            onMuteChange = { newValue ->
+//                                viewModel.onSwitchToggled(entity, newValue, "volume_mute", "is_volume_muted")
+                            },
+                            onVolumenChange = { newValue ->
+//                                viewModel.onSliderActionChanged(entity, newValue, "volume_set", "volume_level")
+                            }
+                        )
+
+
+                    }
                 }
 
                 if (sensors.isNotEmpty()) {
@@ -138,62 +153,6 @@ fun DynamicSmartThingScreen(
         }
     }
 }
-@Composable
-fun EntityRow(
-    entity: EntityUiModel,
-    onSwitchToggle: (Boolean) -> Unit
-) {
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MyPaddings.M),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val icon = when (entity.domain) {
-                    is SwitchDomain -> Icons.Default.Build
-                    else -> Icons.Default.Info
-                }
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(MyPaddings.S))
-                Column {
-                    Text(
-                        text = entity.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (entity.isUpdating) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    if (entity.domain is SwitchDomain) {
-                        Switch(
-                            checked = entity.domain.value,
-                            onCheckedChange = onSwitchToggle
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun InfoColumn(
@@ -227,4 +186,16 @@ private fun InfoColumn(
             )
         }
     }
+}
+
+@Preview(widthDp = 400, heightDp = 100)
+@Composable
+fun EntityRowPreview() {
+    EntityRow(
+        title = "Living Room Light",
+        isUpdating = false,
+        actualValue = 0.2f,
+        onSwitchToggle = {},
+        onSliderChange = {}
+    )
 }
