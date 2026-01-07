@@ -109,7 +109,12 @@ fun DynamicSmartThingScreen(
                                 )
                             },
                             onVolumenChange = { newValue ->
-//                                viewModel.onSliderActionChanged(entity, newValue, "volume_set", "volume_level")
+                                viewModel.onSliderActionChanged(
+                                    entity,
+                                    newValue,
+                                    "volume_set",
+                                    "volume_level"
+                                )
                             }
                         )
 

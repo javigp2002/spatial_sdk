@@ -108,6 +108,32 @@ class DynamicSmartThingViewmodel(
         }
     }
 
+    fun onSliderActionChanged(
+        entity: EntityUiModel,
+        newValue: Float,
+        action: String,
+        attribute: String
+    ) {
+        viewModelScope.launch {
+            val entityId = entity.id
+            updateEntityState(entityId) { it.copy(isUpdating = true) }
+
+            if (action !in entity.domain.services) {
+                return@launch
+            }
+            useActionDevice.run(
+                thingId = entityId,
+                action = action,
+                newValue = newValue,
+                attribute = attribute
+            )
+
+            updateEntityState(entityId) { it.copy(isUpdating = false) }
+        }
+
+    }
+
+
     private fun updateEntityState(entityId: String, update: (EntityUiModel) -> EntityUiModel) {
         _uiState.update { currentState ->
             currentState.copy(
