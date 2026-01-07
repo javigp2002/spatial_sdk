@@ -33,39 +33,38 @@ class UpdateRaycastSystem(
     }
 
     override fun execute() {
-        val objectRequestedDirection = detectionRepository.raycastRequest
-            ?: return
+        return
 
-        val currentRoom = mrukFeature.getCurrentRoom()
-        if (currentRoom == null) {
-            Log.w("UpdateRaycastSystem", "Cannot raycast, no current room available.")
-            detectionRepository.raycastRequest = null
-            return
-        }
-
-
-        val hit = mrukFeature.raycastRoom(
-            currentRoom.anchor.uuid,
-            origin = objectRequestedDirection.origin,
-            direction = objectRequestedDirection.direction,
-            maxDistance = MAX_DISTANCE,
-            SurfaceType.PLANE_VOLUME,
-        )
-
-        if (hit != null) {
-            val newMeshPose =
-                Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
-            Entity.create(
-                listOf(
-                    Mesh(Uri.parse("arrow.glb")),
-                    Transform(newMeshPose),
-                    Visible(true)
-                )
-            )
-        } else {
-            Log.d("UpdateRaycastSystem", "Raycast did not hit any surface.")
-        }
-
-        detectionRepository.raycastRequest = null
+//        val currentRoom = mrukFeature.getCurrentRoom()
+//        if (currentRoom == null) {
+//            Log.w("UpdateRaycastSystem", "Cannot raycast, no current room available.")
+////            detectionRepository.raycastRequest = null
+//            return
+//        }
+//
+//
+//        val hit = mrukFeature.raycastRoom(
+//            currentRoom.anchor.uuid,
+//            origin = objectRequestedDirection.headPosition,
+//            direction = objectRequestedDirection.direction,
+//            maxDistance = MAX_DISTANCE,
+//            SurfaceType.PLANE_VOLUME,
+//        )
+//
+//        if (hit != null) {
+//            val newMeshPose =
+//                Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
+//            Entity.create(
+//                listOf(
+//                    Mesh(Uri.parse("arrow.glb")),
+//                    Transform(newMeshPose),
+//                    Visible(true)
+//                )
+//            )
+//        } else {
+//            Log.d("UpdateRaycastSystem", "Raycast did not hit any surface.")
+//        }
+//
+//        detectionRepository.raycastRequest = null
     }
 }

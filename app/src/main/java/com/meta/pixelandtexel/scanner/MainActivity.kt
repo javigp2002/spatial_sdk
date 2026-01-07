@@ -13,18 +13,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
-import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.MRUKSidePanelRaycasterFeature
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.UpdateRaycastSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
-import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.pixelandtexel.scanner.services.TipManager
 import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
@@ -32,6 +31,9 @@ import com.meta.spatial.compose.ComposeFeature
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.compose.panelViewLifecycleOwner
 import com.meta.spatial.core.Entity
+import com.meta.spatial.core.Pose
+import com.meta.spatial.core.Quaternion
+import com.meta.spatial.mruk.SurfaceType
 import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
 import com.meta.spatial.mruk.MRUKFeature
@@ -52,19 +54,14 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import java.io.File
 
-/**
- * Main entry point for the Quest application. See the README for an in-depth description for how
- * this application functions, and see the official
- * [Meta Spatial SDK documentation](https://developers.meta.com/horizon/develop/spatial-sdk) for how
- * to build Spatial applications, or convert your existing Android application to function in the
- * Quest headset.
- */
+
 class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSystemActivity() {
     companion object {
         private const val TAG = "MainActivity"
 
         private const val PERMISSIONS_REQUEST_CODE = 1000
         private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA", "com.oculus.permission.USE_SCENE")
+        const val MAX_DISTANCE = Float.MAX_VALUE
     }
 
     // used for scene inflation
@@ -83,6 +80,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     // panel content for select objects (with 3D models)
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
     private lateinit var mrukFeature: MRUKFeature
+    private lateinit var mrukSidePanelRaycasterFeature: MRUKSidePanelRaycasterFeature
     private lateinit var tipManager: TipManager
 
     private lateinit var updateRaycastSystem: UpdateRaycastSystem
@@ -98,7 +96,14 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
             )
 
         mrukFeature = MRUKFeature(this, systemManager)
-        return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature, mrukFeature)
+        mrukSidePanelRaycasterFeature = MRUKSidePanelRaycasterFeature(this)
+        return listOf(
+            VRFeature(this),
+            ComposeFeature(),
+            objectDetectionFeature,
+            mrukFeature,
+            mrukSidePanelRaycasterFeature
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -235,6 +240,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 //                        tipManager.showHelpPanel()
                         loadScene(true)
 
+                        activityScope.launch {
+                            mrukSidePanelRaycasterFeature.getAllSmartThings()
+                        }
                     }
                 }
             },
@@ -295,32 +303,53 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 composePanel {
                     stopScanning()
                     val displayInfo = entityRepository.newViewModelData ?: return@composePanel
-
                     setContent {
-                        when (displayInfo.data.type) {
-                            TypeSmartHomeInfo.LIGHT -> {
-                                val lightViewModel = LightViewModel(get())
-                                LightControlCard(
-                                    viewModel = lightViewModel,
-                                    onClose = {
-                                        entityRepository.deleteEntity(displayInfo.entityId)
+                        val viewmodel = DeviceSelectionViewModel(displayInfo.data.type, get())
+                        DeviceSelectionScreen(
+                            viewModel = viewmodel,
+                            onOptionSelected = { device ->
+                                entityRepository.deleteEntity(displayInfo.entityId)
+                                val spawnPose =
+                                    getPanelHitSpawnPosition(displayInfo.data.raycastInfo)
+                                if (spawnPose != null) {
+                                    activityScope.launch {
+                                        mrukSidePanelRaycasterFeature.addSmartThing(
+                                            device,
+                                            spawnPose
+                                        )
                                     }
-                                )
-                            }
-                            TypeSmartHomeInfo.PLUG -> {
-                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
-                                SmartPlugScreen(
-                                    entityId = displayInfo.entityId,
-                                    viewModel = smartPlugViewModel
-                                )
+                                } else {
+                                    Log.w(
+                                        "MainActivity",
+                                        "No se pudo obtener la posición de spawn para el objeto detectado."
+                                    )
+                                }
 
                             }
-                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
-                        }
+                        )
                     }
                 }
             },
         )
+    }
+
+    private fun getPanelHitSpawnPosition(raycastModel: RaycastRequestModel): Pose? {
+        val currentRoom = mrukFeature.getCurrentRoom()
+        if (currentRoom == null) {
+            Log.w("UpdateRaycastSystem", "Cannot raycast, no current room available.")
+            return null
+        }
+
+
+        val hit = mrukFeature.raycastRoom(
+            currentRoom.anchor.uuid,
+            origin = raycastModel.headPosition,
+            direction = raycastModel.direction,
+            maxDistance = MAX_DISTANCE,
+            SurfaceType.PLANE_VOLUME,
+        ) ?: return null
+        return Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
+
     }
 
 

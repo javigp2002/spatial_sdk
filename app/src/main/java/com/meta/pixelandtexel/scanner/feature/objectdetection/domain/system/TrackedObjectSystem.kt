@@ -20,6 +20,7 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.Ray
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
+import com.meta.spatial.core.Quaternion
 import com.meta.spatial.core.Query
 import com.meta.spatial.core.SystemBase
 import com.meta.spatial.core.Vector2
@@ -262,6 +263,7 @@ class TrackedObjectSystem(
      * @param entity The entity representing the clicked tracked object.
      */
     private fun onTrackedObjectClicked(entity: Entity) {
+        val comp = entity.getComponent<TrackedObject>()
         val headPose = getScene().getViewerPose()
         val headPosition = headPose.t
 
@@ -270,7 +272,20 @@ class TrackedObjectSystem(
 
         val direction = (pose.t - headPosition).normalize()
 
-        detectionRepository.raycastRequest = RaycastRequestModel(headPosition, direction)
+
+        val scaleComp = entity.getComponent<Scale>()
+        val scale = scaleComp.scale
+        val position = pose.times(Vector3.Right * (scale.x / 2))
+
+        // zero out any pitch to calculate our direction vector
+        position.y = headPosition.y
+
+        val rotation = Quaternion.lookRotationAroundY(position - headPosition)
+
+        detectionRepository.requestInfoForObject(
+            comp.objectId,
+            RaycastRequestModel(headPosition, direction, rotation)
+        )
     }
 
     /**

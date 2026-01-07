@@ -1,7 +1,7 @@
-// Kotlin
-package com.meta.pixelandtexel.scanner.android.datasource
+package com.meta.pixelandtexel.scanner.datasource.network
 
 import com.meta.pixelandtexel.scanner.BuildConfig
+import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -53,7 +53,6 @@ fun provideService(retrofit: Retrofit): SmartHomeApi =
     retrofit.create(SmartHomeApi::class.java)
 
 val networkModule = module {
-    // Reemplaza el token por el tuyo
     single<TokenProvider> { StaticTokenProvider(token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiOWE1NWRiZmQ1ZTY0ZmQxYjQ2ZDVmNTA3NDA2MTAzNSIsImlhdCI6MTc2NTM3MTgzMSwiZXhwIjoyMDgwNzMxODMxfQ.C_0p6QAEsMSpi-5NXfP8zEk48jc65BE8y0gXdkU_vPs") }
     single { provideHttpClient(get()) }
     single { provideRetrofit(get()) }

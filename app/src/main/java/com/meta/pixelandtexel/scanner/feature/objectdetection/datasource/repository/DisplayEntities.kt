@@ -31,10 +31,12 @@ class DisplayedEntityRepository : IDisplayedEntityRepository {
 
     override fun createGenericInfoPanel(
         panelId: Int, // R.integer.info_panel_id
-        data: SmartHomeInfoRequest,
-        rightEdgePose: Pose
+        data: SmartHomeInfoRequest
     ): Entity {
-        val spawnPose = getPanelSpawnPosition(rightEdgePose, INFO_PANEL_WIDTH)
+        val spawnPose = getPanelSpawnPosition(
+            Pose(data.raycastInfo.headPosition, data.raycastInfo.rotation),
+            INFO_PANEL_WIDTH
+        )
         val nextId = this.nextId++
 
         this.newViewModelData = EntityData(nextId, data)

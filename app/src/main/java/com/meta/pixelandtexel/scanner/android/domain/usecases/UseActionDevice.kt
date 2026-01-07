@@ -2,11 +2,11 @@ package com.meta.pixelandtexel.scanner.android.domain.usecases
 
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
 
-class GetConnectionUsecase (
+class UseActionDevice(
     private val repository: SmartHomeRepository
 ) {
-    suspend fun run(boolean: Boolean): Boolean {
-        return repository.getConnection(boolean)
+    suspend fun run(thingId: String, action: String): Boolean {
+        return repository.getActionForThing(thingId, action)
     }
 
 }
