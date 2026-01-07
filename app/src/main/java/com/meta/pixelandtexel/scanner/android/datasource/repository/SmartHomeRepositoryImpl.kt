@@ -76,11 +76,18 @@ class SmartHomeRepositoryImpl (
 
     }
 
-    override suspend fun getActionForThing(thingId: String, action: String): Boolean {
+    override suspend fun getActionForThing(
+        thingId: String,
+        action: String,
+        newValue: Pair<String, Any>?
+    ): Boolean {
         return try {
             val thingDomain = thingId.substringBefore(".", missingDelimiterValue = "")
             val service = action.lowercase()
             val bodyMap = mutableMapOf<String, Any>("entity_id" to thingId)
+            if (newValue != null) {
+                bodyMap[newValue.first] = newValue.second
+            }
 
 
             val response = api.postActionToDeviceDomain(

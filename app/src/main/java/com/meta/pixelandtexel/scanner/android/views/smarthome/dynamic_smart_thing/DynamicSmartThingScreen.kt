@@ -98,10 +98,15 @@ fun DynamicSmartThingScreen(
                             title = entity.name,
                             mediaPlayerDomain = entity.domain,
                             onStartChange = { newValue ->
-//                                viewModel.onSwitchToggled(entity, newValue)
+                                viewModel.onSwitchToggled(entity, newValue)
                             },
                             onMuteChange = { newValue ->
-//                                viewModel.onSwitchToggled(entity, newValue, "volume_mute", "is_volume_muted")
+                                viewModel.onSwitchToggled(
+                                    entity,
+                                    newValue,
+                                    "volume_mute",
+                                    "is_volume_muted"
+                                )
                             },
                             onVolumenChange = { newValue ->
 //                                viewModel.onSliderActionChanged(entity, newValue, "volume_set", "volume_level")

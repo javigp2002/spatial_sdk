@@ -69,18 +69,25 @@ class DynamicSmartThingViewmodel(
 
     }
 
-    fun onSwitchToggled(entity: EntityUiModel, newValue: Boolean) {
+    fun onSwitchToggled(
+        entity: EntityUiModel,
+        newValue: Boolean,
+        action: String? = null,
+        attribute: String? = null
+    ) {
         viewModelScope.launch {
             val entityId = entity.id
             updateEntityState(entityId) { it.copy(isUpdating = true) }
 
-            val action = if (newValue) "turn_on" else "turn_off"
+            val action = action ?: if (newValue) "turn_on" else "turn_off"
             if (action !in entity.domain.services) {
                 return@launch
             }
             val success = useActionDevice.run(
                 thingId = entityId,
-                action = action
+                action = action,
+                newValue = newValue,
+                attribute = attribute
             )
 
             if (success) {
