@@ -111,6 +111,13 @@ fun DynamicSmartThingScreen(
                                     "volume_set",
                                     "volume_level"
                                 )
+                            },
+                            onPlayChange = { newValue ->
+                                viewModel.onSwitchToggled(
+                                    entity,
+                                    true,
+                                    "media_play",
+                                )
                             }
                         )
 

@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
@@ -34,6 +37,9 @@ fun EntityRow(
     actualValue: Any,
     onSwitchToggle: ((Boolean) -> Unit)? = null,
     onSliderChange: ((Float) -> Unit)? = null,
+    buttonIcon: ImageVector = Icons.Default.PlayArrow,
+    onButtonToggled: (() -> Unit)? = null,
+
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -89,6 +95,18 @@ fun EntityRow(
                         },
                         valueRange = 0f..1f,
                     )
+                } else if (onButtonToggled != null) {
+                    IconButton(
+                        onClick = {
+                            onButtonToggled.invoke()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = buttonIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }

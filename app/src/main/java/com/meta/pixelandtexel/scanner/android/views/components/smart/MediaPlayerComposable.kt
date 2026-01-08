@@ -21,6 +21,7 @@ fun MediaPlayerComposable(
     onStartChange: ((Boolean) -> Unit)? = null,
     onMuteChange: ((Boolean) -> Unit)? = null,
     onVolumenChange: ((Float) -> Unit)? = null,
+    onPlayChange: ((Boolean) -> Unit)? = null,
 ) {
     Card(modifier = modifier) {
         Column(
@@ -57,13 +58,16 @@ fun MediaPlayerComposable(
                 )
             }
 
-//            if (mediaPlayerDomain.attributes.source != null) {
-//                Text(
-//                    text = "Sources: ${mediaPlayerDomain.attributes.source.joinToString(", ")}",
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    modifier = Modifier.padding(MyPaddings.M)
-//                )
-//            }
+
+            EntityRow(
+                title = "Play/Pause",
+                isUpdating = false,
+                actualValue = 0,
+                onButtonToggled = {
+                    onPlayChange?.invoke(true)
+                }
+            )
+
         }
     }
 }
@@ -83,6 +87,7 @@ fun MediaPlayerComposablePreview() {
     MediaPlayerComposable(
         mediaPlayerDomain = thingEntity,
         onMuteChange = { isChecked -> /* Handle switch toggle */ },
-        onVolumenChange = { volume -> /* Handle slider change */ }
+        onVolumenChange = { volume -> /* Handle slider change */ },
+        onStartChange = { isChecked -> /* Handle switch toggle */ },
     )
 }
