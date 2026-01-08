@@ -29,6 +29,7 @@ import com.meta.pixelandtexel.scanner.android.views.components.ScrollableColumn
 import com.meta.pixelandtexel.scanner.android.views.components.smart.EntityRow
 import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.models.devices.Device
+import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
@@ -100,7 +101,7 @@ fun DynamicSmartThingScreen(
                                 viewModel.onSwitchToggled(
                                     entity,
                                     newValue,
-                                    "volume_mute",
+                                    DomainServices.VOLUME_SET,
                                     "is_volume_muted"
                                 )
                             },
@@ -108,7 +109,7 @@ fun DynamicSmartThingScreen(
                                 viewModel.onSliderActionChanged(
                                     entity,
                                     newValue,
-                                    "volume_set",
+                                    DomainServices.VOLUME_SET,
                                     "volume_level"
                                 )
                             },
@@ -116,7 +117,7 @@ fun DynamicSmartThingScreen(
                                 viewModel.onSwitchToggled(
                                     entity,
                                     true,
-                                    "media_play",
+                                    DomainServices.MEDIA_PLAY,
                                 )
                             }
                         )

@@ -8,6 +8,7 @@ import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thin
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.SmartDeviceUiState
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.ThingEntity
+import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,20 +73,20 @@ class DynamicSmartThingViewmodel(
     fun onSwitchToggled(
         entity: EntityUiModel,
         newValue: Boolean,
-        action: String? = null,
+        action: DomainServices? = null,
         attribute: String? = null
     ) {
         viewModelScope.launch {
             val entityId = entity.id
             updateEntityState(entityId) { it.copy(isUpdating = true) }
 
-            val action = action ?: if (newValue) "turn_on" else "turn_off"
+            val action = action ?: if (newValue) DomainServices.TURN_ON else DomainServices.TURN_OFF
             if (action !in entity.domain.services) {
                 return@launch
             }
             val success = useActionDevice.run(
                 thingId = entityId,
-                action = action,
+                action = action.serviceName,
                 newValue = newValue,
                 attribute = attribute
             )
@@ -111,7 +112,7 @@ class DynamicSmartThingViewmodel(
     fun onSliderActionChanged(
         entity: EntityUiModel,
         newValue: Float,
-        action: String,
+        action: DomainServices,
         attribute: String
     ) {
         viewModelScope.launch {
@@ -123,7 +124,7 @@ class DynamicSmartThingViewmodel(
             }
             useActionDevice.run(
                 thingId = entityId,
-                action = action,
+                action = action.serviceName,
                 newValue = newValue,
                 attribute = attribute
             )

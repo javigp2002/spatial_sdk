@@ -9,6 +9,6 @@ data class MediaPlayerAttributes(
 
 data class MediaPlayerDomain(
     override val value: Boolean,
-    override val services: List<String>,
+    override val services: List<DomainServices>,
     val attributes: MediaPlayerAttributes
 ) : Domain

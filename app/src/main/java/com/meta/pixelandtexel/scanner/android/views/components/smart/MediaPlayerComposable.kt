@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerAttributes
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
@@ -77,7 +78,10 @@ fun MediaPlayerComposable(
 fun MediaPlayerComposablePreview() {
     val thingEntity = MediaPlayerDomain(
         value = true,
-        services = listOf("turn_on", "turn_off", "volume_set", "volume_mute"),
+        services = listOf(
+            DomainServices.TURN_OFF, DomainServices.TURN_ON, DomainServices.VOLUME_SET,
+            DomainServices.VOLUME_MUTE, DomainServices.MEDIA_PLAY
+        ),
         attributes = MediaPlayerAttributes(
             volumeLevel = 0.5f,
             isMuted = false,

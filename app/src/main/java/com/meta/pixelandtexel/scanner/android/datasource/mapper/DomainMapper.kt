@@ -2,6 +2,7 @@ package com.meta.pixelandtexel.scanner.android.datasource.mapper
 
 import com.meta.pixelandtexel.scanner.android.datasource.dto.Attributes
 import com.meta.pixelandtexel.scanner.models.devices.domain.Domain
+import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerAttributes
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
@@ -15,7 +16,7 @@ object DomainMapper {
         return when (domainString) {
             "switch" -> SwitchDomain(
                 value = false,
-                services = listOf("turn_on", "turn_off")
+                services = listOf(DomainServices.TURN_OFF, DomainServices.TURN_ON)
             )
 
             "sensor" -> SensorDomain(
@@ -30,7 +31,10 @@ object DomainMapper {
 
             "media_player" -> MediaPlayerDomain(
                 value = false,
-                services = listOf("turn_on", "turn_off", "volume_set", "volume_mute"),
+                services = listOf(
+                    DomainServices.TURN_OFF, DomainServices.TURN_ON, DomainServices.VOLUME_SET,
+                    DomainServices.VOLUME_MUTE, DomainServices.MEDIA_PLAY
+                ),
                 attributes = MediaPlayerAttributes(
                     volumeLevel = null,
                     isMuted = null,
