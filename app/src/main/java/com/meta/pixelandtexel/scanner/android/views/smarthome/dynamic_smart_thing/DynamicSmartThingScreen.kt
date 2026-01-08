@@ -104,7 +104,7 @@ fun DynamicSmartThingScreen(
                                 viewModel.onSwitchToggled(
                                     entity,
                                     newValue,
-                                    DomainServices.VOLUME_SET,
+                                    DomainServices.VOLUME_MUTE,
                                     "is_volume_muted"
                                 )
                             },
