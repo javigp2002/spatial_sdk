@@ -76,6 +76,9 @@ fun EntityRow(
             } else {
                 if (actualValue is Boolean) {
                     var switchValue by remember { mutableStateOf(actualValue) }
+                    if (actualValue != switchValue) {
+                        switchValue = actualValue
+                    }
                     Switch(
                         checked = switchValue,
                         onCheckedChange = { isChecked ->
@@ -85,6 +88,9 @@ fun EntityRow(
                     )
                 } else if (actualValue is Float) {
                     var sliderPosition by remember { mutableFloatStateOf(actualValue) }
+                    if (actualValue != sliderPosition) {
+                        sliderPosition = actualValue
+                    }
                     Slider(
                         value = sliderPosition,
                         onValueChangeFinished = {
