@@ -55,7 +55,10 @@ fun DynamicSmartThingScreen(
             .padding(MyPaddings.M),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        ScrollableColumn {
+        Column(
+            modifier = Modifier
+                .padding(MyPaddings.M)
+        ) {
             Text(
                 text = uiState.deviceName,
                 style = MaterialTheme.typography.headlineMedium,
