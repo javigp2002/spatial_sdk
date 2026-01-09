@@ -8,6 +8,7 @@ import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thin
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.SmartDeviceUiState
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.ThingEntity
+import com.meta.pixelandtexel.scanner.models.devices.domain.AttributeServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
 import kotlinx.coroutines.delay
@@ -74,7 +75,7 @@ class DynamicSmartThingViewmodel(
         entity: EntityUiModel,
         newValue: Boolean,
         action: DomainServices? = null,
-        attribute: String? = null
+        attribute: AttributeServices? = null
     ) {
         viewModelScope.launch {
             val entityId = entity.id
@@ -88,7 +89,7 @@ class DynamicSmartThingViewmodel(
                 thingId = entityId,
                 action = action.serviceName,
                 newValue = newValue,
-                attribute = attribute
+                attribute = attribute?.serviceName
             )
 
             if (success) {
@@ -113,7 +114,7 @@ class DynamicSmartThingViewmodel(
         entity: EntityUiModel,
         newValue: Float,
         action: DomainServices,
-        attribute: String
+        attribute: AttributeServices
     ) {
         viewModelScope.launch {
             val entityId = entity.id
@@ -126,7 +127,7 @@ class DynamicSmartThingViewmodel(
                 thingId = entityId,
                 action = action.serviceName,
                 newValue = newValue,
-                attribute = attribute
+                attribute = attribute.serviceName
             )
 
             updateEntityState(entityId) { it.copy(isUpdating = false) }
