@@ -22,6 +22,7 @@ import com.meta.pixelandtexel.scanner.android.views.components.smart.EntityRow
 import com.meta.pixelandtexel.scanner.android.views.components.smart.LightComposable
 import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.android.views.components.smart.SensorGrid
+import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.EntityUiModel
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.domain.AttributeServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
@@ -37,6 +38,17 @@ fun DynamicSmartThingScreen(
     viewModel: DynamicSmartThingViewmodel,
     modifier: Modifier = Modifier
 ) {
+    fun onSwitchToggled(
+        entity: EntityUiModel,
+        newValue: Boolean,
+    ) {
+        var domainService = DomainServices.TURN_ON
+        if (!newValue) {
+            domainService = DomainServices.TURN_OFF
+        }
+        viewModel.onActionExecuted(entity, newValue, domainService)
+    }
+
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(device) {
         viewModel.initialize(device)
@@ -86,7 +98,7 @@ fun DynamicSmartThingScreen(
                             isUpdating = entity.isUpdating,
                             actualValue = entity.domain.value,
                             onSwitchToggle = { newValue ->
-                                viewModel.onSwitchToggled(entity, newValue)
+                                onSwitchToggled(entity, newValue)
                             },
                         )
                     } else if (entity.domain is MediaPlayerDomain) {
@@ -94,10 +106,10 @@ fun DynamicSmartThingScreen(
                             title = entity.name,
                             mediaPlayerDomain = entity.domain,
                             onStartChange = { newValue ->
-                                viewModel.onSwitchToggled(entity, newValue)
+                                onSwitchToggled(entity, newValue)
                             },
                             onMuteChange = { newValue ->
-                                viewModel.onSwitchToggled(
+                                viewModel.onActionExecuted(
                                     entity,
                                     newValue,
                                     DomainServices.VOLUME_MUTE,
@@ -105,7 +117,7 @@ fun DynamicSmartThingScreen(
                                 )
                             },
                             onVolumenChange = { newValue ->
-                                viewModel.onSliderActionChanged(
+                                viewModel.onActionExecuted(
                                     entity,
                                     newValue,
                                     DomainServices.VOLUME_SET,
@@ -113,7 +125,7 @@ fun DynamicSmartThingScreen(
                                 )
                             },
                             onPlayChange = { newValue ->
-                                viewModel.onSwitchToggled(
+                                viewModel.onActionExecuted(
                                     entity,
                                     true,
                                     DomainServices.MEDIA_PLAY,
@@ -124,10 +136,10 @@ fun DynamicSmartThingScreen(
                         LightComposable(
                             lightDomain = entity.domain,
                             onStateChange = { newValue ->
-                                viewModel.onSwitchToggled(entity, newValue)
+                                onSwitchToggled(entity, newValue)
                             },
                             onKelvinChange = { newValue ->
-                                viewModel.onSliderActionChanged(
+                                viewModel.onActionExecuted(
                                     entity,
                                     newValue,
                                     DomainServices.TURN_ON,
@@ -135,7 +147,7 @@ fun DynamicSmartThingScreen(
                                 )
                             },
                             onBrightnessChange = { newValue ->
-                                viewModel.onSliderActionChanged(
+                                viewModel.onActionExecuted(
                                     entity,
                                     newValue,
                                     DomainServices.TURN_ON,
@@ -158,7 +170,10 @@ fun DynamicSmartThingScreen(
             }
         }
     }
+
+
 }
+
 
 @Preview(widthDp = 400, heightDp = 100)
 @Composable

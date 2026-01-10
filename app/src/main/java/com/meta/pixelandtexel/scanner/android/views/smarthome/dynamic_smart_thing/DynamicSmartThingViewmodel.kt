@@ -55,16 +55,15 @@ class DynamicSmartThingViewmodel(
         }
     }
 
-    fun onSwitchToggled(
+    fun onActionExecuted(
         entity: EntityUiModel,
-        newValue: Boolean,
-        action: DomainServices? = null,
+        newValue: Any,
+        action: DomainServices,
         attribute: AttributeServices? = null
     ) {
         viewModelScope.launch {
             val entityId = entity.id
 
-            val action = action ?: if (newValue) DomainServices.TURN_ON else DomainServices.TURN_OFF
             if (action !in entity.domain.services) {
                 return@launch
             }
@@ -73,29 +72,6 @@ class DynamicSmartThingViewmodel(
                 action = action.serviceName,
                 newValue = newValue,
                 attribute = attribute?.serviceName
-            )
-            updateAllEntitiesState(_uiState.value)
-
-        }
-    }
-
-    fun onSliderActionChanged(
-        entity: EntityUiModel,
-        newValue: Float,
-        action: DomainServices,
-        attribute: AttributeServices
-    ) {
-        viewModelScope.launch {
-            val entityId = entity.id
-
-            if (action !in entity.domain.services) {
-                return@launch
-            }
-            useActionDevice.run(
-                thingId = entityId,
-                action = action.serviceName,
-                newValue = newValue,
-                attribute = attribute.serviceName
             )
 
             updateAllEntitiesState(_uiState.value)
