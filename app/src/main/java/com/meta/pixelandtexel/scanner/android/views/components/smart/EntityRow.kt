@@ -18,6 +18,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +40,8 @@ fun EntityRow(
     onSliderChange: ((Float) -> Unit)? = null,
     buttonIcon: ImageVector = Icons.Default.PlayArrow,
     onButtonToggled: (() -> Unit)? = null,
-
+    minMaxSlider: ClosedFloatingPointRange<Float> = 0f..1f,
+    enabled: Boolean = true
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -76,7 +78,7 @@ fun EntityRow(
             } else {
                 if (actualValue is Boolean) {
                     var switchValue by remember { mutableStateOf(actualValue) }
-                    if (actualValue != switchValue) {
+                    LaunchedEffect(actualValue) {
                         switchValue = actualValue
                     }
                     Switch(
@@ -84,13 +86,15 @@ fun EntityRow(
                         onCheckedChange = { isChecked ->
                             onSwitchToggle?.invoke(isChecked)
                             switchValue = isChecked
-                        }
+                        },
+                        enabled = enabled
                     )
                 } else if (actualValue is Float) {
                     var sliderPosition by remember { mutableFloatStateOf(actualValue) }
-                    if (actualValue != sliderPosition) {
+                    LaunchedEffect(actualValue) {
                         sliderPosition = actualValue
                     }
+
                     Slider(
                         value = sliderPosition,
                         onValueChangeFinished = {
@@ -99,7 +103,8 @@ fun EntityRow(
                         onValueChange = { volume ->
                             sliderPosition = volume
                         },
-                        valueRange = 0f..1f,
+                        valueRange = minMaxSlider,
+                        enabled = enabled
                     )
                 } else if (onButtonToggled != null) {
                     IconButton(

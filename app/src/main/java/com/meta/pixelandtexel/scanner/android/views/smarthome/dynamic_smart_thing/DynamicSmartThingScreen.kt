@@ -19,11 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.meta.pixelandtexel.scanner.android.views.components.smart.EntityRow
+import com.meta.pixelandtexel.scanner.android.views.components.smart.LightComposable
 import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.android.views.components.smart.SensorGrid
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.domain.AttributeServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
+import com.meta.pixelandtexel.scanner.models.devices.domain.LightDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
@@ -85,7 +87,7 @@ fun DynamicSmartThingScreen(
                             actualValue = entity.domain.value,
                             onSwitchToggle = { newValue ->
                                 viewModel.onSwitchToggled(entity, newValue)
-                            }
+                            },
                         )
                     } else if (entity.domain is MediaPlayerDomain) {
                         MediaPlayerComposable(
@@ -116,10 +118,31 @@ fun DynamicSmartThingScreen(
                                     true,
                                     DomainServices.MEDIA_PLAY,
                                 )
-                            }
+                            },
                         )
-
-
+                    } else if (entity.domain is LightDomain) {
+                        LightComposable(
+                            lightDomain = entity.domain,
+                            onStateChange = { newValue ->
+                                viewModel.onSwitchToggled(entity, newValue)
+                            },
+                            onKelvinChange = { newValue ->
+                                viewModel.onSliderActionChanged(
+                                    entity,
+                                    newValue,
+                                    DomainServices.TURN_ON,
+                                    AttributeServices.COLOR_TEMP_KELVIN
+                                )
+                            },
+                            onBrightnessChange = { newValue ->
+                                viewModel.onSliderActionChanged(
+                                    entity,
+                                    newValue,
+                                    DomainServices.TURN_ON,
+                                    AttributeServices.BRIGHTNESS
+                                )
+                            },
+                        )
                     }
                 }
 

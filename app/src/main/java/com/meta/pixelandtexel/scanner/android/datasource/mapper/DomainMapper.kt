@@ -3,6 +3,8 @@ package com.meta.pixelandtexel.scanner.android.datasource.mapper
 import com.meta.pixelandtexel.scanner.android.datasource.dto.Attributes
 import com.meta.pixelandtexel.scanner.models.devices.domain.Domain
 import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
+import com.meta.pixelandtexel.scanner.models.devices.domain.LightAttributes
+import com.meta.pixelandtexel.scanner.models.devices.domain.LightDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerAttributes
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
@@ -41,6 +43,11 @@ object DomainMapper {
                     source = null
                 )
             )
+            "light" -> LightDomain(
+                value = false,
+                services = listOf(DomainServices.TURN_OFF, DomainServices.TURN_ON),
+                attributes = LightAttributes()
+            )
 
             else -> null
         }
@@ -71,6 +78,24 @@ object DomainMapper {
                         volumeLevel = attributes?.volumeLevel,
                         isMuted = attributes?.isVolumeMuted,
                         source = attributes?.source
+                    )
+                )
+            }
+
+            is LightDomain -> {
+                val newValueBoolean =
+                    newValue.equals("ON", ignoreCase = true) || newValue.equals(
+                        "true",
+                        ignoreCase = true
+                    )
+                domain.copy(
+                    value = newValueBoolean,
+                    attributes = LightAttributes(
+                        brightness = attributes?.brightness,
+                        colorTempKelvin = attributes?.colorTempKelvin,
+                        hsColor = attributes?.hsColor,
+                        minColorTempKelvin = attributes?.minColorTempKelvin,
+                        maxColorTempKelvin = attributes?.maxColorTempKelvin,
                     )
                 )
             }
