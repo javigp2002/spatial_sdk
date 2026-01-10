@@ -79,17 +79,6 @@ class DynamicSmartThingViewmodel(
 
     }
 
-
-    private fun updateEntityState(entityId: String, update: (EntityUiModel) -> EntityUiModel) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                entities = currentState.entities.map { entity ->
-                    if (entity.id == entityId) update(entity) else entity
-                }
-            )
-        }
-    }
-
     private suspend fun updateAllEntitiesState(newState: SmartDeviceUiState) {
         val listThings = newState.entities.map { ThingEntity(id = it.id, domain = it.domain) }
         delay(DELAY_FOR_UPDATING_FROM_API_MS)
