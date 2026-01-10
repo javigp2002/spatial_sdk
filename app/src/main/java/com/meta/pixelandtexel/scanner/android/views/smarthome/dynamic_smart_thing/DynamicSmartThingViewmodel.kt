@@ -10,7 +10,6 @@ import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.ThingEntity
 import com.meta.pixelandtexel.scanner.models.devices.domain.AttributeServices
 import com.meta.pixelandtexel.scanner.models.devices.domain.DomainServices
-import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +22,7 @@ class DynamicSmartThingViewmodel(
 ) : ViewModel() {
     companion object {
         private const val WAIT_FOR_NEXT_REQUEST_MS = 5000L
+        private const val DELAY_FOR_UPDATING_FROM_API_MS = 500L
     }
     private val _uiState = MutableStateFlow(SmartDeviceUiState())
     val uiState: StateFlow<SmartDeviceUiState> = _uiState
@@ -39,36 +39,20 @@ class DynamicSmartThingViewmodel(
                 }
         )
 
-        _uiState.value = newState
+        viewModelScope.launch {
+            updateAllEntitiesState(newState)
+        }
 
+        updateStatePeriodically()
+    }
+
+    fun updateStatePeriodically() {
         viewModelScope.launch {
             while (true) {
-                val updatedEntities = getDeviceInfoUsecase.run(_uiState.value.entities.map {
-                    ThingEntity(
-                        id = it.id,
-                        domain = it.domain
-                    )
-                })
-
-                if (updatedEntities.isEmpty()) {
-                    delay(WAIT_FOR_NEXT_REQUEST_MS)
-                    continue
-                }
-
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        entities = updatedEntities.map { entity ->
-                            EntityUiModel.fromThingEntityWithoutDeviceName(
-                                thingEntity = entity,
-                                deviceName = currentState.deviceName
-                            )
-                        }
-                    )
-                }
+                updateAllEntitiesState(_uiState.value)
                 delay(WAIT_FOR_NEXT_REQUEST_MS)
             }
         }
-
     }
 
     fun onSwitchToggled(
@@ -79,34 +63,19 @@ class DynamicSmartThingViewmodel(
     ) {
         viewModelScope.launch {
             val entityId = entity.id
-            updateEntityState(entityId) { it.copy(isUpdating = true) }
 
             val action = action ?: if (newValue) DomainServices.TURN_ON else DomainServices.TURN_OFF
             if (action !in entity.domain.services) {
                 return@launch
             }
-            val success = useActionDevice.run(
+            useActionDevice.run(
                 thingId = entityId,
                 action = action.serviceName,
                 newValue = newValue,
                 attribute = attribute?.serviceName
             )
+            updateAllEntitiesState(_uiState.value)
 
-            if (success) {
-                updateEntityState(entityId) { currentEntity ->
-                    val currentDomain = currentEntity.domain
-                    if (currentDomain is SwitchDomain) {
-                        currentEntity.copy(
-                            domain = currentDomain.copy(value = newValue),
-                            isUpdating = false
-                        )
-                    } else {
-                        currentEntity.copy(isUpdating = false)
-                    }
-                }
-            } else {
-                updateEntityState(entityId) { it.copy(isUpdating = false) }
-            }
         }
     }
 
@@ -118,7 +87,6 @@ class DynamicSmartThingViewmodel(
     ) {
         viewModelScope.launch {
             val entityId = entity.id
-            updateEntityState(entityId) { it.copy(isUpdating = true) }
 
             if (action !in entity.domain.services) {
                 return@launch
@@ -130,7 +98,7 @@ class DynamicSmartThingViewmodel(
                 attribute = attribute.serviceName
             )
 
-            updateEntityState(entityId) { it.copy(isUpdating = false) }
+            updateAllEntitiesState(_uiState.value)
         }
 
     }
@@ -142,6 +110,25 @@ class DynamicSmartThingViewmodel(
                 entities = currentState.entities.map { entity ->
                     if (entity.id == entityId) update(entity) else entity
                 }
+            )
+        }
+    }
+
+    private suspend fun updateAllEntitiesState(newState: SmartDeviceUiState) {
+        val listThings = newState.entities.map { ThingEntity(id = it.id, domain = it.domain) }
+        delay(DELAY_FOR_UPDATING_FROM_API_MS)
+
+        val updatedEntities = getDeviceInfoUsecase.run(listThings)
+
+        val newEntities = updatedEntities.map { entity ->
+            EntityUiModel.fromThingEntityWithoutDeviceName(
+                thingEntity = entity,
+                deviceName = newState.deviceName
+            )
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                entities = newEntities,
             )
         }
     }
