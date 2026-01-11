@@ -1,5 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository
 
+import com.meta.pixelandtexel.scanner.FollowHead
+import com.meta.pixelandtexel.scanner.RotationMode
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.models.EntityData
 import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
@@ -41,10 +43,11 @@ class DisplayedEntityRepository : IDisplayedEntityRepository {
 
         this.newViewModelData = EntityData(nextId, data)
 
-        val entity = Entity.Companion.createPanelEntity(
+        val entity = Entity.createPanelEntity(
             panelId,
             Transform(spawnPose),
-            Grabbable(type = GrabbableType.PIVOT_Y)
+            Grabbable(type = GrabbableType.PIVOT_Y),
+            FollowHead(lookAtHead = true, rotationMode = RotationMode.FULL)
         )
         entitiesHashMap[nextId] = entity
         return entity

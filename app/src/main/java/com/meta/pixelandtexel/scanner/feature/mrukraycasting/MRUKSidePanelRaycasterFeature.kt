@@ -2,15 +2,18 @@ package com.meta.pixelandtexel.scanner.feature.mrukraycasting
 
 import android.os.Bundle
 import com.meta.pixelandtexel.scanner.DiApplication
+import com.meta.pixelandtexel.scanner.FollowHead
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.DynamicSmartThingScreen
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.DynamicSmartThingViewmodel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.MrukRaycastModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.system.FollowHeadSystem
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.core.ComponentRegistration
 import com.meta.spatial.core.Pose
+import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
 import com.meta.spatial.core.SystemBase
 import com.meta.spatial.runtime.LayerConfig
@@ -34,7 +37,7 @@ class MRUKSidePanelRaycasterFeature(
     private val activity: AppSystemActivity,
 ) : SpatialFeature {
     companion object {
-        private const val TAG = "ObjectDetectionFeature"
+        private const val TAG = "MRUKSidePanelRaycasterFeature"
     }
 
     private val subscriptionScope = CoroutineScope(Dispatchers.Main)
@@ -92,11 +95,17 @@ class MRUKSidePanelRaycasterFeature(
 
     override fun systemsToRegister(): List<SystemBase> {
         val systems = mutableListOf<SystemBase>()
+        systems.add(FollowHeadSystem())
         return systems
     }
 
     override fun componentsToRegister(): List<ComponentRegistration> {
-        return listOf()
+        return listOf(
+            ComponentRegistration.createConfig<FollowHead>(
+                FollowHead.Companion,
+                SendRate.DEFAULT,
+            ),
+        )
     }
 
     override fun onSceneReady() {
