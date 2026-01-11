@@ -1,18 +1,17 @@
 package com.meta.pixelandtexel.scanner.android.datasource.dto
 
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class DeviceListResponseDto(
-    @SerialName("devices")
+    @SerializedName("devices")
     val devices: List<SmartDeviceDto>
 )
 
 @Serializable
 data class SmartDeviceDto(
-    @SerialName("name")
+    @SerializedName("name")
     val name: String,
-    @SerialName("entities")
+    @SerializedName("entities")
     val entities: List<String>
 )

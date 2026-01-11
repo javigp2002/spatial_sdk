@@ -1,30 +1,44 @@
 package com.meta.pixelandtexel.scanner.android.datasource.dto
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class ThingsResponseDto(
-    @SerialName("entity_id") val entityId: String,
+    @SerializedName("entity_id") val entityId: String,
     val state: String,
-    val attributes: Attributes?,
-    @SerialName("last_changed") val lastChanged: String?,
-    @SerialName("last_reported") val lastReported: String?,
-    @SerialName("last_updated") val lastUpdated: String?,
+    @SerializedName("attributes") val attributes: Attributes?,
+    @SerializedName("last_changed") val lastChanged: String?,
+    @SerializedName("last_reported") val lastReported: String?,
+    @SerializedName("last_updated") val lastUpdated: String?,
     val context: Context?
 )
 
-@Serializable
 data class Attributes(
-    @SerialName("device_class") val deviceClass: String? = null,
-    @SerialName("friendly_name") val friendlyName: String? = null,
-    @SerialName("state_class") val stateClass: String? = null,
-    @SerialName("unit_of_measurement") val unitOfMeasurement: String? = null
+    @SerializedName("device_class") val deviceClass: String? = null,
+    @SerializedName("friendly_name") val friendlyName: String? = null,
+    @SerializedName("state_class") val stateClass: String? = null,
+    @SerializedName("unit_of_measurement") val unitOfMeasurement: String? = null,
+    @SerializedName("volume_level") val volumeLevel: Float? = null,
+    @SerializedName("is_volume_muted") val isVolumeMuted: Boolean? = null,
+    @SerializedName("source_list") val source: List<String>? = null,
+    @SerializedName("min_color_temp_kelvin") val minColorTempKelvin: Int? = null,
+    @SerializedName("max_color_temp_kelvin") val maxColorTempKelvin: Int? = null,
+    @SerializedName("min_mireds") val minMireds: Int? = null,
+    @SerializedName("max_mireds") val maxMireds: Int? = null,
+    @SerializedName("effect_list") val effectList: List<String>? = null,
+    @SerializedName("supported_color_modes") val supportedColorModes: List<String>? = null,
+    @SerializedName("effect") val effect: String? = null,
+    @SerializedName("color_mode") val colorMode: String? = null,
+    @SerializedName("brightness") val brightness: Int? = null,
+    @SerializedName("color_temp_kelvin") val colorTempKelvin: Int? = null,
+    @SerializedName("color_temp") val colorTemp: Int? = null,
+    @SerializedName("hs_color") val hsColor: List<Double>? = null,
+    @SerializedName("rgb_color") val rgbColor: List<Int>? = null,
+    @SerializedName("xy_color") val xyColor: List<Double>? = null,
+    @SerializedName("supported_features") val supportedFeatures: Int? = null
 )
 
-@Serializable
 data class Context(
     val id: String,
-    @SerialName("parent_id") val parentId: String? = null,
-    @SerialName("user_id") val userId: String? = null
+    @SerializedName("parent_id") val parentId: String? = null,
+    @SerializedName("user_id") val userId: String? = null
 )

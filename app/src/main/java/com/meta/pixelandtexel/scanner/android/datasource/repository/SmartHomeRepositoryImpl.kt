@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner.android.datasource.repository
 
-import com.meta.pixelandtexel.scanner.android.datasource.dto.EntityIdDto
 import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
 import com.meta.pixelandtexel.scanner.android.datasource.mapper.DeviceMapper
 import com.meta.pixelandtexel.scanner.android.datasource.mapper.DomainMapper
@@ -62,7 +61,11 @@ class SmartHomeRepositoryImpl (
                 }
 
                 entity.copy(
-                    domain = DomainMapper.fromOtherDomainNewValue(entity.domain, newState)
+                    domain = DomainMapper.fromOtherDomainNewValue(
+                        entity.domain,
+                        newState,
+                        responseBody.attributes
+                    )
                 )
             }
             return updatedEntities
@@ -73,18 +76,24 @@ class SmartHomeRepositoryImpl (
 
     }
 
-    override suspend fun getActionForThing(thingId: String, action: String): Boolean {
+    override suspend fun getActionForThing(
+        thingId: String,
+        action: String,
+        newValue: Pair<String, Any>?
+    ): Boolean {
         return try {
             val thingDomain = thingId.substringBefore(".", missingDelimiterValue = "")
             val service = action.lowercase()
-            val body = EntityIdDto(
-                entity_id = thingId
-            )
+            val bodyMap = mutableMapOf<String, Any>("entity_id" to thingId)
+            if (newValue != null) {
+                bodyMap[newValue.first] = newValue.second
+            }
+
 
             val response = api.postActionToDeviceDomain(
                 device = thingDomain,
                 action = service,
-                body = body
+                body = bodyMap.toMap()
             )
 
             response.isSuccessful

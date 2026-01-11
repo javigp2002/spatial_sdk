@@ -29,7 +29,7 @@
 
     <uses-feature
     android:name="oculus.software.handtracking"
-    android:required="false"
+            android:required="true"
   />
 
     <uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
