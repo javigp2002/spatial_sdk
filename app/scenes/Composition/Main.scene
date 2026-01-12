@@ -5,9 +5,6 @@ entities:
           {}
         com.meta.components.Scene:
           nodes:
-            - ref:Fridge
-            - ref:TV
-            - ref:Phone
             - ref:WelcomePanel
             - ref:CameraControlsPanel
             - ref:HelpButtonPanel
@@ -47,46 +44,6 @@ entities:
     - components:
         com.meta.components.Animatable:
           {}
-        com.meta.components.DocumentReference:
-          transformType: None
-          documentReference: projref:Fridge/Main.metaspatialobj
-        com.meta.components.Name:
-          name: Fridge
-        com.meta.components.PointerNodeInverseComponent:
-          {}
-        com.meta.components.SceneNode:
-          rotation.format: Euler
-          scale:
-            - 1
-            - 1
-            - 1
-          translation:
-            - 1.5
-            - -100
-            - 0
-          componentVersion: 1
-          children:
-            - ref:max
-            - ref:min
-        com.meta.spatial.toolkit.Animated:
-          track: projref:Fridge?tag=CloseToOpen
-        com.meta.spatial.toolkit.Box:
-          min:
-            - -0.419999987
-            - -0.810000002
-            - 0
-          max:
-            - 0.419999987
-            - 0.819999993
-            - 0.769999981
-        com.meta.spatial.toolkit.Grabbable:
-          type: 1
-        com.meta.spatial.toolkit.Visible:
-          {}
-      tag: Fridge
-    - components:
-        com.meta.components.Animatable:
-          {}
         com.meta.components.Name:
           name: WelcomePanel
         com.meta.components.PointerNodeInverseComponent:
@@ -114,86 +71,6 @@ entities:
         com.meta.spatial.toolkit.PanelDimensions:
           {}
       tag: WelcomePanel
-    - components:
-        com.meta.components.Animatable:
-          {}
-        com.meta.components.DocumentReference:
-          transformType: None
-          documentReference: projref:TV/Main.metaspatialobj
-        com.meta.components.Name:
-          name: TV
-        com.meta.components.PointerNodeInverseComponent:
-          {}
-        com.meta.components.SceneNode:
-          rotation.format: Euler
-          scale:
-            - 1
-            - 1
-            - 1
-          translation:
-            - 0
-            - -100
-            - 0
-          componentVersion: 1
-          children:
-            - ref:max1
-            - ref:min1
-        com.meta.spatial.toolkit.Animated:
-          track: projref:TV?tag=FrontToBack
-        com.meta.spatial.toolkit.Box:
-          min:
-            - -0.5
-            - -0.300000012
-            - 0
-          max:
-            - 0.50999999
-            - 0.300000012
-            - 0.100000001
-        com.meta.spatial.toolkit.Grabbable:
-          type: 1
-        com.meta.spatial.toolkit.Visible:
-          {}
-      tag: TV
-    - components:
-        com.meta.components.Animatable:
-          {}
-        com.meta.components.DocumentReference:
-          transformType: None
-          documentReference: projref:Phone/Main.metaspatialobj
-        com.meta.components.Name:
-          name: Phone
-        com.meta.components.PointerNodeInverseComponent:
-          {}
-        com.meta.components.SceneNode:
-          rotation.format: Euler
-          scale:
-            - 1
-            - 1
-            - 1
-          translation:
-            - -1.5
-            - -100
-            - 0
-          componentVersion: 1
-          children:
-            - ref:max2
-            - ref:min2
-        com.meta.spatial.toolkit.Animated:
-          track: projref:Phone?tag=FrontToBack
-        com.meta.spatial.toolkit.Box:
-          max:
-            - 0.209999993
-            - 0.449999988
-            - 0.0599999987
-          min:
-            - -0.219999999
-            - -0.460000008
-            - -0.0299999993
-        com.meta.spatial.toolkit.Grabbable:
-          type: 1
-        com.meta.spatial.toolkit.Visible:
-          {}
-      tag: Phone
     - components:
         com.meta.components.Animatable:
           {}
