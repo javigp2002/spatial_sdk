@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner
 
 import android.app.Application
+import androidx.room.Room.databaseBuilder
 import com.meta.pixelandtexel.scanner.datasource.network.networkModule
 import com.meta.pixelandtexel.scanner.android.datasource.repository.SmartHomeRepositoryImpl
 import com.meta.pixelandtexel.scanner.android.domain.repository.SmartHomeRepository
@@ -8,6 +9,8 @@ import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDeviceInfoUseca
 import com.meta.pixelandtexel.scanner.android.domain.usecases.GetDevicesOfASmarthomeType
 import com.meta.pixelandtexel.scanner.android.domain.usecases.UseActionDevice
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.MRUKObjectsRepositoryImpl
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.MrukDatabase
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.MrukLocalDatasource
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.IObjectDetectorHelper
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.MLKitObjectDetector
@@ -27,8 +30,18 @@ val appModule = module {
         ObjectDetectionRepository(get(), get())
     }
 
+    single {
+        databaseBuilder(
+            androidContext(),
+            MrukDatabase::class.java,
+            "mruk_db"
+        ).build()
+    }
 
-    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get()) }
+    single { get<MrukDatabase>().mrukDao() }
+    single { MrukLocalDatasource(get()) }
+
+    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get(), get()) }
     single<SmartHomeRepository>{
         SmartHomeRepositoryImpl(get())
     }

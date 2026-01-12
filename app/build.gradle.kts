@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.android)
   alias(libs.plugins.meta.spatial.plugin)
   alias(libs.plugins.jetbrains.kotlin.plugin.compose)
+  id("com.google.devtools.ksp")
 }
 
 val httpApi: String = gradleLocalProperties(rootDir, providers).getProperty("HTTP_API")
@@ -122,6 +123,10 @@ dependencies {
   implementation(libs.koin.android)
 
   implementation ("com.google.code.gson:gson:2.13.2")
+
+  // database
+  implementation(libs.androidx.room.runtime)
+  ksp(libs.androidx.room.compiler)
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }
