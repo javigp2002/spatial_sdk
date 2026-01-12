@@ -4,6 +4,8 @@ import android.net.Uri
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.MrukRaycastModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.ObjectEntityModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
+import com.meta.pixelandtexel.scanner.models.devices.Device
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.MrukLocalDatasource
 import com.meta.spatial.core.Entity
 import com.meta.spatial.core.Pose
 import com.meta.spatial.core.Vector3
@@ -15,14 +17,13 @@ import com.meta.spatial.toolkit.Transform
 import com.meta.spatial.toolkit.Visible
 import com.meta.spatial.toolkit.createPanelEntity
 import com.meta.pixelandtexel.scanner.R
-import com.meta.pixelandtexel.scanner.datasource.network.SmartHomeApi
-import com.meta.pixelandtexel.scanner.models.devices.Device
-import com.meta.spatial.core.Quaternion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKObjectsRepository {
+class MRUKObjectsRepositoryImpl(
+    private val localDatasource: MrukLocalDatasource,
+) : IMRUKObjectsRepository {
 
     override var lastAddedObjectDevice: Device? = null
 
@@ -31,6 +32,7 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
 
     override suspend fun addMRUKObject(addObject: MrukRaycastModel): Boolean {
         if (!mrukEntities.containsKey(addObject.device.name)) {
+            localDatasource.save(addObject)
 
             val newMeshPose = Pose(addObject.pose.t, addObject.pose.q)
 
@@ -62,36 +64,28 @@ class MRUKObjectsRepositoryImpl(private val smartHomeApi: SmartHomeApi) : IMRUKO
         }
     }
 
+    override suspend fun deleteFromDatabase(objectId: String): Boolean {
+        val deleteMRUKObject = deleteMRUKObject(objectId)
+        localDatasource.delete(objectId)
+        return deleteMRUKObject
+    }
+
     override suspend fun deleteMRUKObject(objectId: String): Boolean {
         return if (mrukEntities.containsKey(objectId)) {
             val objectEntityModel = mrukEntities[objectId]
             objectEntityModel?.objectEntity?.destroy()
             objectEntityModel?.panelEntity?.destroy()
             mrukEntities.remove(objectId)
+
             true
         } else {
             false
         }
     }
 
-    override suspend fun getAllMRUKObjects(): Boolean {
-        withContext(Dispatchers.IO) {
-            // llamar a la api
-//           val models = smartHomeApi.getAllDevicesOfASmarthomeType()
-
-            val smartThingRaycastModel = MrukRaycastModel(
-                device = Device(
-                    name = "Smart Thing 1",
-                    entityList = emptyList()
-                ),
-                pose = Pose(
-                    Vector3(-1.6329944f, 0.7017277f, -1.3612689f),
-                    Quaternion(-0.1479072f, -0.14790718f, 0.6914648f, -0.69146466f)
-                )
-            )
-            addMRUKObject(smartThingRaycastModel)
+    override suspend fun getAllMRUKObjects(): List<MrukRaycastModel> {
+        return withContext(Dispatchers.IO) {
+            localDatasource.getAll()
         }
-        return true
-
     }
 }

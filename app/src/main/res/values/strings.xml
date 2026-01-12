@@ -70,4 +70,6 @@
         - Capture the Moment: With an unmatched 2-in-1 camera system, you\'ll get the shot you want no matter the lighting.\n
         - Powerfully Professional: 6-core GPU, 6 core CPU, and a neural engine mean you\'ve never been faster at getting things done.
     </string>
+
+    <string name="db_name">mruk_db</string>
 </resources>

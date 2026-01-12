@@ -18,7 +18,9 @@ import kotlinx.coroutines.launch
 
 class DynamicSmartThingViewmodel(
     private val getDeviceInfoUsecase: GetDeviceInfoUsecase,
-    private val useActionDevice: UseActionDevice
+    private val useActionDevice: UseActionDevice,
+    val onCloseSmartThing: () -> Unit = {},
+    val onDisconnectDevice: () -> Unit = {}
 ) : ViewModel() {
     companion object {
         private const val WAIT_FOR_NEXT_REQUEST_MS = 5000L
@@ -41,18 +43,17 @@ class DynamicSmartThingViewmodel(
 
         viewModelScope.launch {
             updateAllEntitiesState(newState)
+            updateStatePeriodically()
         }
 
-        updateStatePeriodically()
     }
 
-    fun updateStatePeriodically() {
-        viewModelScope.launch {
-            while (true) {
-                updateAllEntitiesState(_uiState.value)
-                delay(WAIT_FOR_NEXT_REQUEST_MS)
-            }
+    suspend fun updateStatePeriodically() {
+        while (true) {
+            updateAllEntitiesState(_uiState.value)
+            delay(WAIT_FOR_NEXT_REQUEST_MS)
         }
+
     }
 
     fun onActionExecuted(
@@ -94,6 +95,7 @@ class DynamicSmartThingViewmodel(
         _uiState.update { currentState ->
             currentState.copy(
                 entities = newEntities,
+                deviceName = newState.deviceName
             )
         }
     }

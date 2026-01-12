@@ -15,6 +15,7 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.repository.DisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.dbModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
@@ -26,7 +27,6 @@ val appModule = module {
     single<IObjectDetectionRepository> {
         ObjectDetectionRepository(get(), get())
     }
-
 
     single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get()) }
     single<SmartHomeRepository>{
@@ -45,7 +45,7 @@ class DiApplication : Application() {
 
         startKoin {
             androidContext(this@DiApplication)
-            modules(networkModule, appModule)
+            modules(networkModule, dbModule, appModule)
         }
     }
 }
