@@ -1,6 +1,7 @@
+package com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local
+
 import androidx.room.Room.databaseBuilder
-import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.MrukDatabase
-import com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource.local.MrukLocalDatasource
+import com.meta.pixelandtexel.scanner.R
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -9,7 +10,7 @@ val dbModule = module {
         databaseBuilder(
             androidContext(),
             MrukDatabase::class.java,
-            "mruk_db"
+            androidContext().getString(R.string.db_name)
         ).build()
     }
 
