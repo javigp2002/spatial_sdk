@@ -22,8 +22,6 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFea
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
 import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
-import com.meta.pixelandtexel.scanner.services.TipManager
-import com.meta.pixelandtexel.scanner.services.UserEvent
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
 import com.meta.spatial.compose.ComposeFeature
 import com.meta.spatial.compose.composePanel
@@ -79,7 +77,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
     private lateinit var mrukFeature: MRUKFeature
     private lateinit var mrukSidePanelRaycasterFeature: MRUKSidePanelRaycasterFeature
-    private lateinit var tipManager: TipManager
 
 
     lateinit var entityRepository: IDisplayedEntityRepository
@@ -114,10 +111,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
         // extra object detection handling and usability
         entityRepository = get()
-        tipManager =
-            TipManager(this) {
-                stopScanning()
-            }
 
         // register systems/components
         systemManager.unregisterSystem<LocomotionSystem>()
@@ -222,8 +215,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                         welcomePanelEntity?.destroy()
                         welcomePanelEntity = null
                         stopScanning()
-                        tipManager.dismissTipPanels()
-
                         loadScene(true)
 
                         activityScope.launch {
@@ -342,13 +333,11 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     /** Activates the object detection feature scanning, which turns on the user's camera. */
     private fun startScanning() {
         objectDetectionFeature.scan()
-        tipManager.reportUserEvent(UserEvent.STARTED_SCANNING)
     }
 
     /** Stops the object detection and device camera. */
     private fun stopScanning() {
         objectDetectionFeature.pause()
-        tipManager.reportUserEvent(UserEvent.DETECTED_OBJECT)
     }
 
     /**
