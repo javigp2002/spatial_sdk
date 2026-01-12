@@ -224,7 +224,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                         stopScanning()
                         tipManager.dismissTipPanels()
 
-//                        tipManager.showHelpPanel()
                         loadScene(true)
 
                         activityScope.launch {
@@ -360,7 +359,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private fun onObjectDetectionFeatureStatusChanged(newStatus: CameraStatus) {
         cameraControlsBtn?.setBackgroundResource(
             when (newStatus) {
-                CameraStatus.PAUSED -> com.meta.spatial.uiset.R.drawable.ic_play_circle_24
+                CameraStatus.PAUSED -> R.drawable.scan_svgrepo_com
                 CameraStatus.SCANNING -> com.meta.spatial.uiset.R.drawable.ic_pause_circle_24
             }
         )
