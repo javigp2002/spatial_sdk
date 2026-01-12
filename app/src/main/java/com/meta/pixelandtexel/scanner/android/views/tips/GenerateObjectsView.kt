@@ -33,7 +33,7 @@ fun GenerateObjectsView(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(R.drawable.tip_refrigerator),
+            painter = painterResource(R.drawable.placeholder),
             contentDescription = stringResource(R.string.refrigerator_image_description),
             modifier = Modifier.fillMaxWidth(),
             colorFilter = ColorFilter.tint(Color(0x88000000), BlendMode.Darken),
