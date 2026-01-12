@@ -23,7 +23,7 @@
 
     <!-- Welcome panel -->
     <string name="notice">
-        This application uses generative AI to describe the content of images, and those responses may be inaccurate or inappropriate. [Learn More](https://www.facebook.com/privacy/guide/genai/). Your queries and the generative AI responses are not retained by Meta.
+        This app has been implemented to be able to scan and identify objects in your environment using Mixed Reality capabilities. No information is sent to any external servers.
     </string>
     <string name="camera_controls_title">Camera Controls</string>
     <string name="camera_controls_1">
@@ -35,9 +35,7 @@
 
     <!-- Tips -->
     <string name="select_object_title">Select Object</string>
-    <string
-    name="select_object_copy"
-  >Select an object to learn more information about it.</string>
+    <string name="select_object_copy">Select an object to be able to configure it for Mixed Reality.</string>
     <string name="no_objects_detected_title">No Objects Detected</string>
     <string
     name="no_objects_detected_body"

@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -195,13 +194,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                                             get() = OnBackPressedDispatcher()
                                     }
                         ) {
-                            WelcomeScreen(
-                                onLinkClicked = {
-                                    val uri = it.toUri()
-                                    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-                                    startActivity(browserIntent)
-                                }
-                            ) {
+                            WelcomeScreen {
                                 welcomePanelEntity?.destroy()
                                 welcomePanelEntity = null
                             }
@@ -356,6 +349,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     /** Stops the object detection and device camera. */
     private fun stopScanning() {
         objectDetectionFeature.pause()
+        tipManager.reportUserEvent(UserEvent.DETECTED_OBJECT)
     }
 
     /**
