@@ -8,6 +8,7 @@ interface IMRUKObjectsRepository {
     var lastAddedObjectDevice: Device?
     val mrukEntities: HashMap<String, ObjectEntityModel>
     suspend fun addMRUKObject(addObject: MrukRaycastModel): Boolean
+    suspend fun deleteFromDatabase(objectId: String): Boolean
     suspend fun deleteMRUKObject(objectId: String): Boolean
     suspend fun getAllMRUKObjects(): List<MrukRaycastModel>
 }

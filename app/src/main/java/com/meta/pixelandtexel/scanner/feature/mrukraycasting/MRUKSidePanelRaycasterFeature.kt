@@ -77,7 +77,8 @@ class MRUKSidePanelRaycasterFeature(
                         val viewmodel = DynamicSmartThingViewmodel(
                             di.get(),
                             di.get(),
-                            onCloseSmartThing = { removeSmartThing(device.name) })
+                            onCloseSmartThing = { removeSmartThing(device.name) },
+                            onDisconnectDevice = { disconnectSmartThing(device.name) })
                         DynamicSmartThingScreen(
                             device = device,
                             viewModel = viewmodel,
@@ -100,6 +101,12 @@ class MRUKSidePanelRaycasterFeature(
     fun removeSmartThing(deviceName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             mrukObjectRepository.deleteMRUKObject(deviceName)
+        }
+    }
+
+    fun disconnectSmartThing(deviceName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            mrukObjectRepository.deleteFromDatabase(deviceName)
         }
     }
 

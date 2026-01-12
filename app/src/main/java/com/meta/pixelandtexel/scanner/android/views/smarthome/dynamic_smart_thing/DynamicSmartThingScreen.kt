@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -166,6 +167,16 @@ fun DynamicSmartThingScreen(
                             modifier = Modifier
                                 .padding(top = MyPaddings.L)
                         )
+                    }
+                }
+
+
+
+                item {
+                    Button(
+                        onClick = { viewModel.onDisconnectDevice() }
+                    ) {
+                        Text(text = "Disconnect Common Device")
                     }
                 }
             }

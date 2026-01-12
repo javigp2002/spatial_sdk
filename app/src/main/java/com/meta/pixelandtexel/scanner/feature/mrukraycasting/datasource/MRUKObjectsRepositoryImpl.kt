@@ -64,6 +64,12 @@ class MRUKObjectsRepositoryImpl(
         }
     }
 
+    override suspend fun deleteFromDatabase(objectId: String): Boolean {
+        val deleteMRUKObject = deleteMRUKObject(objectId)
+        localDatasource.delete(objectId)
+        return deleteMRUKObject
+    }
+
     override suspend fun deleteMRUKObject(objectId: String): Boolean {
         return if (mrukEntities.containsKey(objectId)) {
             val objectEntityModel = mrukEntities[objectId]
@@ -71,7 +77,6 @@ class MRUKObjectsRepositoryImpl(
             objectEntityModel?.panelEntity?.destroy()
             mrukEntities.remove(objectId)
 
-            localDatasource.delete(objectId)
             true
         } else {
             false
