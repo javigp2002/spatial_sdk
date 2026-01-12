@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,8 +72,11 @@ fun DynamicSmartThingScreen(
                 text = uiState.deviceName,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = MyPaddings.M)
+                modifier = Modifier.padding(bottom = MyPaddings.M),
+                color = MaterialTheme.colorScheme.primary
             )
+
+            HorizontalDivider(thickness = 3.dp)
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(MyPaddings.S)
