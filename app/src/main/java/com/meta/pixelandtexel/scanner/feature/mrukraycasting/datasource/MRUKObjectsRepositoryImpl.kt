@@ -72,7 +72,6 @@ class MRUKObjectsRepositoryImpl(
             mrukEntities.remove(objectId)
 
             localDatasource.delete(objectId)
-
             true
         } else {
             false

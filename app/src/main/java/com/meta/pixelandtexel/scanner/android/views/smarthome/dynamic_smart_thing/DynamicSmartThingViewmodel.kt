@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class DynamicSmartThingViewmodel(
     private val getDeviceInfoUsecase: GetDeviceInfoUsecase,
-    private val useActionDevice: UseActionDevice
+    private val useActionDevice: UseActionDevice,
+    val onCloseSmartThing: () -> Unit = {}
 ) : ViewModel() {
     companion object {
         private const val WAIT_FOR_NEXT_REQUEST_MS = 5000L
