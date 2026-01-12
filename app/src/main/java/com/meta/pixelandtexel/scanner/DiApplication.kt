@@ -41,7 +41,7 @@ val appModule = module {
     single { get<MrukDatabase>().mrukDao() }
     single { MrukLocalDatasource(get()) }
 
-    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get(), get()) }
+    single<IMRUKObjectsRepository> { MRUKObjectsRepositoryImpl(get()) }
     single<SmartHomeRepository>{
         SmartHomeRepositoryImpl(get())
     }

@@ -9,5 +9,5 @@ interface IMRUKObjectsRepository {
     val mrukEntities: HashMap<String, ObjectEntityModel>
     suspend fun addMRUKObject(addObject: MrukRaycastModel): Boolean
     suspend fun deleteMRUKObject(objectId: String): Boolean
-    suspend fun getAllMRUKObjects(): Boolean
+    suspend fun getAllMRUKObjects(): List<MrukRaycastModel>
 }
