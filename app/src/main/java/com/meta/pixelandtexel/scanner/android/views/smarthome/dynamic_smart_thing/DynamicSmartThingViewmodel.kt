@@ -41,18 +41,17 @@ class DynamicSmartThingViewmodel(
 
         viewModelScope.launch {
             updateAllEntitiesState(newState)
+            updateStatePeriodically()
         }
 
-        updateStatePeriodically()
     }
 
-    fun updateStatePeriodically() {
-        viewModelScope.launch {
-            while (true) {
-                updateAllEntitiesState(_uiState.value)
-                delay(WAIT_FOR_NEXT_REQUEST_MS)
-            }
+    suspend fun updateStatePeriodically() {
+        while (true) {
+            updateAllEntitiesState(_uiState.value)
+            delay(WAIT_FOR_NEXT_REQUEST_MS)
         }
+
     }
 
     fun onActionExecuted(
@@ -94,6 +93,7 @@ class DynamicSmartThingViewmodel(
         _uiState.update { currentState ->
             currentState.copy(
                 entities = newEntities,
+                deviceName = newState.deviceName
             )
         }
     }
