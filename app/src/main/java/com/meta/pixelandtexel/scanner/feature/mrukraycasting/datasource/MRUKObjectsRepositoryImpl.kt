@@ -1,6 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.mrukraycasting.datasource
 
 import android.net.Uri
+import com.meta.pixelandtexel.scanner.FollowHead
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.MrukRaycastModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.model.ObjectEntityModel
 import com.meta.pixelandtexel.scanner.feature.mrukraycasting.domain.repository.IMRUKObjectsRepository
@@ -18,6 +19,9 @@ import com.meta.spatial.toolkit.Visible
 import com.meta.spatial.toolkit.createPanelEntity
 import com.meta.pixelandtexel.scanner.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 
@@ -25,10 +29,14 @@ class MRUKObjectsRepositoryImpl(
     private val localDatasource: MrukLocalDatasource,
 ) : IMRUKObjectsRepository {
 
+    override val mutex: Mutex = Mutex()
     override var lastAddedObjectDevice: Device? = null
 
     override val mrukEntities: HashMap<String, ObjectEntityModel> = HashMap()
 
+    override suspend fun unlock() {
+        mutex.unlock()
+    }
 
     override suspend fun addMRUKObject(addObject: MrukRaycastModel): Boolean {
         if (!mrukEntities.containsKey(addObject.device.name)) {
@@ -44,20 +52,27 @@ class MRUKObjectsRepositoryImpl(
                     Visible(true)
                 )
             )
-            val panelEntity = Entity.Companion.createPanelEntity(
-                R.integer.object_panel_id,
-                Transform(newMeshPose * Pose(Vector3(0f, 0.5f, 0f))),
-                Grabbable(type = GrabbableType.PIVOT_Y)
 
-            )
+            coroutineScope {
+                launch(Dispatchers.Default) {
+                    mutex.lock()
+                    lastAddedObjectDevice = addObject.device
 
-            val objectEntity = ObjectEntityModel(
-                objectEntity = boxEntity,
-                panelEntity = panelEntity
-            )
-            mrukEntities[addObject.device.name] = objectEntity
+                    val panelEntity = Entity.createPanelEntity(
+                        R.integer.object_panel_id,
+                        Transform(newMeshPose * Pose(Vector3(0f, 0.5f, 0f))),
+                        Grabbable(type = GrabbableType.PIVOT_Y),
+                        FollowHead(true),
+                    )
 
-            lastAddedObjectDevice = addObject.device
+                    val objectEntity = ObjectEntityModel(
+                        objectEntity = boxEntity,
+                        panelEntity = panelEntity
+                    )
+                    mrukEntities[addObject.device.name] = objectEntity
+                }
+            }
+
             return true
         } else {
             return false

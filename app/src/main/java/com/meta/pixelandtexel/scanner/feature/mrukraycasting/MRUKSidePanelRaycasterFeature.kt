@@ -24,7 +24,6 @@ import com.meta.spatial.toolkit.PanelRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 
@@ -40,7 +39,6 @@ class MRUKSidePanelRaycasterFeature(
 ) : SpatialFeature {
     companion object {
         private const val TAG = "MRUKSidePanelRaycasterFeature"
-        private const val DELAY_BETWEEN_SPAWNS_MS = 100L
     }
 
     private val subscriptionScope = CoroutineScope(Dispatchers.Main)
@@ -70,20 +68,27 @@ class MRUKSidePanelRaycasterFeature(
                     enableLayerFeatheredEdge = true
                 }
                 composePanel {
-                    val device = mrukObjectRepository.lastAddedObjectDevice ?: return@composePanel
-                    mrukObjectRepository.lastAddedObjectDevice = null
-
-                    setContent {
-                        val viewmodel = DynamicSmartThingViewmodel(
-                            di.get(),
-                            di.get(),
-                            onCloseSmartThing = { removeSmartThing(device.name) },
-                            onDisconnectDevice = { disconnectSmartThing(device.name) })
-                        DynamicSmartThingScreen(
-                            device = device,
-                            viewModel = viewmodel,
-                        )
+                    try {
+                        val device =
+                            mrukObjectRepository.lastAddedObjectDevice ?: return@composePanel
+                        mrukObjectRepository.lastAddedObjectDevice = null
+                        setContent {
+                            val viewmodel = DynamicSmartThingViewmodel(
+                                di.get(),
+                                di.get(),
+                                onCloseSmartThing = { removeSmartThing(device.name) },
+                                onDisconnectDevice = { disconnectSmartThing(device.name) })
+                            DynamicSmartThingScreen(
+                                device = device,
+                                viewModel = viewmodel,
+                            )
+                        }
+                    } finally {
+                        subscriptionScope.launch {
+                            mrukObjectRepository.unlock()
+                        }
                     }
+
                 }
             },
         )
@@ -120,7 +125,6 @@ class MRUKSidePanelRaycasterFeature(
 
             val device = devices.find { it.name == mrukObject.device.name }
             if (device != null) {
-                delay(DELAY_BETWEEN_SPAWNS_MS)
                 mrukObjectRepository.addMRUKObject(
                     MrukRaycastModel(
                         device = device,
