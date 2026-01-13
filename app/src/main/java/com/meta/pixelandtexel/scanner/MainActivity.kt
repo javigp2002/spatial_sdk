@@ -348,7 +348,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private fun onObjectDetectionFeatureStatusChanged(newStatus: CameraStatus) {
         cameraControlsBtn?.setBackgroundResource(
             when (newStatus) {
-                CameraStatus.PAUSED -> R.drawable.scan_svgrepo_com
+                CameraStatus.PAUSED -> R.drawable.escaneo
                 CameraStatus.SCANNING -> com.meta.spatial.uiset.R.drawable.ic_pause_circle_24
             }
         )

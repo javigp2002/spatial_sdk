@@ -12,7 +12,7 @@
     android:id="@+id/camera_play_btn"
     android:layout_width="0dp"
     android:layout_height="0dp"
-            android:background="@drawable/scan_svgrepo_com"
+            android:background="@drawable/escaneo"
     android:contentDescription="@string/camera_controls_button_description"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintDimensionRatio="1:1"
