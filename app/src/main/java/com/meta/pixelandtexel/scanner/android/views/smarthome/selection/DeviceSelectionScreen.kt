@@ -26,7 +26,6 @@ fun DeviceSelectionScreen(
     onOptionSelected: (Device) -> Unit
 ) {
     val options by viewModel.options.collectAsState()
-    val deviceType by viewModel.deviceType.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadOptions()
@@ -42,7 +41,7 @@ fun DeviceSelectionScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "¿Qué dispositivo $deviceType has seleccionado?",
+                text = "Which device do you want to pair?",
                 style = MaterialTheme.typography.headlineSmall
             )
 
