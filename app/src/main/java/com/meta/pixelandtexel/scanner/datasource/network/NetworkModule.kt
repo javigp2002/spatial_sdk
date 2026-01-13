@@ -53,7 +53,7 @@ fun provideService(retrofit: Retrofit): SmartHomeApi =
     retrofit.create(SmartHomeApi::class.java)
 
 val networkModule = module {
-    single<TokenProvider> { StaticTokenProvider(token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiOWE1NWRiZmQ1ZTY0ZmQxYjQ2ZDVmNTA3NDA2MTAzNSIsImlhdCI6MTc2NTM3MTgzMSwiZXhwIjoyMDgwNzMxODMxfQ.C_0p6QAEsMSpi-5NXfP8zEk48jc65BE8y0gXdkU_vPs") }
+    single<TokenProvider> { StaticTokenProvider(token = BuildConfig.HOME_ASSISTANT_TOKEN) }
     single { provideHttpClient(get()) }
     single { provideRetrofit(get()) }
     single { provideService(get()) }

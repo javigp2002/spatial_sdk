@@ -10,6 +10,8 @@ plugins {
 }
 
 val httpApi: String = gradleLocalProperties(rootDir, providers).getProperty("HTTP_API")
+val homeAssistantToken: String =
+  gradleLocalProperties(rootDir, providers).getProperty("HOME_ASSISTANT_TOKEN")
 
 
 android {
@@ -32,6 +34,7 @@ android {
     // Pass our aws credentials to the BuildConfig
 
     buildConfigField("String", "HTTP_API", "\"$httpApi\"")
+    buildConfigField("String", "HOME_ASSISTANT_TOKEN", "\"$homeAssistantToken\"")
   }
 
   packaging {
