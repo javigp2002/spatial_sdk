@@ -135,6 +135,10 @@ class MRUKSidePanelRaycasterFeature(
         }
     }
 
+    suspend fun deleteAllSmartThingEntities() {
+        mrukObjectRepository.deleteAllMRUKObjects()
+    }
+
     override fun systemsToRegister(): List<SystemBase> {
         val systems = mutableListOf<SystemBase>()
         systems.add(FollowHeadSystem())

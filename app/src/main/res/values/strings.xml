@@ -51,4 +51,6 @@
 
 
     <string name="db_name">mruk_db</string>
+    <string name="delete_smart_things_button_description">Delete Smart Things Button</string>
+    <string name="show_smart_things_button_description">Show Smart Things Button\n</string>
 </resources>

@@ -98,6 +98,15 @@ class MRUKObjectsRepositoryImpl(
         }
     }
 
+    override suspend fun deleteAllMRUKObjects(): Boolean {
+        mrukEntities.forEach { (_, objectEntityModel) ->
+            objectEntityModel.objectEntity.destroy()
+            objectEntityModel.panelEntity.destroy()
+        }
+        mrukEntities.clear()
+        return true
+    }
+
     override suspend fun getAllMRUKObjects(): List<MrukRaycastModel> {
         return withContext(Dispatchers.IO) {
             localDatasource.getAll()

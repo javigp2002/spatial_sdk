@@ -195,7 +195,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     }
                 }
             },
-            PanelRegistration(R.layout.ui_help_button_view) {
+            PanelRegistration(R.layout.ui_show_smart_things_button_view) {
                 config {
                     themeResourceId = R.style.PanelAppThemeTransparent
                     includeGlass = false
@@ -207,11 +207,11 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     enableLayerFeatheredEdge = true
                 }
                 panel {
-                    val helpBtn =
-                        rootView?.findViewById<ImageButton>(R.id.help_btn)
+                    val showSmartThingsButton =
+                        rootView?.findViewById<ImageButton>(R.id.show_smart_things_btn)
                             ?: throw RuntimeException("Missing help button")
 
-                    helpBtn.setOnClickListener {
+                    showSmartThingsButton.setOnClickListener {
                         welcomePanelEntity?.destroy()
                         welcomePanelEntity = null
                         stopScanning()
@@ -219,6 +219,34 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
                         activityScope.launch {
                             mrukSidePanelRaycasterFeature.getAllSmartThings()
+                        }
+                    }
+                }
+            },
+            PanelRegistration(R.layout.ui_delete_smart_things_button_view) {
+                config {
+                    themeResourceId = R.style.PanelAppThemeTransparent
+                    includeGlass = false
+                    layoutWidthInDp = 80f
+                    width = 0.04f
+                    height = 0.04f
+                    layerConfig = LayerConfig()
+                    layerBlendType = PanelShapeLayerBlendType.MASKED
+                    enableLayerFeatheredEdge = true
+                }
+                panel {
+                    val deleteBtn =
+                        rootView?.findViewById<ImageButton>(R.id.delete_btn)
+                            ?: throw RuntimeException("Missing delete button")
+
+                    deleteBtn.setOnClickListener {
+                        welcomePanelEntity?.destroy()
+                        welcomePanelEntity = null
+                        stopScanning()
+                        loadScene(true)
+
+                        activityScope.launch {
+                            mrukSidePanelRaycasterFeature.deleteAllSmartThingEntities()
                         }
                     }
                 }
