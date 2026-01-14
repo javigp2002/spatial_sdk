@@ -67,7 +67,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var permissionsResultCallback: (granted: Boolean) -> Unit
 
     // button for toggling the scanning
-    private var cameraControlsBtn: ImageButton? = null
+    private var scanControlsBtn: ImageButton? = null
 
     // our main scene entities
     private var welcomePanelEntity: Entity? = null
@@ -235,11 +235,11 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     enableLayerFeatheredEdge = true
                 }
                 panel {
-                    cameraControlsBtn =
+                    scanControlsBtn =
                         rootView?.findViewById(R.id.camera_play_btn)
                             ?: throw RuntimeException("Missing camera play/pause button")
 
-                    cameraControlsBtn?.setOnClickListener {
+                    scanControlsBtn?.setOnClickListener {
                         welcomePanelEntity?.destroy()
                         welcomePanelEntity = null
 
@@ -346,7 +346,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
      * @param newStatus The new [CameraStatus] camera scanning status
      */
     private fun onObjectDetectionFeatureStatusChanged(newStatus: CameraStatus) {
-        cameraControlsBtn?.setBackgroundResource(
+        scanControlsBtn?.setBackgroundResource(
             when (newStatus) {
                 CameraStatus.PAUSED -> R.drawable.escaneo
                 CameraStatus.SCANNING -> com.meta.spatial.uiset.R.drawable.ic_pause_circle_24
