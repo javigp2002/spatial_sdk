@@ -64,6 +64,8 @@ The project reads `HTTP_API` from `gradle.properties`/`secrets.properties` (see
 `app/build.gradle.kts`). Place the URL or token in `local.properties` if the flow requires the Smart
 Home API.
 
+Also update `app/src/main/res/xml/network_security_config.xml` with the known IP.
+
 **Useful Commands (from repo root):**
 
 ```bash
@@ -75,6 +77,8 @@ Home API.
 ```
 
 También puedes abrir el proyecto en Android Studio y ejecutar/depurar normalmente.
+
+## ** [User Manual](documentation/MANUAL.md)**
 
 ## 2.1 Need of a Home Assistant installed
 -------------------------------------
