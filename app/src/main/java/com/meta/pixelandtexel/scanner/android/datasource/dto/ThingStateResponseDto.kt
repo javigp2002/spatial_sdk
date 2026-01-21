@@ -34,7 +34,21 @@ data class Attributes(
     @SerializedName("hs_color") val hsColor: List<Double>? = null,
     @SerializedName("rgb_color") val rgbColor: List<Int>? = null,
     @SerializedName("xy_color") val xyColor: List<Double>? = null,
-    @SerializedName("supported_features") val supportedFeatures: Int? = null
+    @SerializedName("supported_features") val supportedFeatures: Int? = null,
+    @SerializedName("temperature") val temperature: Double? = null,
+    @SerializedName("dew_point") val dewPoint: Double? = null,
+    @SerializedName("temperature_unit") val temperatureUnit: String? = null,
+    @SerializedName("humidity") val humidity: Int? = null,
+    @SerializedName("cloud_coverage") val cloudCoverage: Double? = null,
+    @SerializedName("uv_index") val uvIndex: Double? = null,
+    @SerializedName("pressure") val pressure: Double? = null,
+    @SerializedName("pressure_unit") val pressureUnit: String? = null,
+    @SerializedName("wind_bearing") val windBearing: Double? = null,
+    @SerializedName("wind_speed") val windSpeed: Double? = null,
+    @SerializedName("wind_speed_unit") val windSpeedUnit: String? = null,
+    @SerializedName("visibility_unit") val visibilityUnit: String? = null,
+    @SerializedName("precipitation_unit") val precipitationUnit: String? = null,
+    @SerializedName("attribution") val attribution: String? = null,
 )
 
 data class Context(

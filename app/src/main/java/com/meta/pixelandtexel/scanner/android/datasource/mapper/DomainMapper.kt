@@ -9,6 +9,8 @@ import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerAttribute
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
+import com.meta.pixelandtexel.scanner.models.devices.domain.WeatherDomain
+import com.meta.pixelandtexel.scanner.models.devices.domain.WeatherDomainAttributes
 
 object DomainMapper {
 
@@ -47,6 +49,12 @@ object DomainMapper {
                 value = false,
                 services = listOf(DomainServices.TURN_OFF, DomainServices.TURN_ON),
                 attributes = LightAttributes()
+            )
+
+            "weather" -> WeatherDomain(
+                value = "",
+                services = emptyList(),
+                attributes = WeatherDomainAttributes()
             )
 
             else -> null
@@ -97,6 +105,13 @@ object DomainMapper {
                         minColorTempKelvin = attributes?.minColorTempKelvin,
                         maxColorTempKelvin = attributes?.maxColorTempKelvin,
                     )
+                )
+            }
+
+            is WeatherDomain -> {
+                domain.copy(
+                    value = newValue,
+                    attributes = WeatherDomainAttributes.fromAttributes(attributes ?: Attributes())
                 )
             }
         }

@@ -21,6 +21,7 @@ This project employs clean architecture and dependency injection (Koin).
 1. [Main Description](#1-main-description)
 2. [How to Run the App](#2-how-to-run-it)
   1. [Requirement: Home Assistant / Smart Home API](#21-need-of-a-home-assistant-installed)
+2. [Add new Smart Thing](#22-add-new-smart-thing)
 3. [App Architecture (Clean Architecture Applied)](#3-app-architecture-clean-arch-on-app-and-features)
 4. [Dependency Injection with Koin](#4-dependency-injection-with-koin)
 5. [Technical Notes and Troubleshooting](#5-technical-notes-and-troubleshooting)
@@ -80,6 +81,7 @@ También puedes abrir el proyecto en Android Studio y ejecutar/depurar normalmen
 
 ## ** [User Manual](documentation/MANUAL.md)**
 
+
 ## 2.1 Need of a Home Assistant installed
 -------------------------------------
 Some functionalities depend on a Smart Home service (API) to obtain device metadata or execute
@@ -97,6 +99,20 @@ The main types of supported smart devices are:
 - Lights: smart lights.
 - Plugs: smart plugs.
 - Media: smart media players.
+- Weather: weather stations.
+
+## 2.2 Add new Smart Thing:
+
+Add to Domain interface, then create how to fetch it in the Domain Mapper with the Attributes (if
+needed).
+
+Highly recommended to use one of the existing Domains as template or even to use it if it only
+differs in some attributes.
+
+You can
+check [Adding a Weather Station Smart Thing](https://github.com/javigp2002/spatial_sdk/pull/10) as
+example.
+
 
 # 3. App Architecture (clean arch on app and features)
 ---------------------------------------------------
