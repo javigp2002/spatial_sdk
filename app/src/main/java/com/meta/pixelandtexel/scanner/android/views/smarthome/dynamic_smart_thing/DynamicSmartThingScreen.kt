@@ -25,6 +25,7 @@ import com.meta.pixelandtexel.scanner.android.views.components.smart.LightCompos
 import com.meta.pixelandtexel.scanner.android.views.components.smart.MediaPlayerComposable
 import com.meta.pixelandtexel.scanner.android.views.components.smart.SensorGrid
 import com.meta.pixelandtexel.scanner.android.views.components.smart.TitleComposable
+import com.meta.pixelandtexel.scanner.android.views.components.smart.WeatherGrid
 import com.meta.pixelandtexel.scanner.android.views.smarthome.dynamic_smart_thing.state.EntityUiModel
 import com.meta.pixelandtexel.scanner.models.devices.Device
 import com.meta.pixelandtexel.scanner.models.devices.domain.AttributeServices
@@ -33,6 +34,7 @@ import com.meta.pixelandtexel.scanner.models.devices.domain.LightDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.MediaPlayerDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SensorDomain
 import com.meta.pixelandtexel.scanner.models.devices.domain.SwitchDomain
+import com.meta.pixelandtexel.scanner.models.devices.domain.WeatherDomain
 import com.meta.pixelandtexel.scanner.utils.mytheme.MyPaddings
 
 @Composable
@@ -57,7 +59,8 @@ fun DynamicSmartThingScreen(
         viewModel.initialize(device)
     }
 
-    val sensors = uiState.entities.filter { it.domain is SensorDomain }
+    val sensors =
+        uiState.entities.filter { it.domain is SensorDomain || it.domain is WeatherDomain }
     val controllers = uiState.entities.filter { it.domain !is SensorDomain }
 
     Card(
@@ -162,11 +165,19 @@ fun DynamicSmartThingScreen(
 
                 if (sensors.isNotEmpty()) {
                     item {
-                        SensorGrid(
-                            sensors = sensors,
-                            modifier = Modifier
-                                .padding(top = MyPaddings.L)
-                        )
+                        if (sensors[0].domain is WeatherDomain) {
+                            WeatherGrid(
+                                domain = sensors[0].domain as WeatherDomain,
+                                modifier = Modifier
+                                    .padding(top = MyPaddings.L)
+                            )
+                        } else {
+                            SensorGrid(
+                                sensors = sensors,
+                                modifier = Modifier
+                                    .padding(top = MyPaddings.L)
+                            )
+                        }
                     }
                 }
 
