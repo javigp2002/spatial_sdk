@@ -3,7 +3,6 @@ package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository
 import com.meta.pixelandtexel.scanner.models.EntityData
 import com.meta.pixelandtexel.scanner.models.smarthomedata.SmartHomeInfoRequest
 import com.meta.spatial.core.Entity
-import com.meta.spatial.core.Pose
 
 /**
  * Defines the contract for a repository that manages the creation
@@ -24,13 +23,11 @@ interface IDisplayedEntityRepository {
      *
      * @param panelId The resource ID for the panel registration.
      * @param data The information to be displayed on the panel.
-     * @param rightEdgePose The pose of the camera's right edge, used as a reference for positioning.
      * @return The newly created panel [Entity].
      */
     fun createGenericInfoPanel(
         panelId: Int,
         data: SmartHomeInfoRequest,
-        rightEdgePose: Pose
     ): Entity
 
     fun deleteEntity(entityId: Int)

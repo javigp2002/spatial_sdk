@@ -2,6 +2,7 @@
 koinAndroid = "3.5.6"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+roomRuntime = "2.8.4"
 spatialsdk = "0.8.0"
 agp = "8.6.1"
 kotlin = "2.1.20"
@@ -28,6 +29,8 @@ hiltNavigationCompose = "1.2.0"
 
 [libraries]
 # Meta Spatial SDK Libraries
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 meta-spatial-sdk-base = { group = "com.meta.spatial", name = "meta-spatial-sdk", version.ref = "spatialsdk" }
 meta-spatial-sdk-animation = { group = "com.meta.spatial", name = "meta-spatial-sdk-animation", version.ref = "spatialsdk" }

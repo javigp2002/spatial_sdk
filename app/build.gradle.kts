@@ -6,9 +6,12 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.android)
   alias(libs.plugins.meta.spatial.plugin)
   alias(libs.plugins.jetbrains.kotlin.plugin.compose)
+  id("com.google.devtools.ksp")
 }
 
 val httpApi: String = gradleLocalProperties(rootDir, providers).getProperty("HTTP_API")
+val homeAssistantToken: String =
+  gradleLocalProperties(rootDir, providers).getProperty("HOME_ASSISTANT_TOKEN")
 
 
 android {
@@ -31,6 +34,7 @@ android {
     // Pass our aws credentials to the BuildConfig
 
     buildConfigField("String", "HTTP_API", "\"$httpApi\"")
+    buildConfigField("String", "HOME_ASSISTANT_TOKEN", "\"$homeAssistantToken\"")
   }
 
   packaging {
@@ -94,6 +98,7 @@ dependencies {
   implementation(libs.meta.spatial.sdk.toolkit)
   implementation(libs.meta.spatial.sdk.uiset)
   implementation(libs.meta.spatial.sdk.vr)
+  implementation(libs.meta.spatial.sdk.mruk)
 
   // Mediapipe CV object detection
   implementation(libs.google.mediapipe.tasks.vision)
@@ -121,6 +126,10 @@ dependencies {
   implementation(libs.koin.android)
 
   implementation ("com.google.code.gson:gson:2.13.2")
+
+  // database
+  implementation(libs.androidx.room.runtime)
+  ksp(libs.androidx.room.compiler)
 }
 
 afterEvaluate { tasks.named("assembleDebug") { dependsOn("export") } }

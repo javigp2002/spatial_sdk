@@ -1,7 +1,7 @@
 package com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection
 
 import android.media.Image
-import com.meta.spatial.core.Pose
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
  * the detection results, allowing for different implementations to be used
  * interchangeably.
  */
+
 interface IObjectDetectionRepository {
 
     /**
@@ -36,5 +37,5 @@ interface IObjectDetectionRepository {
 
     fun clear()
 
-    fun requestInfoForObject(id: Int, pose: Pose)
+    fun requestInfoForObject(id: Int, pose: RaycastRequestModel)
 }

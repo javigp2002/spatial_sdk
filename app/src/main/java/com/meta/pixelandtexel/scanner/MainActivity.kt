@@ -1,6 +1,5 @@
 package com.meta.pixelandtexel.scanner
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -13,27 +12,28 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
-import com.meta.pixelandtexel.scanner.android.views.smarthome.LightControlCard
-import com.meta.pixelandtexel.scanner.android.views.smarthome.LightViewModel
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugScreen
-import com.meta.pixelandtexel.scanner.android.views.smarthome.plug.SmartPlugViewModel
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionScreen
+import com.meta.pixelandtexel.scanner.android.views.smarthome.selection.DeviceSelectionViewModel
 import com.meta.pixelandtexel.scanner.android.views.welcome.WelcomeScreen
 import com.meta.pixelandtexel.scanner.ecs.OutlinedSystem
 import com.meta.pixelandtexel.scanner.ecs.WristAttachedSystem
+import com.meta.pixelandtexel.scanner.feature.mrukraycasting.MRUKSidePanelRaycasterFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.ObjectDetectionFeature
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.enums.CameraStatus
-import com.meta.pixelandtexel.scanner.models.smarthomedata.TypeSmartHomeInfo
-import com.meta.pixelandtexel.scanner.services.TipManager
-import com.meta.pixelandtexel.scanner.services.UserEvent
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.pixelandtexel.scanner.services.settings.SettingsService
 import com.meta.spatial.compose.ComposeFeature
 import com.meta.spatial.compose.composePanel
 import com.meta.spatial.compose.panelViewLifecycleOwner
 import com.meta.spatial.core.Entity
+import com.meta.spatial.core.Pose
+import com.meta.spatial.core.Quaternion
+import com.meta.spatial.mruk.SurfaceType
 import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
-import com.meta.spatial.core.Vector3
+import com.meta.spatial.mruk.MRUKFeature
+import com.meta.spatial.mruk.MRUKLoadDeviceResult
 import com.meta.spatial.okhttp3.OkHttpAssetFetcher
 import com.meta.spatial.runtime.LayerConfig
 import com.meta.spatial.runtime.NetworkedAssetLoader
@@ -50,19 +50,14 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import java.io.File
 
-/**
- * Main entry point for the Quest application. See the README for an in-depth description for how
- * this application functions, and see the official
- * [Meta Spatial SDK documentation](https://developers.meta.com/horizon/develop/spatial-sdk) for how
- * to build Spatial applications, or convert your existing Android application to function in the
- * Quest headset.
- */
+
 class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSystemActivity() {
     companion object {
         private const val TAG = "MainActivity"
 
         private const val PERMISSIONS_REQUEST_CODE = 1000
-        private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA")
+        private val PERMISSIONS_REQUIRED = arrayOf("horizonos.permission.HEADSET_CAMERA", "com.oculus.permission.USE_SCENE")
+        const val MAX_DISTANCE = Float.MAX_VALUE
     }
 
     // used for scene inflation
@@ -72,7 +67,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private lateinit var permissionsResultCallback: (granted: Boolean) -> Unit
 
     // button for toggling the scanning
-    private var cameraControlsBtn: ImageButton? = null
+    private var scanControlsBtn: ImageButton? = null
 
     // our main scene entities
     private var welcomePanelEntity: Entity? = null
@@ -80,7 +75,8 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     // our main services for detected object, displaying helpful tips, and displaying pre-assembled
     // panel content for select objects (with 3D models)
     private lateinit var objectDetectionFeature: ObjectDetectionFeature
-    private lateinit var tipManager: TipManager
+    private lateinit var mrukFeature: MRUKFeature
+    private lateinit var mrukSidePanelRaycasterFeature: MRUKSidePanelRaycasterFeature
 
 
     lateinit var entityRepository: IDisplayedEntityRepository
@@ -92,7 +88,15 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 onStatusChanged = ::onObjectDetectionFeatureStatusChanged,
             )
 
-        return listOf(VRFeature(this), ComposeFeature(), objectDetectionFeature)
+        mrukFeature = MRUKFeature(this, systemManager)
+        mrukSidePanelRaycasterFeature = MRUKSidePanelRaycasterFeature(this)
+        return listOf(
+            VRFeature(this),
+            ComposeFeature(),
+            objectDetectionFeature,
+            mrukFeature,
+            mrukSidePanelRaycasterFeature
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,17 +111,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
 
         // extra object detection handling and usability
         entityRepository = get()
-        tipManager =
-            TipManager(this) {
-                stopScanning()
-            }
 
         // register systems/components
-
         systemManager.unregisterSystem<LocomotionSystem>()
-
-        // FIXME not working; prevent isdk components from automatically being added to all panels
-        // systemManager.findSystem<IsdkToolkitBridgeSystem>().active = false
 
         componentManager.registerComponent<WristAttached>(WristAttached.Companion, SendRate.DEFAULT)
         systemManager.registerSystem(WristAttachedSystem())
@@ -125,13 +121,10 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         componentManager.registerComponent<Outlined>(Outlined.Companion, SendRate.DEFAULT)
         systemManager.registerSystem(OutlinedSystem(this))
 
-        // wait for GLXF to load before accessing nodes inside it
-
         loadGLXF().invokeOnCompletion {
             val composition = glXFManager.getGLXFInfo("scanner_app_main_scene")
 
             // wait for system manager to initialize so we can get the underlying scene objects
-
             welcomePanelEntity = composition.getNodeByName("WelcomePanel").entity
         }
     }
@@ -140,19 +133,32 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         super.onSceneReady()
 
         // set the reference space to enable re-centering
-        scene.setReferenceSpace(ReferenceSpace.LOCAL_FLOOR)
+        scene.setReferenceSpace(ReferenceSpace.STAGE)
 
-        scene.setLightingEnvironment(
-            ambientColor = Vector3(0f),
-            sunColor = Vector3(0f),
-            sunDirection = -Vector3(1.0f, 3.0f, -2.0f),
-            environmentIntensity = 0.2f,
-        )
-        scene.updateIBLEnvironment("museum_lobby.env")
-
-        scene.setViewOrigin(0.0f, 0.0f, 0.0f, 180.0f)
+        requestPermissions { permissionsGranted ->
+            loadScene(permissionsGranted)
+        }
 
         scene.enablePassthrough(true)
+    }
+
+    private fun loadScene(scenePermissionsGranted: Boolean) {
+        if (scenePermissionsGranted) {
+            loadSceneFromDevice()
+        } else {
+            Log.d("JAVI DEBUG", "Permisos denegados. No se puede cargar la escena desde el dispositivo.")
+        }
+    }
+    private fun loadSceneFromDevice() {
+        val future = mrukFeature.loadSceneFromDevice(requestSceneCaptureIfNoDataFound = true)
+
+        future.whenComplete { result: MRUKLoadDeviceResult, _ ->
+            Log.d("JAVI DEBUG", "Scene loaded from device with result: $result")
+
+            if (result != MRUKLoadDeviceResult.SUCCESS) {
+                Log.d("JAVI DEBUG", "error")
+            }
+        }
     }
 
     override fun registerPanels(): List<PanelRegistration> {
@@ -181,13 +187,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                                             get() = OnBackPressedDispatcher()
                                     }
                         ) {
-                            WelcomeScreen(
-                                onLinkClicked = {
-                                    val uri = it.toUri()
-                                    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-                                    startActivity(browserIntent)
-                                }
-                            ) {
+                            WelcomeScreen {
                                 welcomePanelEntity?.destroy()
                                 welcomePanelEntity = null
                             }
@@ -195,7 +195,7 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     }
                 }
             },
-            PanelRegistration(R.layout.ui_help_button_view) {
+            PanelRegistration(R.layout.ui_show_smart_things_button_view) {
                 config {
                     themeResourceId = R.style.PanelAppThemeTransparent
                     includeGlass = false
@@ -207,17 +207,47 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     enableLayerFeatheredEdge = true
                 }
                 panel {
-                    val helpBtn =
-                        rootView?.findViewById<ImageButton>(R.id.help_btn)
+                    val showSmartThingsButton =
+                        rootView?.findViewById<ImageButton>(R.id.show_smart_things_btn)
                             ?: throw RuntimeException("Missing help button")
 
-                    helpBtn.setOnClickListener {
+                    showSmartThingsButton.setOnClickListener {
                         welcomePanelEntity?.destroy()
                         welcomePanelEntity = null
                         stopScanning()
-                        tipManager.dismissTipPanels()
+                        loadScene(true)
 
-                        tipManager.showHelpPanel()
+                        activityScope.launch {
+                            mrukSidePanelRaycasterFeature.getAllSmartThings()
+                        }
+                    }
+                }
+            },
+            PanelRegistration(R.layout.ui_delete_smart_things_button_view) {
+                config {
+                    themeResourceId = R.style.PanelAppThemeTransparent
+                    includeGlass = false
+                    layoutWidthInDp = 80f
+                    width = 0.04f
+                    height = 0.04f
+                    layerConfig = LayerConfig()
+                    layerBlendType = PanelShapeLayerBlendType.MASKED
+                    enableLayerFeatheredEdge = true
+                }
+                panel {
+                    val deleteBtn =
+                        rootView?.findViewById<ImageButton>(R.id.delete_btn)
+                            ?: throw RuntimeException("Missing delete button")
+
+                    deleteBtn.setOnClickListener {
+                        welcomePanelEntity?.destroy()
+                        welcomePanelEntity = null
+                        stopScanning()
+                        loadScene(true)
+
+                        activityScope.launch {
+                            mrukSidePanelRaycasterFeature.deleteAllSmartThingEntities()
+                        }
                     }
                 }
             },
@@ -233,11 +263,11 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                     enableLayerFeatheredEdge = true
                 }
                 panel {
-                    cameraControlsBtn =
+                    scanControlsBtn =
                         rootView?.findViewById(R.id.camera_play_btn)
                             ?: throw RuntimeException("Missing camera play/pause button")
 
-                    cameraControlsBtn?.setOnClickListener {
+                    scanControlsBtn?.setOnClickListener {
                         welcomePanelEntity?.destroy()
                         welcomePanelEntity = null
 
@@ -278,39 +308,59 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
                 composePanel {
                     stopScanning()
                     val displayInfo = entityRepository.newViewModelData ?: return@composePanel
-
                     setContent {
-                        when (displayInfo.data.type) {
-                            TypeSmartHomeInfo.LIGHT -> {
-                                val lightViewModel = LightViewModel(get())
-                                LightControlCard(
-                                    viewModel = lightViewModel,
-                                    onClose = {
-                                        entityRepository.deleteEntity(displayInfo.entityId)
+                        val viewmodel = DeviceSelectionViewModel(displayInfo.data.type, get())
+                        DeviceSelectionScreen(
+                            viewModel = viewmodel,
+                            onOptionSelected = { device ->
+                                entityRepository.deleteEntity(displayInfo.entityId)
+                                val spawnPose =
+                                    getPanelHitSpawnPosition(displayInfo.data.raycastInfo)
+                                if (spawnPose != null) {
+                                    activityScope.launch {
+                                        mrukSidePanelRaycasterFeature.addSmartThing(
+                                            device,
+                                            spawnPose
+                                        )
                                     }
-                                )
-                            }
-                            TypeSmartHomeInfo.PLUG -> {
-                                val smartPlugViewModel = SmartPlugViewModel(get(), get())
-                                SmartPlugScreen(
-                                    entityId = displayInfo.entityId,
-                                    viewModel = smartPlugViewModel
-                                )
+                                } else {
+                                    Log.w(
+                                        "MainActivity",
+                                        "No se pudo obtener la posición de spawn para el objeto detectado."
+                                    )
+                                }
 
                             }
-                            TypeSmartHomeInfo.UNKNOWN -> return@setContent
-                        }
+                        )
                     }
                 }
             },
         )
     }
 
+    private fun getPanelHitSpawnPosition(raycastModel: RaycastRequestModel): Pose? {
+        val currentRoom = mrukFeature.getCurrentRoom()
+        if (currentRoom == null) {
+            Log.w("UpdateRaycastSystem", "Cannot raycast, no current room available.")
+            return null
+        }
+
+
+        val hit = mrukFeature.raycastRoom(
+            currentRoom.anchor.uuid,
+            origin = raycastModel.headPosition,
+            direction = raycastModel.direction,
+            maxDistance = MAX_DISTANCE,
+            SurfaceType.PLANE_VOLUME,
+        ) ?: return null
+        return Pose(hit.hitPosition, Quaternion.lookRotation(hit.hitNormal.normalize()))
+
+    }
+
 
     /** Activates the object detection feature scanning, which turns on the user's camera. */
     private fun startScanning() {
         objectDetectionFeature.scan()
-        tipManager.reportUserEvent(UserEvent.STARTED_SCANNING)
     }
 
     /** Stops the object detection and device camera. */
@@ -324,9 +374,9 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
      * @param newStatus The new [CameraStatus] camera scanning status
      */
     private fun onObjectDetectionFeatureStatusChanged(newStatus: CameraStatus) {
-        cameraControlsBtn?.setBackgroundResource(
+        scanControlsBtn?.setBackgroundResource(
             when (newStatus) {
-                CameraStatus.PAUSED -> com.meta.spatial.uiset.R.drawable.ic_play_circle_24
+                CameraStatus.PAUSED -> R.drawable.escaneo
                 CameraStatus.SCANNING -> com.meta.spatial.uiset.R.drawable.ic_pause_circle_24
             }
         )
@@ -349,8 +399,6 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
         }
     }
 
-    // permissions requesting
-
     private fun hasPermissions() =
         PERMISSIONS_REQUIRED.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
@@ -359,7 +407,13 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     private fun requestPermissions(callback: (granted: Boolean) -> Unit) {
         permissionsResultCallback = callback
 
-        ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+        if (hasPermissions()) {
+            Log.d(TAG, "Los permisos ya estaban concedidos. Saltando la solicitud.")
+            callback(true)
+        } else {
+            Log.d(TAG, "Permisos no concedidos. Solicitando al usuario...")
+            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -369,15 +423,14 @@ class MainActivity : ActivityCompat.OnRequestPermissionsResultCallback, AppSyste
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when (requestCode) {
-            PERMISSIONS_REQUEST_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Log.d(TAG, "Camera permission granted")
-                    permissionsResultCallback(true)
-                } else {
-                    Log.w(TAG, "Camera permission denied")
-                    permissionsResultCallback(false)
-                }
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            val allGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            if (allGranted) {
+                Log.d(TAG, "Todos los permisos fueron concedidos por el usuario.")
+                permissionsResultCallback.invoke(true)
+            } else {
+                Log.w(TAG, "Al menos un permiso fue denegado.")
+                permissionsResultCallback.invoke(false)
             }
         }
     }

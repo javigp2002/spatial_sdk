@@ -3,9 +3,7 @@ package com.meta.pixelandtexel.scanner.feature.objectdetection
 import android.animation.Keyframe
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
@@ -13,7 +11,6 @@ import com.meta.pixelandtexel.scanner.DiApplication
 import com.meta.pixelandtexel.scanner.R
 import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.ViewLocked
-import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.ObjectDetectionRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.display.IDisplayedEntityRepository
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.system.TrackedObjectSystem
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.system.ViewLockedSystem
@@ -23,9 +20,9 @@ import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.mode
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.CameraPreview
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.GraphicOverlay
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.android.ISurfaceProvider
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
 import com.meta.spatial.core.ComponentRegistration
 import com.meta.spatial.core.Entity
-import com.meta.spatial.core.Pose
 import com.meta.spatial.core.SendRate
 import com.meta.spatial.core.SpatialFeature
 import com.meta.spatial.core.SystemBase
@@ -51,29 +48,8 @@ import org.koin.android.ext.android.get
  * discover objects in the user's surroundings, assign them labels and persistent ids, and track
  * their position over time.
  *
- * This class integrates camera functionalities, object detection processing, and user interface
- * elements related to displaying camera status and detected objects. It handles the camera
- * lifecycle (initialization, scanning, pausing), processes image frames for object detection
- *
- * The feature can optionally display a camera preview and debug information ([spawnCameraViewPanel]
- * = true) or rely on a [TrackedObjectSystem] to visualize detected objects in the spatial
- * environment. It provides callbacks for status changes ([onStatusChanged]), new object detections
- * ([onDetectedObjects]), and when a user selects a tracked object ([onTrackedObjectSelected]).
- *
- * It registers necessary UI panels for camera status and (optionally) camera view, and integrates
- * with [ViewLockedSystem] and [TrackedObjectSystem] to manage how these elements are presented to
- * the user in a spatial context.
- *
- * @param activity The main application activity, used for context and UI operations.
- * @param onStatusChanged Callback invoked when the camera's operational status changes (e.g.
- *   PAUSED, SCANNING).
- * @param onDetectedObjects Callback invoked when new objects are detected in a camera frame.
- *   should proceed. Defaults to true.
- * @param onTrackedObjectSelected Callback invoked when a tracked object is selected by the user,
- *   providing the object's label, a [Bitmap] crop, and its [Pose].
- * @param spawnCameraViewPanel If true, a debug panel showing the camera feed and detection overlays
- *   will be created. Otherwise, object visualization relies on [TrackedObjectSystem].
- */
+ **/
+
 class ObjectDetectionFeature(
     private val activity: AppSystemActivity,
     private val onStatusChanged: ((CameraStatus) -> Unit)? = null,
@@ -108,7 +84,7 @@ class ObjectDetectionFeature(
 
     private var di: DiApplication = activity.application as DiApplication
     private var displayRepository: IDisplayedEntityRepository
-    private val detectionRepository: ObjectDetectionRepository
+    private val detectionRepository: IObjectDetectionRepository
 
     init {
         cameraController = CameraController(activity)
@@ -220,8 +196,7 @@ class ObjectDetectionFeature(
         // only use the trackedObjectSystem to draw the outlines and labels of detected objects if
         // we aren't displaying the camera debug view
         if (!spawnCameraViewPanel) {
-            trackedObjectSystem = TrackedObjectSystem(activity)
-            trackedObjectSystem.onTrackedObjectSelected += ::onTrackedObjectSelected
+            trackedObjectSystem = TrackedObjectSystem(activity, detectionRepository)
             cameraController.onCameraPropertiesChanged += trackedObjectSystem::onCameraPropertiesChanged
 
             systems.add(trackedObjectSystem)
@@ -364,24 +339,6 @@ class ObjectDetectionFeature(
 
         _cameraStatus = newStatus
         onStatusChanged?.invoke(newStatus)
-    }
-
-    /**
-     * Called by the TrackedObjectSystem when a tracked object, which is outlined and labeled in the
-     * user's field of view, is selected by the user.
-     *
-     * @param id The id of the tracked object. Use this to try to fetch from the detectedObjectCache a
-     *   cropped image of the object in the next camera frame, and pass that to the owning activity.
-     * @param pose A [Pose] representing the user's head position, and the direction vector from the
-     *   head to the right edge of the detected object in the user's view, at eye level.
-     */
-    private fun onTrackedObjectSelected(id: Int, pose: Pose) {
-        if (!cameraController.isRunning) {
-            Log.w(TAG, "Camera isn't running")
-            return
-        }
-
-        detectionRepository.requestInfoForObject(id, pose)
     }
 
     override fun onPauseActivity() {

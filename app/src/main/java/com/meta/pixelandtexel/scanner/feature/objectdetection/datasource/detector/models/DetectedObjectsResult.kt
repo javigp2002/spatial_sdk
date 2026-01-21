@@ -96,10 +96,6 @@ data class DetectedObjectsResult(
                     val label = it.labels[0].text
                     val confidence = it.labels[0].confidence
 
-                    if (!plugStringList.contains(label.lowercase()) ) {
-                        return@mapNotNull null
-                    }
-
 
                     DetectedObject(point, it.boundingBox, label, confidence, it.trackingId)
                 }

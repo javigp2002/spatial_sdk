@@ -7,10 +7,11 @@ import com.meta.pixelandtexel.scanner.TrackedObject
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.viewmodels.ObjectLabelViewModel
 import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.camera.models.CameraProperties
 import com.meta.pixelandtexel.scanner.feature.objectdetection.datasource.detector.models.DetectedObject
-import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.Event2
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.IPoolable
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.ObjectPool
 import com.meta.pixelandtexel.scanner.feature.objectdetection.android.views.ObjectLabelScreen
+import com.meta.pixelandtexel.scanner.feature.objectdetection.domain.repository.detection.IObjectDetectionRepository
+import com.meta.pixelandtexel.scanner.feature.objectdetection.model.RaycastRequestModel
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.copy
 import com.meta.pixelandtexel.scanner.feature.objectdetection.utils.math.MathUtils.toVector2
@@ -71,6 +72,7 @@ import com.meta.spatial.uiset.theme.SpatialColor
  */
 class TrackedObjectSystem(
     activity: AppSystemActivity,
+    private val detectionRepository: IObjectDetectionRepository,
     private var fov: Float = 72f,
     private var headToCameraOffset: Pose = Pose(),
     private var screenPointToRayInCamera: ((Vector2) -> Vector3) = { _ -> Vector3.Forward },
@@ -100,8 +102,6 @@ class TrackedObjectSystem(
 
     // key is the detected object id, not the entity id
     private var trackedObjects = HashMap<Int, TrackedObjectInfo>()
-
-    val onTrackedObjectSelected = Event2<Int, Pose>()
 
     private val outlineDrawable = activity.getDrawable(R.drawable.rounded_box_outline)!!
 
@@ -257,28 +257,24 @@ class TrackedObjectSystem(
     }
 
     /**
-     * Handles the click event on a tracked object – calculating an interaction pose based on the
-     * object's position and the user's head position, then invokes the [onTrackedObjectSelected]
-     * event.
+     * Handles the click event on a tracked object by calculating the interaction pose
+     * based on the object's position and the user's head position.
      *
      * @param entity The entity representing the clicked tracked object.
      */
     private fun onTrackedObjectClicked(entity: Entity) {
         val comp = entity.getComponent<TrackedObject>()
-
         val headPose = getScene().getViewerPose()
         val headPosition = headPose.t
 
         val transformComp = entity.getComponent<Transform>()
         val pose = transformComp.transform
 
+        val direction = (pose.t - headPosition).normalize()
+
+
         val scaleComp = entity.getComponent<Scale>()
         val scale = scaleComp.scale
-
-        // construct a pose so that the position is the head position, and the
-        // rotation is the direction vector from the head to the right edge of the
-        // detected object in the user's view, at eye level (no pitch or roll)
-
         val position = pose.times(Vector3.Right * (scale.x / 2))
 
         // zero out any pitch to calculate our direction vector
@@ -286,7 +282,10 @@ class TrackedObjectSystem(
 
         val rotation = Quaternion.lookRotationAroundY(position - headPosition)
 
-        onTrackedObjectSelected.invoke(comp.objectId, Pose(headPosition, rotation))
+        detectionRepository.requestInfoForObject(
+            comp.objectId,
+            RaycastRequestModel(headPosition, direction, rotation)
+        )
     }
 
     /**

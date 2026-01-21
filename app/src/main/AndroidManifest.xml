@@ -29,7 +29,7 @@
 
     <uses-feature
     android:name="oculus.software.handtracking"
-    android:required="false"
+            android:required="true"
   />
 
     <uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
@@ -72,6 +72,8 @@
     android:required="false"
   />
     <uses-permission android:name="horizonos.permission.HEADSET_CAMERA" />
+    <uses-permission android:name="com.oculus.permission.USE_SCENE" />
+    <uses-permission android:name="com.oculus.permission.USE_ANCHOR_API" />
     <application
             android:name=".DiApplication"
     android:label="Meta Spatial Scanner"
